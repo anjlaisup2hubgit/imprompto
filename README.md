@@ -12,7 +12,7 @@ imprompto/
 ├── template.html    how the website looks
 ├── build.py         rebuilds index.html from the prompts
 ├── assets/
-│   └── flower.png   the flower picture
+│   └── flower.webp  the flower picture
 ├── prompts/         your prompts, one file each
 │   ├── design/
 │   ├── general/

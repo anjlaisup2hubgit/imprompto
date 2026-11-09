@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompt Library</title>
+<meta name="description" content="imprompto: a flower-shaped place to keep, search and copy your AI prompts. Everything stays in your own browser.">
+<meta name="theme-color" content="#f3edfc">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23c9b8f5'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23ffb26b'/%3E%3C/svg%3E">
+<link rel="preload" as="image" href="assets/flower.webp" fetchpriority="high">
 <style>
 :root{color-scheme:light;--ink:#241c3f;--mute:#554d70;--acc:#a8450f;--line:#c25be6;--chip:#efe9fb;--chipink:#43357d;--brand:#5b3fd0}
 *{box-sizing:border-box}
@@ -11,6 +15,7 @@ html{background:#f3edfc}
 html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#fff,#efe7fb);color:var(--ink);
   font-family:system-ui,"Segoe UI",Helvetica,sans-serif}
 button,input,textarea{font-family:inherit}
+button:active{transform:scale(.97)}
 :focus-visible{outline:3px solid #6d4aff;outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -18,10 +23,17 @@ button,input,textarea{font-family:inherit}
 /* The whole design lives on a fixed stage that is scaled to fit the window. */
 #stage{position:absolute;left:0;top:0;width:1200px;height:900px;transform-origin:0 0}
 #flower{position:absolute;left:373px;top:14px;width:816px;height:776px;pointer-events:none;
-  filter:drop-shadow(0 16px 30px rgba(120,80,220,.25))}
+  filter:drop-shadow(0 16px 30px rgba(120,80,220,.25));animation:float 8s ease-in-out infinite alternate;will-change:transform}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes pop{from{opacity:0;scale:.85}}
+@keyframes rowin{from{opacity:0;transform:translateY(8px)}}
+#bloom{position:absolute;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,var(--c,#8b5cf6),transparent 68%);transition:opacity .25s;mix-blend-mode:multiply}
+#bloom.on{opacity:.42}
 #lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .brand{position:absolute;left:48px;top:36px}
-.brand b{font-size:28px;font-weight:800;display:block;line-height:1.1}
+.brand h1{margin:0;font-size:28px;font-weight:800;line-height:1.1}
 .brand span{font-size:15px;color:var(--mute)}
 .hbtn{position:absolute;top:36px;height:46px;border-radius:23px;font-size:16px;font-weight:700;cursor:pointer;padding:0}
 #new{left:1008px;width:160px;background:var(--brand);color:#fff;border:0;box-shadow:0 8px 18px rgba(91,63,208,.3)}
@@ -30,24 +42,34 @@ button,input,textarea{font-family:inherit}
 /* category labels on the petals (each has its own colour) */
 .lab{position:absolute;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;gap:10px;
   padding:0 18px;font-size:17px;font-weight:700;cursor:pointer;border:0;color:var(--ink);
-  transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(106,75,214,.18);transition:opacity .25s,box-shadow .2s;white-space:nowrap}
+  transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(106,75,214,.18);transition:opacity .25s,box-shadow .2s;white-space:nowrap;
+  animation:pop .5s backwards}
 .lab b{width:12px;height:12px;border-radius:50%;background:var(--c)}
 .lab i{font-style:normal;color:var(--acc);font-size:15px}
-.lab:hover,.lab.on{box-shadow:0 0 0 2px var(--c),0 12px 24px rgba(106,75,214,.22)}
-.dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:3px solid var(--c)}
-body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie{opacity:0;pointer-events:none}
-.dot,.hint,.tie{transition:opacity .25s}
+.lab:hover,.lab:focus-visible,.lab.on{box-shadow:0 0 0 2px var(--c),0 12px 24px rgba(106,75,214,.22)}
+.dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:3px solid var(--c);
+  animation:pop .5s backwards;transition:box-shadow .25s,opacity .25s}
+.dot.hot{box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
+body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie,body.searching #coach{opacity:0;pointer-events:none}
+.hint,.tie{transition:opacity .25s}
 
 /* search bar sitting on the pollen */
 #glow{position:absolute;left:680px;top:310px;width:240px;height:240px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,185,138,.6),rgba(255,185,138,0) 70%);pointer-events:none}
+  background:radial-gradient(circle,rgba(255,185,138,.6),rgba(255,185,138,0) 70%);pointer-events:none;animation:pulse 4s ease-in-out infinite}
 #bar{position:absolute;left:635px;top:398px;width:330px;height:64px;border-radius:32px;background:#fff;
-  border:3px solid #ffb26b;display:flex;align-items:center;padding:0 18px;gap:12px;box-shadow:0 12px 26px rgba(106,75,214,.2)}
+  border:3px solid #ffb26b;display:flex;align-items:center;padding:0 10px 0 18px;gap:12px;box-shadow:0 12px 26px rgba(106,75,214,.2)}
 #bar svg{flex:none}
 #q{flex:1;min-width:0;border:0;outline:0;background:none;font-size:18px;color:var(--ink);font-weight:600}
 #q::placeholder{color:#645d80;font-weight:400}
 #bar:focus-within{box-shadow:0 0 0 3px #6d4aff,0 12px 26px rgba(106,75,214,.2)}
-.hint{position:absolute;background:rgba(255,255,255,.85);border-radius:12px;padding:6px 0;left:635px;width:330px;top:480px;text-align:center;font-size:15px;color:var(--mute)}
+#clr{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:var(--chip);color:var(--chipink);font-size:22px;line-height:1;cursor:pointer;display:none}
+#clr.show{display:block}
+.hint{position:absolute;background:rgba(255,255,255,.88);border-radius:12px;padding:6px 8px;left:635px;width:330px;top:480px;text-align:center;font-size:15px;color:var(--mute)}
+#coach{position:absolute;left:615px;bottom:522px;width:370px;background:var(--brand);color:#fff;border-radius:16px;padding:14px 16px;font-size:16px;line-height:1.4;
+  box-shadow:0 14px 30px rgba(91,63,208,.35);transition:opacity .25s;animation:pop .6s .6s backwards;display:none}
+#coach.show{display:block}
+#coach:after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-9px;width:18px;height:18px;background:var(--brand);transform:rotate(45deg);border-radius:3px}
+#coach button{display:block;margin-top:10px;border:0;border-radius:14px;background:#fff;color:var(--brand);font-weight:700;font-size:15px;padding:7px 16px;cursor:pointer}
 
 /* results box: joined to the pollen by a line, like the reference */
 #box{position:absolute;left:48px;top:120px;width:400px;height:660px;background:rgba(255,255,255,.95);
@@ -66,7 +88,7 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
 .cb b{width:10px;height:10px;border-radius:50%;background:var(--c,#64748b)}
 .cb.on{background:var(--chipink);border-color:var(--chipink);color:#fff}
 #list{overflow:auto;flex:1;padding:0 8px 8px}
-.r{padding:14px 12px 10px;border-radius:12px;cursor:pointer;margin-bottom:2px}
+.r{padding:14px 12px 10px;border-radius:12px;cursor:pointer;margin-bottom:2px;animation:rowin .28s backwards}
 .r:hover,.r.cur{background:#f1e6fd}
 .r .hd{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .r h3{margin:0;font-size:17px;font-weight:700;line-height:1.3}
@@ -80,13 +102,14 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
 .you{background:#ffe3cc!important;color:var(--acc)!important;font-weight:700}
 .acts{flex:none;display:flex;gap:2px}
 .act{border:0;background:none;color:var(--chipink);font-size:14px;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:8px;text-decoration:underline}
-.none{padding:30px 16px;color:var(--mute);font-size:16px}
+.none{padding:26px 16px;color:var(--mute);font-size:16px;line-height:1.5}
+.none .sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 #foot{flex:none;padding:10px 16px 12px;font-size:13px;color:var(--mute);border-top:1px solid #efe7fb}
 
 /* pop-up windows */
 .ov{position:absolute;inset:0;background:rgba(36,28,63,.4);display:none;z-index:5;align-items:center;justify-content:center}
 .ov.show{display:flex}
-.dlg{width:520px;max-width:94%;background:#fff;border-radius:20px;padding:24px 26px;box-shadow:0 24px 60px rgba(60,30,140,.3);font-size:16px}
+.dlg{width:520px;max-width:94%;background:#fff;border-radius:20px;padding:24px 26px;box-shadow:0 24px 60px rgba(60,30,140,.3);font-size:16px;animation:pop .2s}
 .dlg h2{margin:0 0 12px;font-size:21px}
 .dlg label{display:block;font-size:13px;font-weight:700;color:var(--mute);margin:12px 0 5px;letter-spacing:.5px}
 .dlg input[type=text],.dlg textarea{width:100%;border:1.5px solid #d9cff2;border-radius:10px;padding:10px 12px;font-size:16px;color:var(--ink)}
@@ -105,15 +128,18 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
 html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
 body.mobile{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:linear-gradient(#fff,#efe7fb) fixed}
 body.mobile #flower{left:0;top:124px;width:420px;height:399px}
+body.mobile #bloom{display:none}
 body.mobile .brand{left:16px;top:14px}
-body.mobile .brand b{font-size:19px}
+body.mobile .brand h1{font-size:19px}
 body.mobile .brand span{font-size:13px}
+body.mobile .sv{display:none}
 body.mobile .hbtn{top:12px;height:44px;font-size:15px}
 body.mobile #new{left:268px;width:136px}
 body.mobile #bkbtn{left:176px;width:84px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:70px;top:306px;width:280px;height:64px}
 body.mobile .lab,body.mobile .dot,body.mobile .hint,body.mobile .tie{display:none}
+body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
 body.mobile #chips{display:flex;position:absolute;left:16px;top:70px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
 .chipbtn{flex:none;height:44px;border-radius:22px;border:0;background:#fff;padding:0 16px;font-size:15px;font-weight:700;color:var(--ink);
   cursor:pointer;box-shadow:0 4px 10px rgba(106,75,214,.14);display:flex;align-items:center;gap:8px}
@@ -128,10 +154,11 @@ body.mobile .dlg{width:380px}
 </style>
 </head>
 <body>
-<div id="stage">
-  <img id="flower" src="__FLOWER__" alt="">
+<main id="stage">
+  <img id="flower" src="assets/flower.webp" alt="" width="583" height="554" fetchpriority="high">
+  <div id="bloom" aria-hidden="true"></div>
   <svg id="lines" viewBox="0 0 1200 900" aria-hidden="true"></svg>
-  <div class="brand"><b>Prompt Library</b><span id="total"></span></div>
+  <div class="brand"><h1>Prompt Library</h1><span id="total"></span></div>
   <button class="hbtn" id="bkbtn">Backup</button>
   <button class="hbtn" id="new">+ New prompt</button>
   <div id="labels"></div>
@@ -140,8 +167,10 @@ body.mobile .dlg{width:380px}
   <div id="bar">
     <svg width="24" height="24" viewBox="0 0 22 22" fill="none" stroke="#a8450f" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="7"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
     <input id="q" type="text" role="combobox" aria-controls="list" aria-expanded="false" aria-autocomplete="list" placeholder="Type any words you remember…" maxlength="200" autocomplete="off" spellcheck="false" aria-label="Search your prompts" autofocus>
+    <button id="clr" aria-label="Clear search">&times;</button>
   </div>
-  <div class="hint">Type to search, or click a petal to browse</div>
+  <div class="hint" id="hint">Type to search, or click a petal. Press / to jump here.</div>
+  <div id="coach" role="status">Start here: type any word you remember, or click a petal to browse a group.<button id="coach-ok">Got it</button></div>
   <div id="box"><div id="tab"></div><div id="head"></div><div id="cats" role="group" aria-label="Filter by category"></div>
     <div id="list" role="listbox" aria-label="Results"></div>
     <div id="foot">↑ ↓ to move · Enter to copy · Esc to clear</div></div>
@@ -165,10 +194,10 @@ body.mobile .dlg{width:380px}
     <input type="file" id="f-file" accept="application/json" hidden>
   </div></div>
   <div id="toast" role="status"></div>
-</div>
+</main>
 <script>
 const BUILTIN = __DATA__;
-const KEY = "promptlib.mine.v1";
+const KEY = "promptlib.mine.v1", SEEN = "promptlib.seen.v1";
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
 const slug = v => str(v).trim().toLowerCase().replace(/\s+/g, "-");
@@ -211,13 +240,13 @@ function fit() {
 addEventListener("resize", fit);
 
 /* ---- categories ---- */
-const SPOTS = [                                   // petal positions
-  { x: 440,  y: 200, dx: 639, dy: 210 },
-  { x: 1060, y: 200, dx: 862, dy: 128 },
-  { x: 300,  y: 640, dx: 555, dy: 490 },
-  { x: 1070, y: 560, dx: 933, dy: 336 },
+const SPOTS = [                                   // petal positions: label (x,y) and the dot on the flower (dx,dy)
+  { x: 430,  y: 190, dx: 639, dy: 210 },
+  { x: 1070, y: 200, dx: 862, dy: 128 },
+  { x: 330,  y: 600, dx: 555, dy: 490 },
+  { x: 1070, y: 500, dx: 933, dy: 336 },
 ];
-const ALLSPOT = { x: 1040, y: 745, dx: 975, dy: 690 };
+const ALLSPOT = { x: 640, y: 835, dx: 610, dy: 735 };
 const ORDER = ["design", "writing", "general", "how-to"];
 const PAL = ["#8b5cf6", "#d946ef", "#d97706", "#0d9488", "#2563eb", "#dc2626", "#65a30d", "#0891b2"];
 const ln = $("lines");
@@ -227,18 +256,26 @@ function catList() {
   return ord.map((c, i) => ({ c, n: D.filter(d => d.category === c).length, color: PAL[i % PAL.length] }));
 }
 function toggleCat(c) { cat = cat === c ? "" : c; $("q").value = ""; render(); }
+function bloom(on, dot, color) {
+  const b = $("bloom"); if (on) { b.style.cssText = `left:${dot.dx}px;top:${dot.dy}px;--c:${color}`; }
+  b.classList.toggle("on", on);
+}
 function renderLabels() {
   const cats = catList(), D = all();
-  $("total").textContent = D.length + " prompts";
+  $("total").innerHTML = D.length + ' prompts<span class="sv"> · saved in this browser</span>';
+  $("hint").textContent = D.length ? "Type to search, or click a petal. Press / to jump here." : "No prompts yet. Press “+ New prompt” to add your first one.";
   $("labels").innerHTML = ""; $("chips").innerHTML = "";
-  let tieHtml = "";
+  let tieHtml = "", k = 0;
   const mk = (o, p, label, count, color) => {
     tieHtml += `<g class="tie"><line x1="${p.dx}" y1="${p.dy}" x2="${p.x}" y2="${p.y}" stroke="${color}" stroke-width="1.6"/></g>`;
-    const dot = document.createElement("div"); dot.className = "dot"; dot.style.cssText = `left:${p.dx}px;top:${p.dy}px;--c:${color}`;
-    const b = document.createElement("button"); b.className = "lab"; b.dataset.c = o; b.style.cssText = `left:${p.x}px;top:${p.y}px;--c:${color}`;
+    const delay = `animation-delay:${0.1 + 0.08 * k++}s`;
+    const dot = document.createElement("div"); dot.className = "dot"; dot.style.cssText = `left:${p.dx}px;top:${p.dy}px;--c:${color};${delay}`;
+    const b = document.createElement("button"); b.className = "lab"; b.dataset.c = o; b.style.cssText = `left:${p.x}px;top:${p.y}px;--c:${color};${delay}`;
     b.setAttribute("aria-label", `${label}, ${count} prompts`);
     b.innerHTML = `<b></b>${esc(label)} <i>${count}</i>`;
     b.onclick = () => toggleCat(o);
+    const on = () => { dot.classList.add("hot"); bloom(true, p, color); }, off = () => { dot.classList.remove("hot"); bloom(false, p, color); };
+    b.onmouseenter = b.onfocus = on; b.onmouseleave = b.onblur = off;
     $("labels").append(dot, b);
   };
   cats.slice(0, SPOTS.length).forEach((o, i) => mk(o.c, SPOTS[i], o.c, o.n, o.color));
@@ -303,6 +340,7 @@ function render() {
   const terms = [...new Set(fold(raw).split(/\s+/).filter(Boolean))].slice(0, 8).map(w => w.slice(0, 60));
   const active = !!(terms.length || cat);
   document.body.classList.toggle("searching", active);
+  $("clr").classList.toggle("show", !!$("q").value);
   document.querySelectorAll(".lab,.chipbtn").forEach(l => { const on = l.dataset.c === cat; l.classList.toggle("on", on); l.setAttribute("aria-pressed", on); });
   $("box").classList.toggle("show", active);
   $("q").setAttribute("aria-expanded", active);
@@ -327,10 +365,15 @@ function render() {
     $("cats").append(b);
   });
   const list = $("list"); list.innerHTML = ""; list.scrollTop = 0; cur = 0;
-  if (!rows.length) { list.innerHTML = '<div class="none">Nothing found. Try fewer or different words.</div>'; $("q").removeAttribute("aria-activedescendant"); return; }
+  if (!rows.length) {
+    list.innerHTML = '<div class="none">Nothing found. Try fewer or different words' + (cl.length ? ", or browse a group:" : ".") + '<div class="sug"></div></div>';
+    cl.slice(0, 6).forEach(o => { const b = document.createElement("button"); b.className = "cb"; b.style.setProperty("--c", o.color); b.innerHTML = `<b></b>${esc(o.c)}`; b.onclick = () => { $("q").value = ""; cat = o.c; render(); }; list.querySelector(".sug").append(b); });
+    $("q").removeAttribute("aria-activedescendant"); return;
+  }
   rows.forEach(({ d }, i) => {
     const r = document.createElement("div");
     r.className = "r" + (i === 0 ? " cur" : ""); r.id = "r" + i; r.setAttribute("role", "option"); r.setAttribute("aria-selected", i === 0);
+    r.style.animationDelay = Math.min(i, 8) * 25 + "ms";
     r.title = d.text.slice(0, 400);
     r.innerHTML = `<div class="hd"><h3>${hl(d.title, terms)}</h3><span class="cp">Copy</span></div>
       <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
@@ -361,11 +404,19 @@ async function copy(text, row) {
   setTimeout(() => { cp.textContent = "Copy"; row.classList.remove("done"); }, 1400);
 }
 
-$("q").addEventListener("input", () => { if ($("q").value) cat = ""; render(); });
+/* ---- first-visit tip ---- */
+function seenIt() { try { return !!localStorage.getItem(SEEN); } catch (e) { return true; } }
+function dismissCoach() { $("coach").classList.remove("show"); try { localStorage.setItem(SEEN, "1"); } catch (e) {} }
+if (!seenIt() && all().length) $("coach").classList.add("show");
+$("coach-ok").onclick = dismissCoach;
+
+$("q").addEventListener("input", () => { if ($("q").value) cat = ""; dismissCoach(); render(); });
+$("clr").onclick = () => { $("q").value = ""; cat = ""; render(); $("q").focus(); };
 const openOverlay = () => document.querySelector(".ov.show");
 addEventListener("keydown", e => {
   const ov = openOverlay();
-  if (e.key === "Escape") { $("q").value = ""; cat = ""; closeModals(); render(); return; }
+  if (e.key === "Escape") { $("q").value = ""; cat = ""; closeModals(); dismissCoach(); render(); return; }
+  if (e.key === "/" && !ov && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName || "")) { e.preventDefault(); $("q").focus(); return; }
   if (e.key === "Tab" && ov) {                                              // keep keyboard focus inside the pop-up
     const f = [...ov.querySelectorAll("input:not([hidden]),textarea,button")].filter(x => !x.disabled);
     if (!f.length) return;
@@ -382,7 +433,7 @@ addEventListener("keydown", e => {
 
 /* ---- pop-up windows ---- */
 let lastFocus = null;
-function showModal(id, focusId) { lastFocus = document.activeElement; $(id).classList.add("show"); $(focusId).focus(); }
+function showModal(id, focusId) { lastFocus = document.activeElement; $(id).classList.add("show"); $(focusId).focus(); dismissCoach(); }
 function closeModals() {
   const was = openOverlay();
   document.querySelectorAll(".ov").forEach(o => o.classList.remove("show"));
