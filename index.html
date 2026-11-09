@@ -299,7 +299,7 @@ async function copy(text, row) {
 $("q").addEventListener("input", () => { if ($("q").value) cat = ""; render(); });
 addEventListener("keydown", e => {
   if (e.key === "Escape") { $("q").value = ""; cat = ""; closeForm(); render(); }
-  if (e.key === "Enter" && e.target.id === "q" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
+  if (e.key === "Enter" && !e.isComposing && e.target.id === "q" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
 });
 /* ---- add / edit prompts (saved in this browser) ---- */
 let editing = null;
