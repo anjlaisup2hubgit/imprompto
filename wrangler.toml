@@ -1,0 +1,14 @@
+name = "imprompto"
+pages_build_output_dir = "public"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "imprompto"
+database_id = "ef80a0ed-45d6-4f61-8aa6-a9ec90e368b7"
+
+# Fill these in after creating the Access application (see DEPLOY.md).
+[vars]
+ACCESS_TEAM_DOMAIN = "round-lab-f4cd.cloudflareaccess.com"
+ACCESS_AUD = ""
+ALLOWED_EMAIL = "angelahoang066@gmail.com"

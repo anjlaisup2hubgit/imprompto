@@ -1,4 +1,4 @@
-"""Rebuild index.html from the markdown files in prompts/.
+"""Rebuild public/index.html from the markdown files in prompts/.
 Run:  python build.py
 Each prompt is prompts/<category>/<name>.md with a small header:
 ---
@@ -31,5 +31,5 @@ for f in sorted((ROOT / "prompts").rglob("*.md")):
 
 html = (ROOT / "template.html").read_text(encoding="utf-8")
 html = html.replace("__DATA__", json.dumps(items, ensure_ascii=False).replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
-(ROOT / "index.html").write_text(html, encoding="utf-8")
-print(f"index.html built with {len(items)} prompts")
+(ROOT / "public" / "index.html").write_text(html, encoding="utf-8")
+print(f"public/index.html built with {len(items)} prompts")

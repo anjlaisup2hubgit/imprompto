@@ -1,32 +1,31 @@
-# imprompto
+# Imprompto
 
 ## Link
 
-https://anjlaisup2hubgit.github.io/imprompto/
+https://imprompto.pages.dev
 
 ## File tree
 
 ```
-imprompto/
-├── index.html       the website
-├── template.html    how the website looks
-├── build.py         rebuilds index.html from the prompts
-├── assets/
-│   └── flower.webp  the flower picture
-├── prompts/         your prompts, one file each
-│   ├── design/
-│   ├── general/
-│   ├── how-to/
-│   └── writing/
-└── mockups/         early drawings of the website
+organiser/
+├── public/      the website you see
+├── functions/   the small server that saves your prompts
+├── prompts/     the starter prompts (design, general, how-to, writing)
+├── assets/      the flower picture
+├── mockups/     early drawings of the website
+├── reference/   pictures used for the look
+├── template.html  the page before the prompts are added
+├── build.py     puts the prompts into the page
+├── schema.sql   the shape of the saved data
+└── wrangler.toml  the Cloudflare settings
 ```
 
 ## Features
 
-- **Find a prompt.** Type any words you remember in the flower's middle. The matching prompts pop out in a box.
-- **Spelling mistakes are OK.** It still finds what you mean.
-- **Browse.** Click a flower petal to see one group of prompts.
-- **Copy.** Click a prompt to copy it.
-- **Add your own.** Press "+ New prompt", fill in the boxes, and save. You can edit or delete it later.
-- **Keep a backup.** Download your prompts as a file, and put them back whenever you want.
-- **Private.** Prompts you add stay in your own browser.
+- **Flower:** each petal is a group of prompts. Click one to see them.
+- **Search:** type any word you remember and the prompts appear.
+- **Copy:** click a prompt, or press Enter, and it is copied.
+- **Add your own:** press "+ New prompt" to save one. You can edit or delete it later.
+- **On every device:** your prompts are saved online, so your phone and PC show the same ones.
+- **Backup:** save your prompts in a file, and load them again.
+- **Private:** only you can open it, with your email code.
