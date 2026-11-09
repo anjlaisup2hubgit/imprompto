@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Library</title>
+<style>
+:root{--ink:#2b2347;--mute:#7a7394;--acc:#c2571a;--line:#c25be6;--chip:#efe9fb;--chipink:#5b4a99}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#fff,#f1ebfb);color:var(--ink);
+  font-family:system-ui,"Segoe UI",Helvetica,sans-serif}
+/* The whole design lives on a fixed 1200x900 stage that is scaled to fit the window. */
+#stage{position:absolute;left:0;top:0;width:1200px;height:900px;transform-origin:0 0}
+#flower{position:absolute;left:333px;top:14px;width:816px;height:776px;
+  -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);
+  mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);pointer-events:none}
+#lines{position:absolute;inset:0;width:1200px;height:900px;pointer-events:none;overflow:visible}
+.brand{position:absolute;left:48px;top:40px}
+.brand b{font-size:22px;font-weight:800;display:block}
+.brand span{font-size:13px;color:var(--mute)}
+#new{position:absolute;left:1018px;top:40px;width:134px;height:40px;border-radius:20px;border:1px solid #e3dbf6;
+  background:#fff;color:var(--chipink);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.shadow{filter:drop-shadow(0 12px 16px rgba(106,75,214,.18))}
+
+/* category labels on the petals */
+.lab{position:absolute;height:40px;border-radius:20px;background:#fff;display:flex;align-items:center;gap:10px;
+  padding:0 16px 0 18px;font-size:15px;font-weight:700;cursor:pointer;border:0;color:var(--ink);
+  transform:translate(-50%,-50%);transition:opacity .25s,box-shadow .2s;font-family:inherit}
+.lab i{font-style:normal;color:var(--acc);font-size:13px}
+.lab:hover,.lab.on{box-shadow:0 0 0 2px var(--line),0 12px 16px rgba(106,75,214,.18)}
+.dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;border:2px solid var(--line)}
+body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie{opacity:0;pointer-events:none}
+.lab,.dot,.hint,.tie{transition:opacity .25s}
+
+/* search bar sitting on the pollen */
+#glow{position:absolute;left:640px;top:310px;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,185,138,.6),rgba(255,185,138,0) 70%);pointer-events:none}
+#bar{position:absolute;left:610px;top:400px;width:300px;height:60px;border-radius:30px;background:#fff;
+  border:3px solid #ffb26b;display:flex;align-items:center;padding:0 16px;gap:10px}
+#bar svg{flex:none}
+#q{flex:1;min-width:0;border:0;outline:0;background:none;font-size:15px;font-family:inherit;color:var(--ink);font-weight:600}
+#q::placeholder{color:#a59fba;font-weight:400}
+.hint{position:absolute;background:rgba(255,255,255,.75);border-radius:12px;padding:4px 0;left:610px;width:300px;top:525px;text-align:center;font-size:13px;color:var(--mute)}
+
+/* results box: joined to the pollen by a line, like the reference */
+#box{position:absolute;left:48px;top:130px;width:330px;height:560px;background:rgba(255,255,255,.93);
+  border:1.6px solid var(--line);opacity:0;transform:scale(.96);transform-origin:100% 0;pointer-events:none;
+  transition:opacity .22s,transform .22s;display:flex;flex-direction:column}
+#box.show{opacity:1;transform:none;pointer-events:auto}
+#tab{position:absolute;left:-1.6px;top:-21.6px;height:20px;padding:0 10px;background:var(--line);color:#fff;
+  font-size:12px;font-weight:700;letter-spacing:.6px;line-height:20px;white-space:nowrap}
+#head{padding:16px 16px 6px;font-size:12px;font-weight:700;letter-spacing:1.4px;color:var(--mute);text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#list{overflow:auto;flex:1;padding:0 6px 10px}
+.r{padding:12px 10px 14px;cursor:pointer}
+.r.top{background:#f4eafd}
+.r:hover{background:#f4eafd}
+.r h3{margin:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r p{margin:4px 0 8px;font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r mark{background:none;color:var(--acc);font-weight:800}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips span{background:var(--chip);color:var(--chipink);font-size:11px;padding:2px 8px;border-radius:10px}
+.r .cp{float:right;font-size:12px;font-weight:700;color:var(--acc);opacity:0}
+.r:hover .cp,.r.done .cp{opacity:1}
+.none{padding:30px 16px;color:var(--mute);font-size:14px}
+#tip{position:absolute;left:0;right:0;bottom:24px;text-align:center;font-size:13px;color:var(--mute);pointer-events:none}
+#modal{position:absolute;inset:0;background:rgba(43,35,71,.35);display:none;z-index:5;align-items:center;justify-content:center}
+#modal.show{display:flex}
+#form{width:480px;background:#fff;border-radius:20px;padding:22px 24px;box-shadow:0 24px 60px rgba(60,30,140,.3);font-size:14px}
+#form h2{margin:0 0 12px;font-size:18px}
+#form label{display:block;font-size:12px;font-weight:700;color:var(--mute);margin:10px 0 4px;letter-spacing:.5px}
+#form input,#form textarea{width:100%;border:1px solid #e3dbf6;border-radius:10px;padding:9px 12px;font:14px system-ui,sans-serif;color:var(--ink);outline:0}
+#form input:focus,#form textarea:focus{border-color:var(--line)}
+#form textarea{height:150px;resize:vertical}
+.btns{display:flex;gap:8px;align-items:center;margin-top:16px}
+.btn{border:0;border-radius:16px;padding:8px 16px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;background:var(--chip);color:var(--chipink)}
+.btn.main{background:var(--chipink);color:#fff}
+.small{font-size:12px;color:var(--mute);margin-top:12px;line-height:1.5}
+.small a{color:var(--chipink);cursor:pointer;text-decoration:underline}
+.err{color:#b3261e;font-size:12px;margin-top:6px;min-height:16px}
+.r .acts{float:right;font-size:12px;font-weight:700;margin-left:8px;display:none}
+.r:hover .acts{display:inline}
+.r .acts u{cursor:pointer;color:var(--chipink);margin-left:6px}
+.you{background:#ffe9d6!important;color:var(--acc)!important}
+#toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:16px;
+  font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="flower" src="__FLOWER__" alt="">
+  <svg id="lines" viewBox="0 0 1200 900"></svg>
+  <div class="brand"><b>Prompt Library</b><span id="total"></span></div>
+  <button id="new">+ New prompt</button>
+  <div id="labels"></div>
+  <div id="glow"></div>
+  <div id="bar">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#c2571a" stroke-width="2.4" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
+    <input id="q" type="text" placeholder="Type any words you remember…" autocomplete="off" spellcheck="false" autofocus>
+  </div>
+  <div class="hint">Type to search, or click a petal to browse a category</div>
+  <div id="box"><div id="tab"></div><div id="head"></div><div id="list"></div></div>
+  <div id="tip">Enter or click to copy · Esc to clear</div>
+  <div id="modal"><div id="form">
+    <h2 id="ftitle">New prompt</h2>
+    <label>TITLE</label><input id="f-title" maxlength="80" placeholder="e.g. Explain like I'm five">
+    <label>CATEGORY</label><input id="f-cat" list="catlist" maxlength="30" placeholder="design, writing, general…"><datalist id="catlist"></datalist>
+    <label>TAGS (SEPARATE WITH COMMAS)</label><input id="f-tags" placeholder="teaching, explain">
+    <label>PROMPT</label><textarea id="f-text" placeholder="Paste your prompt here…"></textarea>
+    <div class="err" id="ferr"></div>
+    <div class="btns"><button class="btn main" id="f-save">Save</button><button class="btn" id="f-cancel">Cancel</button></div>
+    <div class="small">Saved in this browser only. <a id="f-export">Export backup</a> · <a id="f-import">Import backup</a>
+      <input type="file" id="f-file" accept="application/json" hidden></div>
+  </div></div>
+  <div id="toast"></div>
+</div>
+<script>
+const BUILTIN = __DATA__;
+const KEY = "promptlib.mine.v1";
+let MINE = [];
+try { MINE = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { MINE = []; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(MINE)); return true; } catch (e) { return false; } };
+const all = () => BUILTIN.concat(MINE);
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let cat = "";
+
+/* ---- fit the 1200x900 stage into the window ---- */
+function fit() {
+  const s = Math.min(innerWidth / 1200, innerHeight / 900);
+  const st = $("stage");
+  st.style.transform = `translate(${(innerWidth - 1200 * s) / 2}px,${(innerHeight - 900 * s) / 2}px) scale(${s})`;
+}
+addEventListener("resize", fit); fit();
+
+/* ---- category labels (petal positions from the mockup) ---- */
+const SPOTS = [
+  { x: 420,  y: 200, dx: 599, dy: 210 },
+  { x: 1030, y: 170, dx: 865, dy: 98 },
+  { x: 300,  y: 640, dx: 515, dy: 490 },
+  { x: 1040, y: 560, dx: 893, dy: 336 },
+];
+const ORDER = ["design", "writing", "general", "how-to"];   // which petal each category sits on
+const ln = $("lines");
+function renderLabels() {
+  const DATA = all();
+  const found = [...new Set(DATA.map(d => d.category))];
+  const cats = [...ORDER.filter(c => found.includes(c)), ...found.filter(c => !ORDER.includes(c))]
+    .slice(0, SPOTS.length).map(c => ({ c, n: DATA.filter(d => d.category === c).length }));
+  $("total").textContent = DATA.length + " prompts";
+  $("labels").innerHTML = "";
+  let tieHtml = "";
+  cats.forEach((o, i) => {
+    const p = SPOTS[i];
+    tieHtml += `<g class="tie"><line x1="${p.dx}" y1="${p.dy}" x2="${p.x}" y2="${p.y}" stroke="#c25be6" stroke-width="1.4"/></g>`;
+    const dot = document.createElement("div"); dot.className = "dot"; dot.style.left = p.dx + "px"; dot.style.top = p.dy + "px";
+    const b = document.createElement("button"); b.className = "lab"; b.dataset.c = o.c;
+    b.style.left = p.x + "px"; b.style.top = p.y + "px";
+    b.innerHTML = `${esc(o.c)} <i>${o.n}</i>`;
+    b.onclick = () => { cat = cat === o.c ? "" : o.c; $("q").value = ""; render(); };
+    $("labels").append(dot, b);
+  });
+  ln.querySelectorAll(".tie").forEach(n => n.remove());
+  ln.insertAdjacentHTML("afterbegin", tieHtml);
+  $("catlist").innerHTML = found.map(c => `<option value="${esc(c)}">`).join("");
+}
+ln.innerHTML = `<line id="link" x1="378" y1="130" x2="610" y2="430" stroke="#c25be6" stroke-width="1.6" opacity="0" style="transition:opacity .22s"/>`;
+renderLabels();
+
+/* ---- search (every word must match somewhere; tiny typos allowed) ---- */
+function near(a, b) {
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, miss = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++miss > 1) return false;
+    if (a.length > b.length) i++; else if (a.length < b.length) j++; else { i++; j++; }
+  }
+  return miss + (a.length - i) + (b.length - j) <= 1;
+}
+function score(item, terms) {
+  const title = item.title.toLowerCase(), tags = item.tags.join(" ").toLowerCase(), text = item.text.toLowerCase();
+  const words = (title + " " + tags + " " + text).split(/[^a-z0-9']+/);
+  let total = 0;
+  for (const t of terms) {
+    let s = 0;
+    if (title.includes(t)) s = 5; else if (tags.includes(t)) s = 4; else if (text.includes(t)) s = 2;
+    else if (t.length >= 4 && words.some(w => w.length >= 4 && near(t, w))) s = 1;
+    if (!s) return 0;
+    total += s;
+  }
+  return total;
+}
+function hl(s, terms) {
+  let out = esc(s);
+  for (const t of terms) if (t.length > 1)
+    out = out.replace(new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi"), "<mark>$1</mark>");
+  return out;
+}
+
+function render() {
+  const raw = $("q").value.trim();
+  const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
+  const active = terms.length || cat;
+  document.body.classList.toggle("searching", !!active);
+  document.querySelectorAll(".lab").forEach(l => l.classList.toggle("on", l.dataset.c === cat));
+  $("box").classList.toggle("show", !!active);
+  $("link").setAttribute("opacity", active ? 1 : 0);
+  if (!active) return;
+
+  let rows = all().map(d => ({ d, s: terms.length ? score(d, terms) : 1 }))
+    .filter(r => r.s && (!cat || r.d.category === cat));
+  if (terms.length) rows.sort((a, b) => b.s - a.s);
+
+  $("tab").textContent = "results · " + rows.length;
+  $("head").textContent = terms.length ? `Best matches for “${raw}”` + (cat ? ` in ${cat}` : "") : `Category · ${cat}`;
+  const list = $("list"); list.innerHTML = ""; list.scrollTop = 0;
+  if (!rows.length) { list.innerHTML = '<div class="none">Nothing found. Try fewer or different words.</div>'; return; }
+  rows.forEach(({ d }, i) => {
+    const r = document.createElement("div");
+    r.className = "r" + (i === 0 ? " top" : "");
+    r.title = d.text.slice(0, 400);
+    r.innerHTML = `<span class="cp">Copy</span>${d.mine ? '<span class="acts"><u data-a="edit">Edit</u><u data-a="del">Delete</u></span>' : ""}<h3>${hl(d.title, terms)}</h3>
+      <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
+      <div class="chips">${d.mine ? '<span class="you">yours</span>' : ""}${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>`;
+    r.onclick = ev => {
+      const a = ev.target.dataset && ev.target.dataset.a;
+      if (a === "edit") return openForm(d);
+      if (a === "del") { if (confirm("Delete this prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast("Deleted"); } return; }
+      copy(d.text, r);
+    };
+    list.appendChild(r);
+  });
+}
+async function copy(text, row) {
+  const cp = row.querySelector(".cp");
+  try { await navigator.clipboard.writeText(text); cp.textContent = "Copied"; }
+  catch { cp.textContent = "Press Ctrl+C"; getSelection().selectAllChildren(row); }
+  row.classList.add("done");
+  setTimeout(() => { cp.textContent = "Copy"; row.classList.remove("done"); }, 1400);
+}
+
+$("q").addEventListener("input", () => { if ($("q").value) cat = ""; render(); });
+addEventListener("keydown", e => {
+  if (e.key === "Escape") { $("q").value = ""; cat = ""; closeForm(); render(); }
+  if (e.key === "Enter" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
+});
+/* ---- add / edit prompts (saved in this browser) ---- */
+let editing = null;
+function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 1800); }
+function openForm(d) {
+  editing = d && d.mine ? d.id : null;
+  $("ftitle").textContent = editing ? "Edit prompt" : "New prompt";
+  $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : cat || "";
+  $("f-tags").value = d ? d.tags.join(", ") : ""; $("f-text").value = d ? d.text : "";
+  $("ferr").textContent = ""; $("modal").classList.add("show"); $("f-title").focus();
+}
+function closeForm() { $("modal").classList.remove("show"); }
+$("new").onclick = () => openForm(null);
+$("f-cancel").onclick = closeForm;
+$("modal").addEventListener("mousedown", e => { if (e.target.id === "modal") closeForm(); });
+$("f-save").onclick = () => {
+  const title = $("f-title").value.trim(), text = $("f-text").value.trim();
+  const category = $("f-cat").value.trim().toLowerCase().replace(/\s+/g, "-") || "general";
+  const tags = $("f-tags").value.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+  if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
+  if (editing) Object.assign(MINE.find(x => x.id === editing), { title, category, tags, text });
+  else MINE.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title, category, tags, text, mine: true });
+  const ok = save();
+  closeForm(); renderLabels(); render();
+  toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving. Use Export backup.");
+};
+$("f-export").onclick = () => {
+  const blob = new Blob([JSON.stringify(MINE, null, 2)], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "my-prompts.json"; a.click();
+};
+$("f-import").onclick = () => $("f-file").click();
+$("f-file").onchange = async e => {
+  try {
+    const list = JSON.parse(await e.target.files[0].text());
+    let n = 0;
+    for (const p of list) if (p && p.title && p.text && !MINE.some(m => m.id === p.id)) {
+      MINE.push({ id: p.id || Date.now().toString(36) + n, title: String(p.title), category: String(p.category || "general"),
+                  tags: Array.isArray(p.tags) ? p.tags.map(String) : [], text: String(p.text), mine: true }); n++;
+    }
+    save(); renderLabels(); render(); closeForm(); toast(n + " prompts imported");
+  } catch (err) { $("ferr").textContent = "That file isn't a valid backup."; }
+  e.target.value = "";
+};
+render();
+</script>
+</body>
+</html>
