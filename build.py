@@ -7,20 +7,22 @@ tags: tag1, tag2
 ---
 The prompt text...
 """
-import json, pathlib, base64
+import json, pathlib, base64, re
 
 ROOT = pathlib.Path(__file__).parent
+HEADER = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)", re.S)
 items = []
 for f in sorted((ROOT / "prompts").rglob("*.md")):
-    raw = f.read_text(encoding="utf-8")
+    raw = f.read_text(encoding="utf-8-sig", errors="replace")      # utf-8-sig: ignore the BOM some editors add
     meta, body = {}, raw
-    if raw.startswith("---"):
-        _, head, body = raw.split("---", 2)
-        for line in head.strip().splitlines():
+    m = HEADER.match(raw)
+    if m:
+        for line in m.group(1).splitlines():
             k, _, v = line.partition(":")
             meta[k.strip()] = v.strip()
+        body = raw[m.end():]
     items.append({
-        "title": meta.get("title", f.stem),
+        "title": meta.get("title") or f.stem,
         "category": f.parent.name,
         "tags": [t.strip() for t in meta.get("tags", "").split(",") if t.strip()],
         "text": body.strip(),
@@ -30,6 +32,6 @@ for f in sorted((ROOT / "prompts").rglob("*.md")):
 html = (ROOT / "template.html").read_text(encoding="utf-8")
 flower = "data:image/png;base64," + base64.b64encode((ROOT / "assets" / "flower.png").read_bytes()).decode()
 html = html.replace("__FLOWER__", flower)
-html = html.replace("__DATA__", json.dumps(items, ensure_ascii=False).replace("</", "<\\/"))
+html = html.replace("__DATA__", json.dumps(items, ensure_ascii=False).replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
 (ROOT / "index.html").write_text(html, encoding="utf-8")
 print(f"index.html built with {len(items)} prompts")

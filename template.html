@@ -14,7 +14,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#fff,#
 #flower{position:absolute;left:333px;top:14px;width:816px;height:776px;
   -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);
   mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);pointer-events:none}
-#lines{position:absolute;inset:0;width:1200px;height:900px;pointer-events:none;overflow:visible}
+#lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .brand{position:absolute;left:48px;top:40px}
 .brand b{font-size:22px;font-weight:800;display:block}
 .brand span{font-size:13px;color:var(--mute)}
@@ -85,6 +85,24 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
 #toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:16px;
   font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6}
 #toast.show{opacity:1}
+#chips{display:none}
+/* phone layout: a 420-wide stage, flower on top, categories as a row, results underneath */
+body.mobile,body.mobile html{overflow-y:auto}
+html:has(body.mobile){overflow-y:auto;height:auto}
+body.mobile{height:auto;min-height:100%}
+body.mobile #flower{left:0;top:104px;width:420px;height:399px}
+body.mobile .brand{left:16px;top:16px}
+body.mobile #new{left:270px;top:14px;width:134px;height:36px}
+body.mobile #glow{left:100px;top:198px;width:240px;height:240px}
+body.mobile #bar{left:80px;top:288px;width:280px;height:60px}
+body.mobile .lab,body.mobile .dot,body.mobile .hint,body.mobile #tip,body.mobile .tie{display:none}
+body.mobile #chips{display:flex;position:absolute;left:16px;top:66px;width:388px;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chipbtn{flex:none;height:34px;border-radius:17px;border:0;background:#fff;padding:0 14px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);
+  cursor:pointer;box-shadow:0 4px 10px rgba(106,75,214,.12)}
+.chipbtn i{font-style:normal;color:var(--acc);margin-left:6px}
+.chipbtn.on{box-shadow:0 0 0 2px var(--line)}
+body.mobile #box{left:16px;top:520px;width:388px;height:360px;transform-origin:50% 0}
+body.mobile #form{width:380px}
 </style>
 </head>
 <body>
@@ -94,10 +112,11 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
   <div class="brand"><b>Prompt Library</b><span id="total"></span></div>
   <button id="new">+ New prompt</button>
   <div id="labels"></div>
+  <div id="chips"></div>
   <div id="glow"></div>
   <div id="bar">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#c2571a" stroke-width="2.4" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
-    <input id="q" type="text" placeholder="Type any words you remember…" autocomplete="off" spellcheck="false" autofocus>
+    <input id="q" type="text" placeholder="Type any words you remember…" maxlength="200" autocomplete="off" spellcheck="false" aria-label="Search your prompts" autofocus>
   </div>
   <div class="hint">Type to search, or click a petal to browse a category</div>
   <div id="box"><div id="tab"></div><div id="head"></div><div id="list"></div></div>
@@ -118,8 +137,22 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
 <script>
 const BUILTIN = __DATA__;
 const KEY = "promptlib.mine.v1";
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
+const slug = v => str(v).trim().toLowerCase().replace(/\s+/g, "-");
+/* turns anything (saved data, imported file) into a safe prompt, or null if it is not one */
+function clean(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) return null;
+  const title = str(p.title).trim(), text = str(p.text).trim();
+  if (!title || !text) return null;
+  const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true };
+}
 let MINE = [];
-try { MINE = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { MINE = []; }
+function loadMine() {
+  try { const j = JSON.parse(localStorage.getItem(KEY) || "[]"); MINE = (Array.isArray(j) ? j : []).map(clean).filter(Boolean); } catch (e) { MINE = []; }
+}
+loadMine();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(MINE)); return true; } catch (e) { return false; } };
 const all = () => BUILTIN.concat(MINE);
 const $ = id => document.getElementById(id);
@@ -128,11 +161,18 @@ let cat = "";
 
 /* ---- fit the 1200x900 stage into the window ---- */
 function fit() {
-  const s = Math.min(innerWidth / 1200, innerHeight / 900);
-  const st = $("stage");
-  st.style.transform = `translate(${(innerWidth - 1200 * s) / 2}px,${(innerHeight - 900 * s) / 2}px) scale(${s})`;
+  const mobile = innerWidth < 700;                       // phones get their own layout
+  document.body.classList.toggle("mobile", mobile);
+  const W = mobile ? 420 : 1200, H = 900, st = $("stage");
+  st.style.width = W + "px"; st.style.height = H + "px";
+  $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);
+  $("q").placeholder = mobile ? "Type words you remember…" : "Type any words you remember…";
+  const l = $("link");
+  if (l) { const a = mobile ? [210, 348, 210, 520] : [378, 130, 610, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
+  const s = mobile ? innerWidth / W : Math.min(innerWidth / W, innerHeight / H);
+  st.style.transform = mobile ? `scale(${s})` : `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`;
 }
-addEventListener("resize", fit); fit();
+addEventListener("resize", fit);
 
 /* ---- category labels (petal positions from the mockup) ---- */
 const SPOTS = [
@@ -149,7 +189,7 @@ function renderLabels() {
   const cats = [...ORDER.filter(c => found.includes(c)), ...found.filter(c => !ORDER.includes(c))]
     .slice(0, SPOTS.length).map(c => ({ c, n: DATA.filter(d => d.category === c).length }));
   $("total").textContent = DATA.length + " prompts";
-  $("labels").innerHTML = "";
+  $("labels").innerHTML = ""; $("chips").innerHTML = "";
   let tieHtml = "";
   cats.forEach((o, i) => {
     const p = SPOTS[i];
@@ -160,51 +200,66 @@ function renderLabels() {
     b.innerHTML = `${esc(o.c)} <i>${o.n}</i>`;
     b.onclick = () => { cat = cat === o.c ? "" : o.c; $("q").value = ""; render(); };
     $("labels").append(dot, b);
+    const ch = document.createElement("button"); ch.className = "chipbtn"; ch.dataset.c = o.c;
+    ch.innerHTML = `${esc(o.c)}<i>${o.n}</i>`; ch.onclick = b.onclick; $("chips").append(ch);
   });
   ln.querySelectorAll(".tie").forEach(n => n.remove());
   ln.insertAdjacentHTML("afterbegin", tieHtml);
   $("catlist").innerHTML = found.map(c => `<option value="${esc(c)}">`).join("");
 }
 ln.innerHTML = `<line id="link" x1="378" y1="130" x2="610" y2="430" stroke="#c25be6" stroke-width="1.6" opacity="0" style="transition:opacity .22s"/>`;
-renderLabels();
+renderLabels(); fit();
 
 /* ---- search (every word must match somewhere; tiny typos allowed) ---- */
-function near(a, b) {
+function near(a, b) {                       // true if the words differ by one typo
+  if (a === b) return true;
   if (Math.abs(a.length - b.length) > 1) return false;
-  let i = 0, j = 0, miss = 0;
-  while (i < a.length && j < b.length) {
-    if (a[i] === b[j]) { i++; j++; continue; }
-    if (++miss > 1) return false;
-    if (a.length > b.length) i++; else if (a.length < b.length) j++; else { i++; j++; }
+  if (a.length === b.length) {
+    let i = 0; while (i < a.length && a[i] === b[i]) i++;
+    if (i === a.length) return true;
+    if (a.slice(i + 1) === b.slice(i + 1)) return true;                                    // one wrong letter
+    return a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2);   // two letters swapped
   }
-  return miss + (a.length - i) + (b.length - j) <= 1;
+  const [s, l] = a.length < b.length ? [a, b] : [b, a];
+  let i = 0; while (i < s.length && s[i] === l[i]) i++;
+  return s.slice(i) === l.slice(i + 1);                                                    // one missing letter
+}
+const fold = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const cache = new WeakMap();
+function hay(item) {
+  let h = cache.get(item);
+  if (!h) {
+    const title = fold(item.title), tags = fold(item.category + " " + item.tags.join(" ")), text = fold(item.text);
+    h = { title, tags, text, words: [...new Set((title + " " + tags + " " + text).split(/[^a-z0-9']+/).filter(w => w.length >= 4))] };
+    cache.set(item, h);
+  }
+  return h;
 }
 function score(item, terms) {
-  const title = item.title.toLowerCase(), tags = item.tags.join(" ").toLowerCase(), text = item.text.toLowerCase();
-  const words = (title + " " + tags + " " + text).split(/[^a-z0-9']+/);
+  const h = hay(item);
   let total = 0;
   for (const t of terms) {
     let s = 0;
-    if (title.includes(t)) s = 5; else if (tags.includes(t)) s = 4; else if (text.includes(t)) s = 2;
-    else if (t.length >= 4 && words.some(w => w.length >= 4 && near(t, w))) s = 1;
+    if (h.title.includes(t)) s = 5; else if (h.tags.includes(t)) s = 4; else if (h.text.includes(t)) s = 2;
+    else if (t.length >= 4 && h.words.some(w => near(t, w))) s = 1;
     if (!s) return 0;
     total += s;
   }
   return total;
 }
-function hl(s, terms) {
-  let out = esc(s);
-  for (const t of terms) if (t.length > 1)
-    out = out.replace(new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi"), "<mark>$1</mark>");
-  return out;
+function hl(s, terms) {                       // highlight on the plain text, escape each piece afterwards
+  const ts = terms.filter(t => t.length > 1).sort((a, b) => b.length - a.length);
+  if (!ts.length) return esc(s);
+  const re = new RegExp("(" + ts.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+  return s.split(re).map((part, i) => i % 2 ? "<mark>" + esc(part) + "</mark>" : esc(part)).join("");
 }
 
 function render() {
   const raw = $("q").value.trim();
-  const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
+  const terms = [...new Set(fold(raw).split(/\s+/).filter(Boolean))].slice(0, 8).map(w => w.slice(0, 60));
   const active = terms.length || cat;
   document.body.classList.toggle("searching", !!active);
-  document.querySelectorAll(".lab").forEach(l => l.classList.toggle("on", l.dataset.c === cat));
+  document.querySelectorAll(".lab,.chipbtn").forEach(l => l.classList.toggle("on", l.dataset.c === cat));
   $("box").classList.toggle("show", !!active);
   $("link").setAttribute("opacity", active ? 1 : 0);
   if (!active) return;
@@ -244,7 +299,7 @@ async function copy(text, row) {
 $("q").addEventListener("input", () => { if ($("q").value) cat = ""; render(); });
 addEventListener("keydown", e => {
   if (e.key === "Escape") { $("q").value = ""; cat = ""; closeForm(); render(); }
-  if (e.key === "Enter" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
+  if (e.key === "Enter" && e.target.id === "q" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
 });
 /* ---- add / edit prompts (saved in this browser) ---- */
 let editing = null;
@@ -257,33 +312,33 @@ function openForm(d) {
   $("ferr").textContent = ""; $("modal").classList.add("show"); $("f-title").focus();
 }
 function closeForm() { $("modal").classList.remove("show"); }
+addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
 $("f-cancel").onclick = closeForm;
 $("modal").addEventListener("mousedown", e => { if (e.target.id === "modal") closeForm(); });
 $("f-save").onclick = () => {
   const title = $("f-title").value.trim(), text = $("f-text").value.trim();
-  const category = $("f-cat").value.trim().toLowerCase().replace(/\s+/g, "-") || "general";
-  const tags = $("f-tags").value.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
   if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
-  if (editing) Object.assign(MINE.find(x => x.id === editing), { title, category, tags, text });
-  else MINE.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title, category, tags, text, mine: true });
+  const c = clean({ title, text, category: $("f-cat").value, tags: $("f-tags").value.split(",") });
+  const old = editing && MINE.find(x => x.id === editing);
+  if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
   const ok = save();
   closeForm(); renderLabels(); render();
   toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving. Use Export backup.");
 };
 $("f-export").onclick = () => {
+  if (!MINE.length) { toast("You haven't added any prompts yet"); return; }
   const blob = new Blob([JSON.stringify(MINE, null, 2)], { type: "application/json" });
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "my-prompts.json"; a.click();
 };
 $("f-import").onclick = () => $("f-file").click();
 $("f-file").onchange = async e => {
   try {
-    const list = JSON.parse(await e.target.files[0].text());
+    const file = e.target.files[0]; if (!file) return;
+    const list = JSON.parse(await file.text());
     let n = 0;
-    for (const p of list) if (p && p.title && p.text && !MINE.some(m => m.id === p.id)) {
-      MINE.push({ id: p.id || Date.now().toString(36) + n, title: String(p.title), category: String(p.category || "general"),
-                  tags: Array.isArray(p.tags) ? p.tags.map(String) : [], text: String(p.text), mine: true }); n++;
-    }
+    if (!Array.isArray(list)) throw new Error("not a list");
+    for (const p of list) { const c = clean(p); if (c && !MINE.some(m => m.id === c.id)) { MINE.push(c); n++; } }
     save(); renderLabels(); render(); closeForm(); toast(n + " prompts imported");
   } catch (err) { $("ferr").textContent = "That file isn't a valid backup."; }
   e.target.value = "";

@@ -14,7 +14,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#fff,#
 #flower{position:absolute;left:333px;top:14px;width:816px;height:776px;
   -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);
   mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);pointer-events:none}
-#lines{position:absolute;inset:0;width:1200px;height:900px;pointer-events:none;overflow:visible}
+#lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .brand{position:absolute;left:48px;top:40px}
 .brand b{font-size:22px;font-weight:800;display:block}
 .brand span{font-size:13px;color:var(--mute)}
@@ -85,6 +85,24 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
 #toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:16px;
   font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6}
 #toast.show{opacity:1}
+#chips{display:none}
+/* phone layout: a 420-wide stage, flower on top, categories as a row, results underneath */
+body.mobile,body.mobile html{overflow-y:auto}
+html:has(body.mobile){overflow-y:auto;height:auto}
+body.mobile{height:auto;min-height:100%}
+body.mobile #flower{left:0;top:104px;width:420px;height:399px}
+body.mobile .brand{left:16px;top:16px}
+body.mobile #new{left:270px;top:14px;width:134px;height:36px}
+body.mobile #glow{left:100px;top:198px;width:240px;height:240px}
+body.mobile #bar{left:80px;top:288px;width:280px;height:60px}
+body.mobile .lab,body.mobile .dot,body.mobile .hint,body.mobile #tip,body.mobile .tie{display:none}
+body.mobile #chips{display:flex;position:absolute;left:16px;top:66px;width:388px;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chipbtn{flex:none;height:34px;border-radius:17px;border:0;background:#fff;padding:0 14px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);
+  cursor:pointer;box-shadow:0 4px 10px rgba(106,75,214,.12)}
+.chipbtn i{font-style:normal;color:var(--acc);margin-left:6px}
+.chipbtn.on{box-shadow:0 0 0 2px var(--line)}
+body.mobile #box{left:16px;top:520px;width:388px;height:360px;transform-origin:50% 0}
+body.mobile #form{width:380px}
 </style>
 </head>
 <body>
@@ -94,10 +112,11 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
   <div class="brand"><b>Prompt Library</b><span id="total"></span></div>
   <button id="new">+ New prompt</button>
   <div id="labels"></div>
+  <div id="chips"></div>
   <div id="glow"></div>
   <div id="bar">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#c2571a" stroke-width="2.4" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
-    <input id="q" type="text" placeholder="Type any words you remember…" autocomplete="off" spellcheck="false" autofocus>
+    <input id="q" type="text" placeholder="Type any words you remember…" maxlength="200" autocomplete="off" spellcheck="false" aria-label="Search your prompts" autofocus>
   </div>
   <div class="hint">Type to search, or click a petal to browse a category</div>
   <div id="box"><div id="tab"></div><div id="head"></div><div id="list"></div></div>
@@ -116,10 +135,24 @@ body.searching .lab,body.searching .dot,body.searching .hint,body.searching .tie
   <div id="toast"></div>
 </div>
 <script>
-const BUILTIN = [{"title": "Abstract beverage can graphic", "category": "design", "tags": ["graphic-design", "image-gen", "packaging"], "text": "Continuous pattern vector print for a craft soda can, abstract liquid marbling in coral pink, sunny yellow, and turquoise blue, wavy organic fluid motion, Bauhaus influence, crisp vector details", "file": "prompts/design/abstract-beverage-can-graphic.md"}, {"title": "Cyberpunk event poster", "category": "design", "tags": ["graphic-design", "image-gen", "poster"], "text": "Retro-futuristic synthwave concert poster, a sleek sports car driving toward a neon grid horizon with a massive low-poly glowing sun, bold Japanese typography on sides, heavy grain, dramatic rim lighting in magenta and deep navy blue, 1980s VHS tape cover vibe", "file": "prompts/design/cyberpunk-event-poster.md"}, {"title": "Eco-friendly skincare packaging", "category": "design", "tags": ["graphic-design", "image-gen", "packaging"], "text": "Product photography shot of a luxury organic cosmetic bottle made of frosted amber glass with a raw oak cap, resting on smooth wet river stones surrounded by lush green moss, soft morning sunlight filtering through leaves, natural botanical aesthetic, 8k resolution studio setup", "file": "prompts/design/eco-friendly-skincare-packaging.md"}, {"title": "Isometric 3D web illustration", "category": "design", "tags": ["graphic-design", "image-gen", "ui"], "text": "Isometric 3D illustration of a modern smart city powered by green energy, featuring wind turbines, solar panel roofs, floating electric transport pods, vibrant color palette, claymation matte texture, studio lighting, clean background for web landing page", "file": "prompts/design/isometric-3d-web-illustration.md"}, {"title": "Mascot logo", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Dynamic e-sports team logo featuring a stylized cybernetic wolf head, sharp aggressive angles, glowing cyan and dark charcoal grey tone, bold athletic badge layout, clean vector graphic --no text", "file": "prompts/design/mascot-logo.md"}, {"title": "Minimalist tech monogram", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Minimalist vector logo for a modern AI tech startup named 'Aether', geometric letter A intertwined with a neural network node, flat design, sharp edges, blue and neon violet gradient, isolated on solid white background, high contrast, clean SVG style --no shadows, gradients photo realism", "file": "prompts/design/minimalist-tech-monogram.md"}, {"title": "Minimalist typographic layout", "category": "design", "tags": ["graphic-design", "image-gen", "poster"], "text": "Swiss style graphic design poster, abstract bold geometric shapes, high-contrast composition using electric orange, off-white, and deep jet black, grid-aligned structure, clean negative space, mid-century modern aesthetic, screen-printed texture", "file": "prompts/design/minimalist-typographic-layout.md"}, {"title": "Neumorphic mobile app card", "category": "design", "tags": ["graphic-design", "image-gen", "ui"], "text": "UI design element, 3D render of a soft neumorphic credit card floating in mid-air, smooth frosted glass texture, soft ambient shadows, subtle iridescent sheen, pastel lavender and mint green background, hyper-minimalist, sleek digital interface aesthetic", "file": "prompts/design/neumorphic-mobile-app-card.md"}, {"title": "Tips to master graphic design prompts", "category": "design", "tags": ["graphic-design", "tips", "midjourney"], "text": "- Specify the Medium/Style: Use terms like vector, 3D render, isometric, woodcut line-art, flat design, or Swiss style.\n- Define Lighting & Texture: Mention details like frosted glass, screen-printed texture, matte finish, studio lighting, or neon rim light.\n- Control Output with Negatives: Use negative prompts (--no in Midjourney/Flux) to exclude unwanted details like photorealistic lighting, complex backgrounds, or garbled text.", "file": "prompts/design/tips-to-master-graphic-design-prompts.md"}, {"title": "UI redesign from reference", "category": "design", "tags": ["ui", "svg", "redesign"], "text": "I think you can do better. [issues with old design]. redesign me the [application] using the reference. [what you like about reference]. output 2 svg mockup images.", "file": "prompts/design/ui-redesign-from-reference.md"}, {"title": "Vintage artisanal emblem", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Vintage retro emblem logo for a craft coffee roastery, featuring a detailed line-art engraving of a roaring bear holding a coffee branch, distressed woodcut texture, warm mahogany and cream color palette, hand-drawn typography framing the circular border, 19th-century aesthetic", "file": "prompts/design/vintage-artisanal-emblem.md"}, {"title": "Depth to task", "category": "general", "tags": ["rewrite", "prompt-improving"], "text": "I want a deeper version of this task, not a bigger one. Before rewriting it: (1) say what a top professional in this field would do here that I’m not asking for; (2) name the rawest material they would start from instead of what has already been digested for me; (3) name the specific methods and tools they would use; (4) say what, other than you or me, would show the result is right. Then rewrite my prompt to ask for exactly that.", "file": "prompts/general/depth-to-task.md"}, {"title": "Explanation examples and analogies", "category": "general", "tags": ["teaching", "explain"], "text": "You are an experienced teacher and can generate clear, accurate examples for students of concepts. I want you to ask me two questions: What concept do I want explained. Wait for me to answer and then ask me the second question: Who is the audience for the explanation? Then look up the concept and examples of the concept. Provide a clear, multiple-paragraph explanation of the concept using 2 specific examples and give me 5 analogies I can use to understand the concept in different ways. apply the skill after the questions @fast", "file": "prompts/general/explanation-examples-and-analogies.md"}, {"title": "Find sources for my paragraph", "category": "general", "tags": ["research", "writing", "sources"], "text": "Find sources to support my paragraph, give me the context and the links to verify relevance, weave the sources into my writing.", "file": "prompts/general/find-sources-for-my-paragraph.md"}, {"title": "Organising file tree structure", "category": "general", "tags": ["files", "organise"], "text": "Suggest a simple folder structure for these files, with no more than seven top-level folders. Show me the plan as a list of what would move where, and wait for my approval.", "file": "prompts/general/organising-file-tree-structure.md"}, {"title": "Syllabus designer", "category": "general", "tags": ["teaching", "curriculum"], "text": "You are an expert learning designer specializing in building curricula for classes that promote direct instruction, active learning, retrieval practice, formative assessment, low-stakes testing, making connections between concepts, uncovering misconceptions, and interleaving. First ask me what course I'm teaching, including subject matter. Wait for my response. Then ask what learning levels my students are (high school or college). Wait for my response. Then ask how many times my students and I will meet (have class) over the course of the semester and what topics I generally cover. Wait for my response. Then design a curriculum that makes sure students learn effectively.", "file": "prompts/general/syllabus-designer.md"}, {"title": "Edit an app database in BlueStacks via ADB", "category": "how-to", "tags": ["bluestacks", "adb", "sqlite", "android"], "text": "Path: C:\\ProgramData\\BlueStacks_nxt\\Engine\\Pie64\n\nExtract, Edit, and Push via ADB (Recommended). This approach bypasses file system limitations by pulling the database file directly out of the running emulator, editing it on your PC, and pushing it back.\n\n1. Enable ADB in BlueStacks: Settings -> Preferences, check \"Enable Android debugging (ADB)\". Note the port number (usually 5555).\n2. Pull the database file to your PC. In Command Prompt:\n\nadb connect 127.0.0.1:5555\nadb shell \"su -c 'cp /data/data/<your.app.package>/databases/love_db /sdcard/love_db'\"\nadb pull /sdcard/love_db C:\\Users\\YourUsername\\Desktop\\love_db\n\n(Replace <your.app.package> with the actual bundle ID of the app.)\n3. Edit the database: open love_db in an SQLite editor (such as DB Browser for SQLite), make your edits, and save.\n4. Push the updated file back:\n\nadb push C:\\Users\\YourUsername\\Desktop\\love_db /sdcard/love_db\nadb shell \"su -c 'cp /sdcard/love_db /data/data/<your.app.package>/databases/love_db'\"\n\n5. Verification: restart the app inside BlueStacks to confirm your modifications load correctly.", "file": "prompts/how-to/edit-an-app-database-in-bluestacks-via-adb.md"}, {"title": "3-act outline blueprint", "category": "writing", "tags": ["storyline", "plot"], "text": "Draft a detailed 3-Act plot outline for a story with the following premise: [Insert Premise]. Ensure the outline clearly marks:\n- Inciting Incident\n- Plot Point 1 (Point of No Return)\n- Midpoint (False Victory/Defeat & Shifting Stakes)\n- Plot Point 2 (All Hope Is Lost)\n- Climax and Resolution", "file": "prompts/writing/3-act-outline-blueprint.md"}, {"title": "Antagonist motivation", "category": "writing", "tags": ["storyline", "character"], "text": "Draft a character motivation for the antagonist of a story about [Brief Plot]. Avoid making them evil for the sake of evil. Frame their goal so that from their perspective, they are the hero trying to solve a valid problem using drastic measures.", "file": "prompts/writing/antagonist-motivation.md"}, {"title": "Ban AI tropes", "category": "writing", "tags": ["creative-writing", "style"], "text": "Do not use words like 'testament,' 'beacon,' 'tapestry,' or 'delve.' Avoid ending paragraphs with neat summary moral lessons.", "file": "prompts/writing/ban-ai-tropes.md"}, {"title": "Brainstorming obstacles", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Give me 5 non-cliché physical complications that could prevent my protagonist from leaving the room without raising the alarm.", "file": "prompts/writing/brainstorming-obstacles.md"}, {"title": "Chain-of-thought story steps", "category": "writing", "tags": ["creative-writing", "structure"], "text": "Step 1: Outline the 5 main story beats of the scene.\nStep 2: Generate 3 alternative twists for Beat 3.\nStep 3: Write only the opening sensory hook (50–100 words).\nStep 4: Iterate and expand.", "file": "prompts/writing/chain-of-thought-story-steps.md"}, {"title": "Character profile and fatal flaw", "category": "writing", "tags": ["storyline", "character"], "text": "Create a character profile for a [Role/Archetype] named [Name]. Focus on their internal contradiction: what is their core desire versus their deepest lie/flaw? Outline how this flaw will cause them to make a catastrophic decision in Act 2.", "file": "prompts/writing/character-profile-and-fatal-flaw.md"}, {"title": "Dialogue doctor", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Rewrite this dialogue exchange 3 ways: 1) where they are hiding a secret, 2) passive-aggressive, 3) fast-paced/clipped.", "file": "prompts/writing/dialogue-doctor.md"}, {"title": "Feed style passages", "category": "writing", "tags": ["creative-writing", "style"], "text": "Analyze the tone, sentence length, and sensory focus of the excerpt below. Then, write a scene about a train station delay using that exact style.\n\n[Insert 1-2 paragraphs of your favorite author or your own best writing]", "file": "prompts/writing/feed-style-passages.md"}, {"title": "High-tension scene beat sheet", "category": "writing", "tags": ["storyline", "scene"], "text": "I need to write a high-tension scene where [Character A] must [Goal] while [Character B] tries to [Opposing Goal]. Provide a scene beat sheet detailing:\n- Opening emotional state\n- The immediate physical or verbal obstacle\n- The escalating stakes mid-scene\n- The turn/realization\n- The cliffhanger or outcome that forces the next action", "file": "prompts/writing/high-tension-scene-beat-sheet.md"}, {"title": "Pacing and twist enhancer", "category": "writing", "tags": ["storyline", "scene"], "text": "Review this scene summary: [Insert Scene Summary]. Suggest 3 plot twists or narrative shifts that escalate the stakes, flip character power dynamics, or reveal a secret that changes the direction of the scene.", "file": "prompts/writing/pacing-and-twist-enhancer.md"}, {"title": "Premise generator", "category": "writing", "tags": ["storyline", "world-building"], "text": "Act as a narrative strategist. Combine the core theme of [Theme, e.g., corporate surveillance] with a genre mashup of [Genre 1] and [Genre 2]. Give me 3 high-concept plot premises, each with a unique central conflict, an inciting incident, and the core stakes for the protagonist.", "file": "prompts/writing/premise-generator.md"}, {"title": "Reverse interviewing (sunken colony ship)", "category": "writing", "tags": ["creative-writing", "interview"], "text": "I have an idea for a sci-fi story set on a sunken colony ship. Act as a investigative journalist interviewing me. Ask me 5 sharp, probing questions one by one to help me flesh out the social hierarchy, energy source, and main conflict of this world.", "file": "prompts/writing/reverse-interviewing-sunken-colony-ship.md"}, {"title": "Sensory layering", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Here is a flat scene: [Insert text]. Rewrite it focusing strictly on sound, smell, and tactile temperature, omitting visual descriptions.", "file": "prompts/writing/sensory-layering.md"}, {"title": "Setting and environment", "category": "writing", "tags": ["storyline", "world-building"], "text": "I am designing a setting called [Name/Type of Place]. Describe 5 sensory details of this world that reveal its social structure, history, or underlying tension without explicitly explaining it to the reader.", "file": "prompts/writing/setting-and-environment.md"}, {"title": "Subplot integration", "category": "writing", "tags": ["storyline", "plot"], "text": "Here is my main plot: [Brief summary]. Generate 3 distinct subplot options (e.g., romantic, betrayal, mystery, mentor-student) that run parallel to the main narrative and directly mirror or challenge the protagonist's central internal conflict.", "file": "prompts/writing/subplot-integration.md"}, {"title": "The brutal developmental editor", "category": "writing", "tags": ["creative-writing", "persona"], "text": "Act as an aggressive line editor. Read this scene and tell me where the pacing drags, where the dialogue sounds robotic, and which cliché tropes I should cut. Do not rewrite it for me—give me structural critique.", "file": "prompts/writing/the-brutal-developmental-editor.md"}, {"title": "The character psychologist", "category": "writing", "tags": ["creative-writing", "persona"], "text": "Act as a character psychologist. Interview me about my main character's childhood trauma so I can discover their subconscious motivations.", "file": "prompts/writing/the-character-psychologist.md"}];
+const BUILTIN = [{"title": "Abstract beverage can graphic", "category": "design", "tags": ["graphic-design", "image-gen", "packaging"], "text": "Continuous pattern vector print for a craft soda can, abstract liquid marbling in coral pink, sunny yellow, and turquoise blue, wavy organic fluid motion, Bauhaus influence, crisp vector details", "file": "prompts/design/abstract-beverage-can-graphic.md"}, {"title": "Cyberpunk event poster", "category": "design", "tags": ["graphic-design", "image-gen", "poster"], "text": "Retro-futuristic synthwave concert poster, a sleek sports car driving toward a neon grid horizon with a massive low-poly glowing sun, bold Japanese typography on sides, heavy grain, dramatic rim lighting in magenta and deep navy blue, 1980s VHS tape cover vibe", "file": "prompts/design/cyberpunk-event-poster.md"}, {"title": "Eco-friendly skincare packaging", "category": "design", "tags": ["graphic-design", "image-gen", "packaging"], "text": "Product photography shot of a luxury organic cosmetic bottle made of frosted amber glass with a raw oak cap, resting on smooth wet river stones surrounded by lush green moss, soft morning sunlight filtering through leaves, natural botanical aesthetic, 8k resolution studio setup", "file": "prompts/design/eco-friendly-skincare-packaging.md"}, {"title": "Isometric 3D web illustration", "category": "design", "tags": ["graphic-design", "image-gen", "ui"], "text": "Isometric 3D illustration of a modern smart city powered by green energy, featuring wind turbines, solar panel roofs, floating electric transport pods, vibrant color palette, claymation matte texture, studio lighting, clean background for web landing page", "file": "prompts/design/isometric-3d-web-illustration.md"}, {"title": "Mascot logo", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Dynamic e-sports team logo featuring a stylized cybernetic wolf head, sharp aggressive angles, glowing cyan and dark charcoal grey tone, bold athletic badge layout, clean vector graphic --no text", "file": "prompts/design/mascot-logo.md"}, {"title": "Minimalist tech monogram", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Minimalist vector logo for a modern AI tech startup named 'Aether', geometric letter A intertwined with a neural network node, flat design, sharp edges, blue and neon violet gradient, isolated on solid white background, high contrast, clean SVG style --no shadows, gradients photo realism", "file": "prompts/design/minimalist-tech-monogram.md"}, {"title": "Minimalist typographic layout", "category": "design", "tags": ["graphic-design", "image-gen", "poster"], "text": "Swiss style graphic design poster, abstract bold geometric shapes, high-contrast composition using electric orange, off-white, and deep jet black, grid-aligned structure, clean negative space, mid-century modern aesthetic, screen-printed texture", "file": "prompts/design/minimalist-typographic-layout.md"}, {"title": "Neumorphic mobile app card", "category": "design", "tags": ["graphic-design", "image-gen", "ui"], "text": "UI design element, 3D render of a soft neumorphic credit card floating in mid-air, smooth frosted glass texture, soft ambient shadows, subtle iridescent sheen, pastel lavender and mint green background, hyper-minimalist, sleek digital interface aesthetic", "file": "prompts/design/neumorphic-mobile-app-card.md"}, {"title": "Tips to master graphic design prompts", "category": "design", "tags": ["graphic-design", "tips", "midjourney"], "text": "- Specify the Medium/Style: Use terms like vector, 3D render, isometric, woodcut line-art, flat design, or Swiss style.\n- Define Lighting & Texture: Mention details like frosted glass, screen-printed texture, matte finish, studio lighting, or neon rim light.\n- Control Output with Negatives: Use negative prompts (--no in Midjourney/Flux) to exclude unwanted details like photorealistic lighting, complex backgrounds, or garbled text.", "file": "prompts/design/tips-to-master-graphic-design-prompts.md"}, {"title": "UI redesign from reference", "category": "design", "tags": ["ui", "svg", "redesign"], "text": "I think you can do better. [issues with old design]. redesign me the [application] using the reference. [what you like about reference]. output 2 svg mockup images.", "file": "prompts/design/ui-redesign-from-reference.md"}, {"title": "Vintage artisanal emblem", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Vintage retro emblem logo for a craft coffee roastery, featuring a detailed line-art engraving of a roaring bear holding a coffee branch, distressed woodcut texture, warm mahogany and cream color palette, hand-drawn typography framing the circular border, 19th-century aesthetic", "file": "prompts/design/vintage-artisanal-emblem.md"}, {"title": "Depth to task", "category": "general", "tags": ["rewrite", "prompt-improving"], "text": "I want a deeper version of this task, not a bigger one. Before rewriting it: (1) say what a top professional in this field would do here that I’m not asking for; (2) name the rawest material they would start from instead of what has already been digested for me; (3) name the specific methods and tools they would use; (4) say what, other than you or me, would show the result is right. Then rewrite my prompt to ask for exactly that.", "file": "prompts/general/depth-to-task.md"}, {"title": "Explanation examples and analogies", "category": "general", "tags": ["teaching", "explain"], "text": "You are an experienced teacher and can generate clear, accurate examples for students of concepts. I want you to ask me two questions: What concept do I want explained. Wait for me to answer and then ask me the second question: Who is the audience for the explanation? Then look up the concept and examples of the concept. Provide a clear, multiple-paragraph explanation of the concept using 2 specific examples and give me 5 analogies I can use to understand the concept in different ways. apply the skill after the questions @fast", "file": "prompts/general/explanation-examples-and-analogies.md"}, {"title": "Find sources for my paragraph", "category": "general", "tags": ["research", "writing", "sources"], "text": "Find sources to support my paragraph, give me the context and the links to verify relevance, weave the sources into my writing.", "file": "prompts/general/find-sources-for-my-paragraph.md"}, {"title": "Organising file tree structure", "category": "general", "tags": ["files", "organise"], "text": "Suggest a simple folder structure for these files, with no more than seven top-level folders. Show me the plan as a list of what would move where, and wait for my approval.", "file": "prompts/general/organising-file-tree-structure.md"}, {"title": "Syllabus designer", "category": "general", "tags": ["teaching", "curriculum"], "text": "You are an expert learning designer specializing in building curricula for classes that promote direct instruction, active learning, retrieval practice, formative assessment, low-stakes testing, making connections between concepts, uncovering misconceptions, and interleaving. First ask me what course I'm teaching, including subject matter. Wait for my response. Then ask what learning levels my students are (high school or college). Wait for my response. Then ask how many times my students and I will meet (have class) over the course of the semester and what topics I generally cover. Wait for my response. Then design a curriculum that makes sure students learn effectively.", "file": "prompts/general/syllabus-designer.md"}, {"title": "Edit an app database in BlueStacks via ADB", "category": "how-to", "tags": ["bluestacks", "adb", "sqlite", "android"], "text": "Path: C:\\ProgramData\\BlueStacks_nxt\\Engine\\Pie64\n\nExtract, Edit, and Push via ADB (Recommended). This approach bypasses file system limitations by pulling the database file directly out of the running emulator, editing it on your PC, and pushing it back.\n\n1. Enable ADB in BlueStacks: Settings -> Preferences, check \"Enable Android debugging (ADB)\". Note the port number (usually 5555).\n2. Pull the database file to your PC. In Command Prompt:\n\nadb connect 127.0.0.1:5555\nadb shell \"su -c 'cp /data/data/\u003cyour.app.package>/databases/love_db /sdcard/love_db'\"\nadb pull /sdcard/love_db C:\\Users\\YourUsername\\Desktop\\love_db\n\n(Replace \u003cyour.app.package> with the actual bundle ID of the app.)\n3. Edit the database: open love_db in an SQLite editor (such as DB Browser for SQLite), make your edits, and save.\n4. Push the updated file back:\n\nadb push C:\\Users\\YourUsername\\Desktop\\love_db /sdcard/love_db\nadb shell \"su -c 'cp /sdcard/love_db /data/data/\u003cyour.app.package>/databases/love_db'\"\n\n5. Verification: restart the app inside BlueStacks to confirm your modifications load correctly.", "file": "prompts/how-to/edit-an-app-database-in-bluestacks-via-adb.md"}, {"title": "3-act outline blueprint", "category": "writing", "tags": ["storyline", "plot"], "text": "Draft a detailed 3-Act plot outline for a story with the following premise: [Insert Premise]. Ensure the outline clearly marks:\n- Inciting Incident\n- Plot Point 1 (Point of No Return)\n- Midpoint (False Victory/Defeat & Shifting Stakes)\n- Plot Point 2 (All Hope Is Lost)\n- Climax and Resolution", "file": "prompts/writing/3-act-outline-blueprint.md"}, {"title": "Antagonist motivation", "category": "writing", "tags": ["storyline", "character"], "text": "Draft a character motivation for the antagonist of a story about [Brief Plot]. Avoid making them evil for the sake of evil. Frame their goal so that from their perspective, they are the hero trying to solve a valid problem using drastic measures.", "file": "prompts/writing/antagonist-motivation.md"}, {"title": "Ban AI tropes", "category": "writing", "tags": ["creative-writing", "style"], "text": "Do not use words like 'testament,' 'beacon,' 'tapestry,' or 'delve.' Avoid ending paragraphs with neat summary moral lessons.", "file": "prompts/writing/ban-ai-tropes.md"}, {"title": "Brainstorming obstacles", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Give me 5 non-cliché physical complications that could prevent my protagonist from leaving the room without raising the alarm.", "file": "prompts/writing/brainstorming-obstacles.md"}, {"title": "Chain-of-thought story steps", "category": "writing", "tags": ["creative-writing", "structure"], "text": "Step 1: Outline the 5 main story beats of the scene.\nStep 2: Generate 3 alternative twists for Beat 3.\nStep 3: Write only the opening sensory hook (50–100 words).\nStep 4: Iterate and expand.", "file": "prompts/writing/chain-of-thought-story-steps.md"}, {"title": "Character profile and fatal flaw", "category": "writing", "tags": ["storyline", "character"], "text": "Create a character profile for a [Role/Archetype] named [Name]. Focus on their internal contradiction: what is their core desire versus their deepest lie/flaw? Outline how this flaw will cause them to make a catastrophic decision in Act 2.", "file": "prompts/writing/character-profile-and-fatal-flaw.md"}, {"title": "Dialogue doctor", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Rewrite this dialogue exchange 3 ways: 1) where they are hiding a secret, 2) passive-aggressive, 3) fast-paced/clipped.", "file": "prompts/writing/dialogue-doctor.md"}, {"title": "Feed style passages", "category": "writing", "tags": ["creative-writing", "style"], "text": "Analyze the tone, sentence length, and sensory focus of the excerpt below. Then, write a scene about a train station delay using that exact style.\n\n[Insert 1-2 paragraphs of your favorite author or your own best writing]", "file": "prompts/writing/feed-style-passages.md"}, {"title": "High-tension scene beat sheet", "category": "writing", "tags": ["storyline", "scene"], "text": "I need to write a high-tension scene where [Character A] must [Goal] while [Character B] tries to [Opposing Goal]. Provide a scene beat sheet detailing:\n- Opening emotional state\n- The immediate physical or verbal obstacle\n- The escalating stakes mid-scene\n- The turn/realization\n- The cliffhanger or outcome that forces the next action", "file": "prompts/writing/high-tension-scene-beat-sheet.md"}, {"title": "Pacing and twist enhancer", "category": "writing", "tags": ["storyline", "scene"], "text": "Review this scene summary: [Insert Scene Summary]. Suggest 3 plot twists or narrative shifts that escalate the stakes, flip character power dynamics, or reveal a secret that changes the direction of the scene.", "file": "prompts/writing/pacing-and-twist-enhancer.md"}, {"title": "Premise generator", "category": "writing", "tags": ["storyline", "world-building"], "text": "Act as a narrative strategist. Combine the core theme of [Theme, e.g., corporate surveillance] with a genre mashup of [Genre 1] and [Genre 2]. Give me 3 high-concept plot premises, each with a unique central conflict, an inciting incident, and the core stakes for the protagonist.", "file": "prompts/writing/premise-generator.md"}, {"title": "Reverse interviewing (sunken colony ship)", "category": "writing", "tags": ["creative-writing", "interview"], "text": "I have an idea for a sci-fi story set on a sunken colony ship. Act as a investigative journalist interviewing me. Ask me 5 sharp, probing questions one by one to help me flesh out the social hierarchy, energy source, and main conflict of this world.", "file": "prompts/writing/reverse-interviewing-sunken-colony-ship.md"}, {"title": "Sensory layering", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Here is a flat scene: [Insert text]. Rewrite it focusing strictly on sound, smell, and tactile temperature, omitting visual descriptions.", "file": "prompts/writing/sensory-layering.md"}, {"title": "Setting and environment", "category": "writing", "tags": ["storyline", "world-building"], "text": "I am designing a setting called [Name/Type of Place]. Describe 5 sensory details of this world that reveal its social structure, history, or underlying tension without explicitly explaining it to the reader.", "file": "prompts/writing/setting-and-environment.md"}, {"title": "Subplot integration", "category": "writing", "tags": ["storyline", "plot"], "text": "Here is my main plot: [Brief summary]. Generate 3 distinct subplot options (e.g., romantic, betrayal, mystery, mentor-student) that run parallel to the main narrative and directly mirror or challenge the protagonist's central internal conflict.", "file": "prompts/writing/subplot-integration.md"}, {"title": "The brutal developmental editor", "category": "writing", "tags": ["creative-writing", "persona"], "text": "Act as an aggressive line editor. Read this scene and tell me where the pacing drags, where the dialogue sounds robotic, and which cliché tropes I should cut. Do not rewrite it for me—give me structural critique.", "file": "prompts/writing/the-brutal-developmental-editor.md"}, {"title": "The character psychologist", "category": "writing", "tags": ["creative-writing", "persona"], "text": "Act as a character psychologist. Interview me about my main character's childhood trauma so I can discover their subconscious motivations.", "file": "prompts/writing/the-character-psychologist.md"}];
 const KEY = "promptlib.mine.v1";
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
+const slug = v => str(v).trim().toLowerCase().replace(/\s+/g, "-");
+/* turns anything (saved data, imported file) into a safe prompt, or null if it is not one */
+function clean(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) return null;
+  const title = str(p.title).trim(), text = str(p.text).trim();
+  if (!title || !text) return null;
+  const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true };
+}
 let MINE = [];
-try { MINE = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { MINE = []; }
+function loadMine() {
+  try { const j = JSON.parse(localStorage.getItem(KEY) || "[]"); MINE = (Array.isArray(j) ? j : []).map(clean).filter(Boolean); } catch (e) { MINE = []; }
+}
+loadMine();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(MINE)); return true; } catch (e) { return false; } };
 const all = () => BUILTIN.concat(MINE);
 const $ = id => document.getElementById(id);
@@ -128,11 +161,18 @@ let cat = "";
 
 /* ---- fit the 1200x900 stage into the window ---- */
 function fit() {
-  const s = Math.min(innerWidth / 1200, innerHeight / 900);
-  const st = $("stage");
-  st.style.transform = `translate(${(innerWidth - 1200 * s) / 2}px,${(innerHeight - 900 * s) / 2}px) scale(${s})`;
+  const mobile = innerWidth < 700;                       // phones get their own layout
+  document.body.classList.toggle("mobile", mobile);
+  const W = mobile ? 420 : 1200, H = 900, st = $("stage");
+  st.style.width = W + "px"; st.style.height = H + "px";
+  $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);
+  $("q").placeholder = mobile ? "Type words you remember…" : "Type any words you remember…";
+  const l = $("link");
+  if (l) { const a = mobile ? [210, 348, 210, 520] : [378, 130, 610, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
+  const s = mobile ? innerWidth / W : Math.min(innerWidth / W, innerHeight / H);
+  st.style.transform = mobile ? `scale(${s})` : `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`;
 }
-addEventListener("resize", fit); fit();
+addEventListener("resize", fit);
 
 /* ---- category labels (petal positions from the mockup) ---- */
 const SPOTS = [
@@ -149,7 +189,7 @@ function renderLabels() {
   const cats = [...ORDER.filter(c => found.includes(c)), ...found.filter(c => !ORDER.includes(c))]
     .slice(0, SPOTS.length).map(c => ({ c, n: DATA.filter(d => d.category === c).length }));
   $("total").textContent = DATA.length + " prompts";
-  $("labels").innerHTML = "";
+  $("labels").innerHTML = ""; $("chips").innerHTML = "";
   let tieHtml = "";
   cats.forEach((o, i) => {
     const p = SPOTS[i];
@@ -160,51 +200,66 @@ function renderLabels() {
     b.innerHTML = `${esc(o.c)} <i>${o.n}</i>`;
     b.onclick = () => { cat = cat === o.c ? "" : o.c; $("q").value = ""; render(); };
     $("labels").append(dot, b);
+    const ch = document.createElement("button"); ch.className = "chipbtn"; ch.dataset.c = o.c;
+    ch.innerHTML = `${esc(o.c)}<i>${o.n}</i>`; ch.onclick = b.onclick; $("chips").append(ch);
   });
   ln.querySelectorAll(".tie").forEach(n => n.remove());
   ln.insertAdjacentHTML("afterbegin", tieHtml);
   $("catlist").innerHTML = found.map(c => `<option value="${esc(c)}">`).join("");
 }
 ln.innerHTML = `<line id="link" x1="378" y1="130" x2="610" y2="430" stroke="#c25be6" stroke-width="1.6" opacity="0" style="transition:opacity .22s"/>`;
-renderLabels();
+renderLabels(); fit();
 
 /* ---- search (every word must match somewhere; tiny typos allowed) ---- */
-function near(a, b) {
+function near(a, b) {                       // true if the words differ by one typo
+  if (a === b) return true;
   if (Math.abs(a.length - b.length) > 1) return false;
-  let i = 0, j = 0, miss = 0;
-  while (i < a.length && j < b.length) {
-    if (a[i] === b[j]) { i++; j++; continue; }
-    if (++miss > 1) return false;
-    if (a.length > b.length) i++; else if (a.length < b.length) j++; else { i++; j++; }
+  if (a.length === b.length) {
+    let i = 0; while (i < a.length && a[i] === b[i]) i++;
+    if (i === a.length) return true;
+    if (a.slice(i + 1) === b.slice(i + 1)) return true;                                    // one wrong letter
+    return a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2);   // two letters swapped
   }
-  return miss + (a.length - i) + (b.length - j) <= 1;
+  const [s, l] = a.length < b.length ? [a, b] : [b, a];
+  let i = 0; while (i < s.length && s[i] === l[i]) i++;
+  return s.slice(i) === l.slice(i + 1);                                                    // one missing letter
+}
+const fold = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const cache = new WeakMap();
+function hay(item) {
+  let h = cache.get(item);
+  if (!h) {
+    const title = fold(item.title), tags = fold(item.category + " " + item.tags.join(" ")), text = fold(item.text);
+    h = { title, tags, text, words: [...new Set((title + " " + tags + " " + text).split(/[^a-z0-9']+/).filter(w => w.length >= 4))] };
+    cache.set(item, h);
+  }
+  return h;
 }
 function score(item, terms) {
-  const title = item.title.toLowerCase(), tags = item.tags.join(" ").toLowerCase(), text = item.text.toLowerCase();
-  const words = (title + " " + tags + " " + text).split(/[^a-z0-9']+/);
+  const h = hay(item);
   let total = 0;
   for (const t of terms) {
     let s = 0;
-    if (title.includes(t)) s = 5; else if (tags.includes(t)) s = 4; else if (text.includes(t)) s = 2;
-    else if (t.length >= 4 && words.some(w => w.length >= 4 && near(t, w))) s = 1;
+    if (h.title.includes(t)) s = 5; else if (h.tags.includes(t)) s = 4; else if (h.text.includes(t)) s = 2;
+    else if (t.length >= 4 && h.words.some(w => near(t, w))) s = 1;
     if (!s) return 0;
     total += s;
   }
   return total;
 }
-function hl(s, terms) {
-  let out = esc(s);
-  for (const t of terms) if (t.length > 1)
-    out = out.replace(new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi"), "<mark>$1</mark>");
-  return out;
+function hl(s, terms) {                       // highlight on the plain text, escape each piece afterwards
+  const ts = terms.filter(t => t.length > 1).sort((a, b) => b.length - a.length);
+  if (!ts.length) return esc(s);
+  const re = new RegExp("(" + ts.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+  return s.split(re).map((part, i) => i % 2 ? "<mark>" + esc(part) + "</mark>" : esc(part)).join("");
 }
 
 function render() {
   const raw = $("q").value.trim();
-  const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
+  const terms = [...new Set(fold(raw).split(/\s+/).filter(Boolean))].slice(0, 8).map(w => w.slice(0, 60));
   const active = terms.length || cat;
   document.body.classList.toggle("searching", !!active);
-  document.querySelectorAll(".lab").forEach(l => l.classList.toggle("on", l.dataset.c === cat));
+  document.querySelectorAll(".lab,.chipbtn").forEach(l => l.classList.toggle("on", l.dataset.c === cat));
   $("box").classList.toggle("show", !!active);
   $("link").setAttribute("opacity", active ? 1 : 0);
   if (!active) return;
@@ -244,7 +299,7 @@ async function copy(text, row) {
 $("q").addEventListener("input", () => { if ($("q").value) cat = ""; render(); });
 addEventListener("keydown", e => {
   if (e.key === "Escape") { $("q").value = ""; cat = ""; closeForm(); render(); }
-  if (e.key === "Enter" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
+  if (e.key === "Enter" && e.target.id === "q" && $("box").classList.contains("show")) { const f = document.querySelector("#list .r"); if (f) f.click(); }
 });
 /* ---- add / edit prompts (saved in this browser) ---- */
 let editing = null;
@@ -257,33 +312,33 @@ function openForm(d) {
   $("ferr").textContent = ""; $("modal").classList.add("show"); $("f-title").focus();
 }
 function closeForm() { $("modal").classList.remove("show"); }
+addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
 $("f-cancel").onclick = closeForm;
 $("modal").addEventListener("mousedown", e => { if (e.target.id === "modal") closeForm(); });
 $("f-save").onclick = () => {
   const title = $("f-title").value.trim(), text = $("f-text").value.trim();
-  const category = $("f-cat").value.trim().toLowerCase().replace(/\s+/g, "-") || "general";
-  const tags = $("f-tags").value.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
   if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
-  if (editing) Object.assign(MINE.find(x => x.id === editing), { title, category, tags, text });
-  else MINE.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title, category, tags, text, mine: true });
+  const c = clean({ title, text, category: $("f-cat").value, tags: $("f-tags").value.split(",") });
+  const old = editing && MINE.find(x => x.id === editing);
+  if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
   const ok = save();
   closeForm(); renderLabels(); render();
   toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving. Use Export backup.");
 };
 $("f-export").onclick = () => {
+  if (!MINE.length) { toast("You haven't added any prompts yet"); return; }
   const blob = new Blob([JSON.stringify(MINE, null, 2)], { type: "application/json" });
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "my-prompts.json"; a.click();
 };
 $("f-import").onclick = () => $("f-file").click();
 $("f-file").onchange = async e => {
   try {
-    const list = JSON.parse(await e.target.files[0].text());
+    const file = e.target.files[0]; if (!file) return;
+    const list = JSON.parse(await file.text());
     let n = 0;
-    for (const p of list) if (p && p.title && p.text && !MINE.some(m => m.id === p.id)) {
-      MINE.push({ id: p.id || Date.now().toString(36) + n, title: String(p.title), category: String(p.category || "general"),
-                  tags: Array.isArray(p.tags) ? p.tags.map(String) : [], text: String(p.text), mine: true }); n++;
-    }
+    if (!Array.isArray(list)) throw new Error("not a list");
+    for (const p of list) { const c = clean(p); if (c && !MINE.some(m => m.id === c.id)) { MINE.push(c); n++; } }
     save(); renderLabels(); render(); closeForm(); toast(n + " prompts imported");
   } catch (err) { $("ferr").textContent = "That file isn't a valid backup."; }
   e.target.value = "";
