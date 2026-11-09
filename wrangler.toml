@@ -10,5 +10,5 @@ database_id = "ef80a0ed-45d6-4f61-8aa6-a9ec90e368b7"
 # Fill these in after creating the Access application (see DEPLOY.md).
 [vars]
 ACCESS_TEAM_DOMAIN = "round-lab-f4cd.cloudflareaccess.com"
-ACCESS_AUD = ""
+ACCESS_AUD = "b5361e29aa7a7ed97bfa75c7ed10b06663d6ad3f9b19c0b366e63a534105811b"
 ALLOWED_EMAIL = "angelahoang066@gmail.com"
