@@ -52,8 +52,8 @@ function renderLabels() {
   };
   cats.slice(0, SPOTS.length).forEach((o, i) => mk(o.c, SPOTS[i], o.c, o.n, o.color));
   mk("*", ALLSPOT, "all prompts", D.length, "#64748b");
-  [{ c: "*", n: D.length, color: "#64748b", label: "all" }, ...cats].forEach(o => {
-    const ch = document.createElement("button"); ch.className = "chipbtn"; ch.dataset.c = o.c; ch.style.setProperty("--c", o.color);
+  [{ c: "*", n: D.length, color: "#64748b", label: "all" }, ...cats].forEach((o, i) => {
+    const ch = document.createElement("button"); ch.className = "chipbtn" + (i > SPOTS.length ? " extra" : ""); ch.dataset.c = o.c; ch.style.setProperty("--c", o.color);
     ch.innerHTML = `<b></b>${esc(o.label || o.c)}<i>${o.n}</i>`; ch.onclick = () => toggleCat(o.c); $("chips").append(ch);
   });
   ln.querySelectorAll(".tie").forEach(n => n.remove());

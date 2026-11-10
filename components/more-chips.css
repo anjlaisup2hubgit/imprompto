@@ -1,0 +1,5 @@
+/* computer layout: categories that do not fit on the 4 petals wait in a sliding row under the flower */
+body:not(.mobile) #chips{display:flex;position:absolute;left:48px;top:828px;width:480px;gap:8px;overflow-x:auto;padding:2px 2px 8px;z-index:2}
+body:not(.mobile) .chipbtn:not(.extra){display:none}
+#rename{flex:none;align-self:flex-start;margin:0 14px 8px;display:none}
+#rename.show{display:block}

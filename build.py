@@ -31,15 +31,15 @@ for f in sorted((ROOT / "prompts").rglob("*.md")):
 
 # The page is made of small files. The order matters: later files use things defined by earlier ones.
 STYLES = ["components/base.css", "pages/home.css", "components/header-buttons.css", "components/petals.css",
-          "components/seeds.css", "components/search-bar.css", "components/results-box.css", "components/dialog.css",
+          "components/seeds.css", "components/search-bar.css", "components/results-box.css", "components/dialog.css", "components/more-chips.css",
           "pages/mobile.css", "pages/layout-seeds.css"]
 PAGE = ["pages/home.html"]
 DIALOGS = ["components/prompt-dialog.html", "components/toast.html"]
-SCRIPTS = ["data/prompts.js", "data/local-storage.js", "data/sync.js", "components/dom-helpers.js",
+SCRIPTS = ["data/prompts.js", "data/local-storage.js", "data/sync.js", "data/categories.js", "components/dom-helpers.js",
            "components/state.js", "components/stage-fit.js", "components/petals.js", "components/sprigs.js",
            "components/sprig-motion.js", "components/search.js", "components/sprig-filters.js", "pages/results.js",
            "components/copy.js", "components/coach.js", "components/keyboard.js", "components/click-away.js", "components/modal.js",
-           "components/toast.js", "components/auto-fill.js", "pages/prompt-form.js", "components/header-buttons.js", "pages/home.js"]
+           "components/toast.js", "components/auto-fill.js", "pages/prompt-form.js", "components/header-buttons.js", "components/rename.js", "pages/home.js"]
 
 def join(files):
     return "".join((ROOT / f).read_text(encoding="utf-8") for f in files).rstrip("\n")

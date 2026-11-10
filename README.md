@@ -20,6 +20,8 @@ git clone https://github.com/anjlaisup2hubgit/imprompto.git
 - **Search:** type any word you remember and the matching prompts show up.
 - **Copy:** tap a prompt and it is copied, so you can paste it anywhere.
 - **Add your own:** press "+ New prompt" to save a prompt of your own. You can change it or delete it later.
+- **Any number of groups:** type a new group name when you save a prompt, and extra groups wait in a sliding row under the flower.
+- **Rename a group:** open a group and press "Rename category" to give it a new name.
 - **Same on every device:** your prompts are saved online, so your phone and your computer show the same ones.
 - **Private:** you sign in with a code sent to your email, and you only see your own prompts.
 

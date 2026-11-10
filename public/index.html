@@ -152,6 +152,11 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 #toast.show{opacity:1}
 .btn:hover{filter:brightness(.96)}
 .btn.main:hover{filter:brightness(1.12)}
+/* computer layout: categories that do not fit on the 4 petals wait in a sliding row under the flower */
+body:not(.mobile) #chips{display:flex;position:absolute;left:48px;top:828px;width:480px;gap:8px;overflow-x:auto;padding:2px 2px 8px;z-index:2}
+body:not(.mobile) .chipbtn:not(.extra){display:none}
+#rename{flex:none;align-self:flex-start;margin:0 14px 8px;display:none}
+#rename.show{display:block}
 /* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
 #chips{display:none}
 html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
@@ -219,6 +224,7 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
   </div>
   <div id="coach" role="status">Start here: type any word you remember, or click a petal to browse a group.<button id="coach-ok">Got it</button></div>
   <div id="box"><div id="tab"></div><div id="head"></div><div id="cats" role="group" aria-label="Filter by category"></div>
+    <button class="act" id="rename">Rename category</button>
     <div id="list" role="listbox" aria-label="Results"></div>
     <div id="foot">↑ ↓ to move · Enter to copy · Esc to clear</div></div>
   <div class="sr" id="live" role="status" aria-live="polite"></div>
@@ -283,6 +289,20 @@ async function sync() {
 }
 addEventListener("online", sync);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) sync(); });
+/* ---- renaming a category: every prompt inside it moves to the new name ---- */
+function renameCategory(oldName, newName) {
+  const name = slug(newName);
+  if (!name || name === oldName) return 0;
+  let n = 0;
+  all().forEach(d => {
+    if (d.category !== oldName) return;
+    n++;
+    if (d.mine) d.category = name;                                              // your own prompt: just change it
+    else MINE.push(clean({ ...d, category: name, from: d.file }));              // a starter prompt: save a changed copy that hides the original
+  });
+  if (n) save();
+  return n;
+}
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let cat = "";          // "" = no category chosen, "*" = every prompt, otherwise a category name
@@ -362,8 +382,8 @@ function renderLabels() {
   };
   cats.slice(0, SPOTS.length).forEach((o, i) => mk(o.c, SPOTS[i], o.c, o.n, o.color));
   mk("*", ALLSPOT, "all prompts", D.length, "#64748b");
-  [{ c: "*", n: D.length, color: "#64748b", label: "all" }, ...cats].forEach(o => {
-    const ch = document.createElement("button"); ch.className = "chipbtn"; ch.dataset.c = o.c; ch.style.setProperty("--c", o.color);
+  [{ c: "*", n: D.length, color: "#64748b", label: "all" }, ...cats].forEach((o, i) => {
+    const ch = document.createElement("button"); ch.className = "chipbtn" + (i > SPOTS.length ? " extra" : ""); ch.dataset.c = o.c; ch.style.setProperty("--c", o.color);
     ch.innerHTML = `<b></b>${esc(o.label || o.c)}<i>${o.n}</i>`; ch.onclick = () => toggleCat(o.c); $("chips").append(ch);
   });
   ln.querySelectorAll(".tie").forEach(n => n.remove());
@@ -602,6 +622,7 @@ function render() {
   base.forEach(r => { counts[r.d.category] = (counts[r.d.category] || 0) + 1; });
   markSprigs(counts, restrict);
   ctx = { n: rows.length, restrict };
+  $("rename").classList.toggle("show", restrict);
 
   $("tab").textContent = "results · " + rows.length;
   $("live").textContent = rows.length + (rows.length === 1 ? " result" : " results");
@@ -751,6 +772,14 @@ $("f-save").onclick = () => {
 addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
 $("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
+/* ---- the "Rename category" button above the results ---- */
+$("rename").onclick = () => {
+  const old = cat, name = prompt(`New name for “${old}”:`, old);
+  if (name === null) return;
+  const n = renameCategory(old, name);
+  if (!n) return toast("Name not changed");
+  cat = slug(name); renderLabels(); render(); toast(`Renamed ${n} prompt${n === 1 ? "" : "s"}`);
+};
 render();
 sync();
 </script>
