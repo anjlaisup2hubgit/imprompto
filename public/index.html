@@ -179,6 +179,18 @@ body.mobile .r .cp{opacity:1}
 body.mobile .act{padding:11px 12px}
 body.mobile #foot{display:none}
 body.mobile .dlg{width:380px}
+body:not(.mobile) #tab,body:not(.mobile) #head,body:not(.mobile) #cats{display:none}
+body:not(.mobile) #box{left:580px;top:482px;width:440px;height:320px;border:0;border-radius:22px;background:rgba(255,255,255,.97);
+  box-shadow:0 14px 34px rgba(59,42,138,.22);transform-origin:50% 0}
+body:not(.mobile) #box:before{content:"";position:absolute;left:50%;top:-8px;margin-left:-9px;width:18px;height:18px;background:inherit;transform:rotate(45deg);border-radius:3px}
+body:not(.mobile) #list{padding:12px 10px 6px}
+body:not(.mobile) .r{padding:11px 14px 9px}
+body:not(.mobile) .r p{-webkit-line-clamp:1}
+body:not(.mobile) .r:hover{background:#f7f2ff}
+body:not(.mobile) .r.cur{background:#f4efff;box-shadow:inset 4px 0 0 var(--c)}
+body:not(.mobile) .r.cur .cp{background:var(--brand);color:#fff;opacity:1;padding:3px 11px;border-radius:8px}
+body:not(.mobile) .ft{margin-top:3px;min-height:0}
+body:not(.mobile) #foot{padding:9px 18px 12px;font-size:12.5px;color:#8a82a6}
 body[data-mode=seeds] #box{left:630px;width:340px;height:auto;max-height:270px;border-top:5px solid var(--c,#8b5cf6);border-radius:16px}
 body[data-mode=seeds] #box:before{background:var(--c,#8b5cf6);top:-13px}
 body[data-mode=seeds] #list{padding:10px 8px 2px;overflow:visible;flex:none}
@@ -672,6 +684,12 @@ addEventListener("keydown", e => {
   if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
   else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
   else if (e.key === "Enter" && e.target.id === "q") { const rows = document.querySelectorAll("#list .r"); if (rows[cur]) rows[cur].click(); }
+});
+/* ---- clicking on empty space closes the results ---- */
+document.addEventListener("pointerdown", e => {
+  if (!document.body.classList.contains("searching")) return;
+  if (e.target.closest("#box,#bar,.lab,.seed,.chipbtn,.ov,.hbtn,#peek,#coach,#toast")) return;
+  $("q").value = ""; cat = ""; render();
 });
 /* ---- pop-up windows ---- */
 let lastFocus = null;
