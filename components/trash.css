@@ -1,5 +1,5 @@
 /* Trash button (top bar) and Trash window */
-#trashbtn{left:752px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:flex;align-items:center;justify-content:center;gap:7px}
+#trashbtn{left:928px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:flex;align-items:center;justify-content:center;gap:7px}
 #trashbtn:hover{background:var(--chip)}
 #tcount{background:#c62828;color:#fff;font-size:12px;min-width:20px;height:20px;border-radius:10px;line-height:20px;text-align:center;position:absolute;right:-4px;top:-6px}
 .act.danger{color:#c62828;border-color:#c62828}
@@ -13,7 +13,6 @@
 .tinfo span{font-size:12.5px;color:#8a82a6;margin-left:18px}
 .btn.sm{padding:6px 14px;font-size:13.5px}
 .tnone{padding:24px 0;text-align:center;color:#8a82a6}
-body.mobile #trashbtn{left:168px;width:44px}
+body.mobile #trashbtn{left:270px;width:44px}
 body.mobile #trashbtn span{display:none}
-body.mobile #sobtn{left:218px;width:74px}
-body.mobile #new{left:298px;width:106px;white-space:nowrap;font-size:14px}
+body.mobile #sobtn{left:322px;width:82px}

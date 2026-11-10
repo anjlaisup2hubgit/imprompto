@@ -8,7 +8,7 @@ function fit() {
   const W = mobile ? 420 : 1200, H = mobile ? 960 : 900, st = $("stage");
   st.style.width = W + "px"; st.style.height = H + "px";
   $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);
-  $("q").placeholder = mobile ? "Search your prompts…" : "Type any words you remember…";
+  $("q").placeholder = "Type any words you remember";
   const l = $("link");
   if (l) { const a = mobile ? [210, 370, 210, 544] : [448, 120, 635, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
   const s = mobile ? Math.min(vw() / W, 1.5) : Math.min(vw() / W, innerHeight / H);
