@@ -29,7 +29,24 @@ for f in sorted((ROOT / "prompts").rglob("*.md")):
         "file": f.relative_to(ROOT).as_posix(),
     })
 
+# The page is made of small files. The order matters: later files use things defined by earlier ones.
+STYLES = ["components/base.css", "pages/home.css", "components/header-buttons.css", "components/petals.css",
+          "components/seeds.css", "components/search-bar.css", "components/results-box.css", "components/dialog.css",
+          "pages/mobile.css", "pages/layout-seeds.css"]
+PAGE = ["pages/home.html"]
+DIALOGS = ["components/prompt-dialog.html", "components/toast.html"]
+SCRIPTS = ["data/prompts.js", "data/local-storage.js", "data/sync.js", "components/dom-helpers.js",
+           "components/state.js", "components/stage-fit.js", "components/petals.js", "components/sprigs.js",
+           "components/sprig-motion.js", "components/search.js", "components/sprig-filters.js", "pages/results.js",
+           "components/copy.js", "components/coach.js", "components/keyboard.js", "components/modal.js",
+           "components/toast.js", "pages/prompt-form.js", "components/header-buttons.js", "pages/home.js"]
+
+def join(files):
+    return "".join((ROOT / f).read_text(encoding="utf-8") for f in files).rstrip("\n")
+
 html = (ROOT / "template.html").read_text(encoding="utf-8")
+for marker, files in (("__STYLES__", STYLES), ("__PAGE__", PAGE), ("__DIALOGS__", DIALOGS), ("__SCRIPTS__", SCRIPTS)):
+    html = html.replace(marker, join(files))
 html = html.replace("__DATA__", json.dumps(items, ensure_ascii=False).replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
 html = html.replace("__FLOWER__", "data:image/webp;base64," + base64.b64encode((ROOT / "public" / "assets" / "flower.webp").read_bytes()).decode())   # inlined so the picture can never be blocked separately from the page
 (ROOT / "public" / "index.html").write_text(html, encoding="utf-8")

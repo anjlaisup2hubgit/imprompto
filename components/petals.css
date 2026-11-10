@@ -1,0 +1,19 @@
+/* category labels on the petals (each has its own colour) */
+.lab{position:absolute;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;gap:10px;
+  padding:0 18px;font-size:17px;font-weight:700;cursor:pointer;border:0;color:var(--ink);
+  transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(106,75,214,.18);transition:opacity .25s,box-shadow .2s;white-space:nowrap;
+  animation:pop .5s backwards}
+.lab b{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.lab i{font-style:normal;color:var(--acc);font-size:15px}
+.lab:hover,.lab:focus-visible,.lab.on{box-shadow:0 0 0 2px var(--c),0 12px 24px rgba(106,75,214,.22)}
+.dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:3px solid var(--c);
+  animation:pop .5s backwards;transition:box-shadow .25s,opacity .25s}
+.dot.hot,.dot.sel{box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
+body.searching #coach{opacity:0;pointer-events:none}
+.tie{transition:opacity .25s}
+.lab{touch-action:none;user-select:none;-webkit-user-select:none}
+.lab.drag{cursor:grabbing;box-shadow:0 0 0 2px var(--c),0 18px 34px rgba(106,75,214,.3);z-index:3}
+.lab.open{box-shadow:0 0 0 2px var(--c),0 12px 24px rgba(106,75,214,.22)}
+.dim{opacity:.3!important}
+.tie path{transition:stroke-width .2s}
+.tie.hl path{stroke-width:3}

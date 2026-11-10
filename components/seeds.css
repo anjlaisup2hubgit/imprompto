@@ -1,0 +1,22 @@
+/* seeds: the prompts inside a sprig, floating around it */
+.seed{position:absolute;height:30px;border-radius:15px;background:#fff;border:0;padding:0 10px;display:flex;align-items:center;gap:0;
+  transform:translate(-50%,-50%);font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap;z-index:2;
+  box-shadow:0 0 0 2px var(--c),0 6px 14px rgba(106,75,214,.2);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
+.seed.show{opacity:1;visibility:visible;transition-delay:0s}
+.seed b{flex:none;width:10px;height:10px;border-radius:50%;background:var(--c)}
+.seed span{max-width:0;overflow:hidden;opacity:0;margin-left:0;transition:max-width .25s,opacity .2s,margin .25s}
+.seed.full span,.seed:hover span,.seed:focus-visible span{max-width:130px;opacity:1;margin-left:7px}
+.seed.all{background:var(--c);color:#fff;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.seed.all b{background:#fff}
+.slink{stroke-width:1.2;opacity:0;transition:opacity .2s;pointer-events:none}
+.slink.show{opacity:.55}
+#peek{position:absolute;width:250px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 16px 36px rgba(60,30,140,.28);
+  z-index:4;pointer-events:none;opacity:0;transition:opacity .15s;font-size:14px;line-height:1.45;border-top:4px solid var(--c,#8b5cf6)}
+#peek.show{opacity:1}
+#peek h4{margin:0 0 4px;font-size:15px}
+#peek p{margin:0;color:var(--mute);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+#peek .tg{margin-top:8px;display:flex;gap:5px;flex-wrap:wrap}
+#peek .tg span{background:var(--chip);color:var(--chipink);font-size:12px;padding:2px 8px;border-radius:10px}
+#peek em{display:block;margin-top:8px;font-size:12px;font-style:normal;font-weight:700;color:var(--acc)}
+body.searching .seed:not(.rseed),body.searching #peek,body.searching .slink:not(.rs){opacity:0;pointer-events:none;visibility:hidden}
+body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}

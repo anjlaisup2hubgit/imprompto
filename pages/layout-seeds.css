@@ -1,0 +1,7 @@
+body[data-mode=seeds] #box{left:630px;width:340px;height:auto;max-height:270px;border-top:5px solid var(--c,#8b5cf6);border-radius:16px}
+body[data-mode=seeds] #box:before{background:var(--c,#8b5cf6);top:-13px}
+body[data-mode=seeds] #list{padding:10px 8px 2px;overflow:visible;flex:none}
+body[data-mode=seeds] .r:not(.cur){display:none}
+body[data-mode=seeds] .r.cur{background:none;box-shadow:none;padding:6px 12px}
+body[data-mode=seeds] .r.cur p{-webkit-line-clamp:4}
+body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}

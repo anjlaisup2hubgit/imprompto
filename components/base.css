@@ -1,0 +1,11 @@
+:root{color-scheme:light;--ink:#241c3f;--mute:#554d70;--acc:#a8450f;--line:#c25be6;--chip:#efe9fb;--chipink:#43357d;--brand:#5b3fd0}
+*{box-sizing:border-box}
+html{background:#f3edfc}
+html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#fff,#efe7fb);color:var(--ink);
+  font-family:system-ui,"Segoe UI",Helvetica,sans-serif}
+button,input,textarea{font-family:inherit}
+button:active{transform:scale(.97)}
+.lab:active{transform:translate(-50%,-50%) scale(.97)}   /* keep the label centred while pressed, or the click misses */
+:focus-visible{outline:3px solid #6d4aff;outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

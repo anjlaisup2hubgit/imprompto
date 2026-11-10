@@ -1,0 +1,8 @@
+.brand{position:absolute;left:48px;top:36px}
+.brand h1{margin:0;font-size:28px;font-weight:800;line-height:1.1}
+.brand span{font-size:15px;color:var(--mute)}
+.hbtn{position:absolute;top:36px;height:46px;border-radius:23px;font-size:16px;font-weight:700;cursor:pointer;padding:0}
+#new{left:1008px;width:160px;background:var(--brand);color:#fff;border:0;box-shadow:0 8px 18px rgba(91,63,208,.3)}
+#sobtn:hover{background:var(--chip)}
+#new:hover{filter:brightness(1.12)}
+#sobtn{left:880px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
