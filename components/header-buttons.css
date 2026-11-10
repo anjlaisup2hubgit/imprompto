@@ -2,7 +2,7 @@
 .brand h1{margin:0;font-size:28px;font-weight:800;line-height:1.1}
 .brand span{font-size:15px;color:var(--mute)}
 .hbtn{position:absolute;top:36px;height:46px;border-radius:23px;font-size:16px;font-weight:700;cursor:pointer;padding:0}
-#new{flex:none;width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.55);border:0;border-radius:50%;cursor:pointer}
+#new{flex:none;width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.55);border:0;border-radius:50%;cursor:pointer}
 #sobtn:hover{background:var(--chip)}
 #new:hover{background:#fff}
 #sobtn{left:1056px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}

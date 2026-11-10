@@ -1,14 +1,14 @@
 /* search bar sitting on the pollen */
 #glow{position:absolute;left:680px;top:310px;width:240px;height:240px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,185,138,.6),rgba(255,185,138,0) 70%);pointer-events:none;animation:pulse 4s ease-in-out infinite}
-#bar{position:absolute;left:605px;top:398px;width:390px;height:64px;border-radius:32px;
+#bar{position:absolute;left:650px;top:404px;width:300px;height:52px;border-radius:26px;
   background:radial-gradient(circle at 18% 28%,#fff6cf,rgba(255,246,207,0) 45%),radial-gradient(circle at 2px 2px,rgba(194,110,10,.28) 1.4px,transparent 1.6px) 0 0/13px 13px,linear-gradient(#ffd877,#ffbd55);
-  border:3px solid #f59e0b;display:flex;align-items:center;padding:0 10px 0 18px;gap:12px;box-shadow:0 12px 26px rgba(106,75,214,.2)}
+  border:3px solid #f59e0b;display:flex;align-items:center;padding:0 8px 0 16px;gap:10px;box-shadow:0 12px 26px rgba(106,75,214,.2)}
 #bar svg{flex:none}
-#q{flex:1;min-width:0;border:0;outline:0;background:none;font-size:16px;color:var(--ink);font-weight:600}
+#q{flex:1;min-width:0;border:0;outline:0;background:none;font-size:15px;color:var(--ink);font-weight:600}
 #q::placeholder{color:#7a4a12;font-weight:400}
 #bar:focus-within{box-shadow:0 0 0 3px #6d4aff,0 12px 26px rgba(106,75,214,.2)}
-#clr{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:#7a4a12;font-size:22px;line-height:1;cursor:pointer;display:none}
+#clr{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:#7a4a12;font-size:22px;line-height:1;cursor:pointer;display:none}
 #clr.show{display:block}
 #coach{position:absolute;left:615px;bottom:522px;width:370px;background:var(--brand);color:#fff;border-radius:16px;padding:14px 16px;font-size:16px;line-height:1.4;
   box-shadow:0 14px 30px rgba(91,63,208,.35);transition:opacity .25s;animation:pop .6s .6s backwards;display:none}
