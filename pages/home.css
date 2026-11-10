@@ -1,6 +1,6 @@
 /* The whole design lives on a fixed stage that is scaled to fit the window. */
 #stage{position:absolute;left:0;top:0;width:1200px;height:900px;transform-origin:0 0}
-#flower{position:absolute;left:373px;top:14px;width:816px;height:776px;pointer-events:none;
+#flower{position:absolute;left:332px;top:-25px;width:898px;height:854px;pointer-events:none;
   filter:drop-shadow(0 16px 30px rgba(120,80,220,.25));animation:float 8s ease-in-out infinite alternate;will-change:transform}
 @keyframes float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
 @keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
