@@ -1,37 +1,43 @@
 # Imprompto
 
-## Link
+Imprompto is a place to keep the messages you type to an AI helper.
+
+## Download
+
+Open the app in any web browser, on your phone or your computer. There is nothing to install.
 
 https://imprompto.pages.dev
 
-## File tree
+To get your own copy of the code, run this in a terminal.
 
-```
-organiser/
-├── public/      the website you see
-├── functions/   the small server that saves your prompts
-├── prompts/     the starter prompts (design, general, how-to, writing)
-├── assets/      the flower picture
-├── mockups/     early drawings of the website
-├── reference/   pictures used for the look
-├── template.html  the page before the prompts are added
-├── build.py     puts the prompts into the page
-├── schema.sql   the shape of the saved data
-└── wrangler.toml  the Cloudflare settings
+```bash
+git clone https://github.com/anjlaisup2hubgit/imprompto.git
 ```
 
 ## Features
 
-- **Flower:** each petal is a group of prompts. Click one to see them.
-- **Search:** type any word you remember and the prompts appear.
-- **Copy:** click a prompt, or press Enter, and it is copied.
-- **Add your own:** press "+ New prompt" to save one. You can edit or delete it later.
-- **On every device:** your prompts are saved online, so your phone and PC show the same ones.
-- **Sign in:** anyone can sign in with their email code, and each person sees only their own prompts.
-- **Private:** you must sign in with an email code to open it.
+- **Flower:** the home page shows a flower. Each petal is a group of prompts, and you tap a petal to see them.
+- **Search:** type any word you remember and the matching prompts show up.
+- **Copy:** tap a prompt and it is copied, so you can paste it anywhere.
+- **Add your own:** press "+ New prompt" to save a prompt of your own. You can change it or delete it later.
+- **Same on every device:** your prompts are saved online, so your phone and your computer show the same ones.
+- **Private:** you sign in with a code sent to your email, and you only see your own prompts.
 
-## Where things live
-- `pages/` holds the screens (home, results, the add-prompt form).
-- `components/` holds shared pieces (search, petals, dialog, buttons).
-- `data/` holds saving and loading (your prompts, browser storage, cloud sync).
-- `build.py` joins these small files into `public/index.html`. Run `python build.py` after any change.
+## File tree
+
+```
+imprompto/
+├── public/        the finished website that people open
+├── pages/         the screens you look at (home, results, add-a-prompt form)
+├── components/    small pieces used on many screens (search, petals, buttons, pop-ups)
+├── data/          saving and loading your prompts
+├── functions/     the small helper on the internet that keeps your prompts safe
+├── prompts/       the starter prompts, sorted into design, general, how-to and writing
+├── assets/        the flower picture
+├── mockups/       early drawings of how the website could look
+├── screenshots/   photos of the app, used to check how it looks
+├── template.html  the empty page before the prompts are put in
+├── build.py       the tool that puts everything together into the finished website
+├── schema.sql     the plan for how saved prompts are stored
+└── wrangler.toml  the settings for the website's online home
+```
