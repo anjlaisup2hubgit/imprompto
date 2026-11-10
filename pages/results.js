@@ -67,6 +67,6 @@ function setCur(i) {                                    // choose the highlighte
   $("box").style.setProperty("--c", rows[cur].style.getPropertyValue("--c"));
   RS.forEach(sd => sd.el.classList.toggle("sel", sd.i === cur));
   const m = document.body.dataset.mode, n = ctx.n;
-  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · ${n - RS.length} more without a seed` : "")
+  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · only the top ${RS.length} show as seeds, type more words to narrow` : "")
     : "↑ ↓ to move · Enter to copy · Esc to clear";
 }
