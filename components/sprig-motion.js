@@ -1,5 +1,5 @@
 const mouse = { x: 0, y: 0, in: false };
-const stagePt = e => { const r = $("stage").getBoundingClientRect(), sc = r.width / 1200; return { x: (e.clientX - r.left) / sc, y: (e.clientY - r.top) / sc }; };
+const stagePt = e => { const r = $("stage").getBoundingClientRect(), sc = r.width / $("stage").offsetWidth; return { x: (e.clientX - r.left) / sc, y: (e.clientY - r.top) / sc }; };
 addEventListener("pointermove", e => { const m = stagePt(e); mouse.x = m.x; mouse.y = m.y; mouse.in = true; });
 document.addEventListener("pointerleave", () => mouse.in = false);
 function startDrag(f, e) {                                           // drag a sprig; it springs back when you let go
