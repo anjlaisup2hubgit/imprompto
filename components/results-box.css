@@ -30,8 +30,9 @@
 .chips span+span:before{content:" \0000b7 ";white-space:pre}
 .you{background:#ffe3cc;color:var(--acc)!important;font-weight:700!important;padding:1px 9px;border-radius:10px;margin-right:8px}
 .chips .you+span:before{content:""}
-.acts{flex:none;display:flex;gap:2px}
-.act{border:0;background:none;color:var(--chipink);font-size:14px;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:8px;text-decoration:underline}
+.acts{flex:none;display:flex;gap:6px}
+.act{background:none;color:var(--chipink);font-size:14px;font-weight:700;cursor:pointer;padding:5px 14px;border-radius:14px;border:1.5px solid var(--chipink)}
+.act:hover{background:var(--chipink);color:#fff}
 .none{padding:26px 16px;color:var(--mute);font-size:16px;line-height:1.5}
 .none .sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 #foot{flex:none;padding:10px 16px 12px;font-size:13px;color:var(--mute);border-top:1px solid #efe7fb}

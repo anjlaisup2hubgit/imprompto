@@ -128,8 +128,9 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 .chips span+span:before{content:" \0000b7 ";white-space:pre}
 .you{background:#ffe3cc;color:var(--acc)!important;font-weight:700!important;padding:1px 9px;border-radius:10px;margin-right:8px}
 .chips .you+span:before{content:""}
-.acts{flex:none;display:flex;gap:2px}
-.act{border:0;background:none;color:var(--chipink);font-size:14px;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:8px;text-decoration:underline}
+.acts{flex:none;display:flex;gap:6px}
+.act{background:none;color:var(--chipink);font-size:14px;font-weight:700;cursor:pointer;padding:5px 14px;border-radius:14px;border:1.5px solid var(--chipink)}
+.act:hover{background:var(--chipink);color:#fff}
 .none{padding:26px 16px;color:var(--mute);font-size:16px;line-height:1.5}
 .none .sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 #foot{flex:none;padding:10px 16px 12px;font-size:13px;color:var(--mute);border-top:1px solid #efe7fb}
@@ -649,7 +650,7 @@ function setCur(i) {                                    // choose the highlighte
   $("box").style.setProperty("--c", rows[cur].style.getPropertyValue("--c"));
   RS.forEach(sd => sd.el.classList.toggle("sel", sd.i === cur));
   const m = document.body.dataset.mode, n = ctx.n;
-  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · ${n - RS.length} more without a seed` : "")
+  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · only the top ${RS.length} show as seeds, type more words to narrow` : "")
     : "↑ ↓ to move · Enter to copy · Esc to clear";
 }
 const move = step => setCur(cur + step);                // arrow keys
@@ -726,9 +727,16 @@ function openForm(d) {
   $("ftitle").textContent = editing || editingFrom ? "Edit prompt" : "New prompt";
   $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
   $("f-tags").value = d ? d.tags.join(", ") : ""; $("f-text").value = d ? d.text : "";
-  $("ferr").textContent = ""; showModal("modal", "f-title");
+  $("ferr").textContent = ""; showAutoHints(); showModal("modal", "f-title");
 }
 const closeForm = closeModals;
+function showAutoHints() {             // the boxes preview what will be filled in when they are left blank
+  const text = $("f-text").value.trim();
+  $("f-title").placeholder = text ? "Will be: " + autoTitle(text) : "Leave blank to fill in automatically";
+  $("f-cat").placeholder = text ? "Will be: " + autoCategory(text) : "Leave blank to fill in automatically";
+  $("f-tags").placeholder = text ? "Will be: " + autoTags(text).join(", ") : "Leave blank to fill in automatically";
+}
+$("f-text").addEventListener("input", showAutoHints);
 $("f-save").onclick = () => {
   const text = $("f-text").value.trim();
   if (!text) { $("ferr").textContent = "Please add the prompt text."; return; }
