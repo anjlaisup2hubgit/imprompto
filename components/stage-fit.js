@@ -4,8 +4,7 @@ const isMobile = () => vw() < 700 || vw() < innerHeight * 0.9 || innerHeight < 5
 function fit() {
   const mobile = isMobile();
   document.body.classList.toggle("mobile", mobile);
-  document.body.dataset.mode = mobile ? "classic" : mode;
-  document.querySelectorAll("#modes button").forEach(b => { const on = b.dataset.m === mode; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+  document.body.dataset.mode = mobile ? "classic" : "seeds";
   const W = mobile ? 420 : 1200, H = mobile ? 960 : 900, st = $("stage");
   st.style.width = W + "px"; st.style.height = H + "px";
   $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);

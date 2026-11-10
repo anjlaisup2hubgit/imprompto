@@ -9,8 +9,8 @@
 .dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:3px solid var(--c);
   animation:pop .5s backwards;transition:box-shadow .25s,opacity .25s}
 .dot.hot,.dot.sel{box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
-body.searching .hint,body.searching #coach{opacity:0;pointer-events:none}
-.hint,.tie{transition:opacity .25s}
+body.searching #coach{opacity:0;pointer-events:none}
+.tie{transition:opacity .25s}
 .lab{touch-action:none;user-select:none;-webkit-user-select:none}
 .lab.drag{cursor:grabbing;box-shadow:0 0 0 2px var(--c),0 18px 34px rgba(106,75,214,.3);z-index:3}
 .lab.open{box-shadow:0 0 0 2px var(--c),0 12px 24px rgba(106,75,214,.22)}

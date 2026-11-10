@@ -38,9 +38,6 @@ button:active{transform:scale(.97)}
 #new{left:1008px;width:160px;background:var(--brand);color:#fff;border:0;box-shadow:0 8px 18px rgba(91,63,208,.3)}
 #sobtn:hover{background:var(--chip)}
 #new:hover{filter:brightness(1.12)}
-#fsbtn{left:818px;width:46px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:20px}
-#fsbtn:hover{background:var(--chip)}
-body.mobile #fsbtn{display:none}
 #sobtn{left:880px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
 /* category labels on the petals (each has its own colour) */
 .lab{position:absolute;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;gap:10px;
@@ -53,8 +50,8 @@ body.mobile #fsbtn{display:none}
 .dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:3px solid var(--c);
   animation:pop .5s backwards;transition:box-shadow .25s,opacity .25s}
 .dot.hot,.dot.sel{box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
-body.searching .hint,body.searching #coach{opacity:0;pointer-events:none}
-.hint,.tie{transition:opacity .25s}
+body.searching #coach{opacity:0;pointer-events:none}
+.tie{transition:opacity .25s}
 .lab{touch-action:none;user-select:none;-webkit-user-select:none}
 .lab.drag{cursor:grabbing;box-shadow:0 0 0 2px var(--c),0 18px 34px rgba(106,75,214,.3);z-index:3}
 .lab.open{box-shadow:0 0 0 2px var(--c),0 12px 24px rgba(106,75,214,.22)}
@@ -94,7 +91,6 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 #bar:focus-within{box-shadow:0 0 0 3px #6d4aff,0 12px 26px rgba(106,75,214,.2)}
 #clr{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:var(--chip);color:var(--chipink);font-size:22px;line-height:1;cursor:pointer;display:none}
 #clr.show{display:block}
-.hint{position:absolute;background:rgba(255,255,255,.88);border-radius:12px;padding:6px 8px;left:635px;width:330px;top:480px;text-align:center;font-size:15px;color:var(--mute)}
 #coach{position:absolute;left:615px;bottom:522px;width:370px;background:var(--brand);color:#fff;border-radius:16px;padding:14px 16px;font-size:16px;line-height:1.4;
   box-shadow:0 14px 30px rgba(91,63,208,.35);transition:opacity .25s;animation:pop .6s .6s backwards;display:none}
 #coach.show{display:block}
@@ -171,7 +167,6 @@ body.mobile #sobtn{left:166px;width:94px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:70px;top:306px;width:280px;height:64px}
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
-body.mobile .hint{left:70px;width:280px;top:492px;font-size:15px}
 body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
 body.mobile #chips{display:flex;position:absolute;left:16px;top:70px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
 .chipbtn{flex:none;height:44px;border-radius:22px;border:0;background:#fff;padding:0 16px;font-size:15px;font-weight:700;color:var(--ink);
@@ -184,52 +179,6 @@ body.mobile .r .cp{opacity:1}
 body.mobile .act{padding:11px 12px}
 body.mobile #foot{display:none}
 body.mobile .dlg{width:380px}
-/* ---- results layouts (desktop): card, seeds, vine. The sprigs stay on the flower and act as live filters. ---- */
-#modes{position:absolute;left:628px;top:38px;height:42px;display:flex;gap:2px;padding:3px;background:#fff;border:1.5px solid #cfc3ee;border-radius:21px}
-#modes button{border:0;background:none;border-radius:18px;padding:0 14px;font-size:14px;font-weight:700;color:var(--chipink);cursor:pointer}
-#modes button:hover{background:var(--chip)}
-#modes button.on{background:var(--brand);color:#fff}
-body.mobile #modes{display:none}
-.lab.off,.dot.off,.tie.off{opacity:.55}
-.lab.zero,.dot.zero,.tie.zero{opacity:.35}
-.tie.sel path{stroke-width:3}
-.r{position:relative}
-.dt{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c,#64748b);margin-right:9px;vertical-align:1px}
-.cat{display:none}
-.seed.rseed{height:32px;animation:pop .35s backwards}
-.seed.rseed span{max-width:230px;opacity:1;margin-left:7px}
-.seed.sel{box-shadow:0 0 0 3.5px var(--c),0 10px 20px rgba(106,75,214,.28);z-index:3}
-.slink.rs.show{opacity:.6}
-body:not(.mobile) #tab,body:not(.mobile) #head,body:not(.mobile) #cats{display:none}
-body:not(.mobile) #box{left:580px;top:482px;width:440px;height:320px;border:0;border-radius:22px;background:rgba(255,255,255,.97);
-  box-shadow:0 14px 34px rgba(59,42,138,.22);transform-origin:50% 0}
-body:not(.mobile) #box:before{content:"";position:absolute;left:50%;top:-8px;margin-left:-9px;width:18px;height:18px;background:inherit;transform:rotate(45deg);border-radius:3px}
-body:not(.mobile) #list{padding:12px 10px 6px}
-body:not(.mobile) .r{padding:11px 14px 9px}
-body:not(.mobile) .r p{-webkit-line-clamp:1}
-body:not(.mobile) .r:hover{background:#f7f2ff}
-body:not(.mobile) .r.cur{background:#f4efff;box-shadow:inset 4px 0 0 var(--c)}
-body:not(.mobile) .r.cur .cp{background:var(--brand);color:#fff;opacity:1;padding:3px 11px;border-radius:8px}
-body:not(.mobile) .ft{margin-top:3px;min-height:0}
-body:not(.mobile) #foot{padding:9px 18px 12px;font-size:12.5px;color:#8a82a6}
-body[data-mode=vine] #box{left:630px;top:480px;width:380px;height:330px;background:none;box-shadow:none;border-radius:0}
-body[data-mode=vine] #box:before{left:17px;top:-20px;margin:0;width:2px;height:22px;background:#8d78d9;transform:none;border-radius:0}
-body[data-mode=vine] #list{padding:6px 4px 4px 40px}
-body[data-mode=vine] .r{background:#fff;border-radius:22px;box-shadow:0 8px 18px rgba(106,75,214,.16);padding:10px 18px;margin:0 0 8px}
-body[data-mode=vine] .r:hover{background:#fff}
-body[data-mode=vine] .r .dt,body[data-mode=vine] .r .cp,body[data-mode=vine] .r p,body[data-mode=vine] .r .ft{display:none}
-body[data-mode=vine] .r .cat{display:inline;flex:none;white-space:nowrap;margin-left:auto;font-size:12px;font-weight:700;color:var(--c)}
-body[data-mode=vine] .r.cur{border-radius:16px;padding:14px 18px 12px;box-shadow:0 0 0 2px var(--c),0 10px 22px rgba(106,75,214,.2)}
-body[data-mode=vine] .r.cur .cat{display:none}
-body[data-mode=vine] .r.cur p{display:-webkit-box;-webkit-line-clamp:3}
-body[data-mode=vine] .r.cur .ft{display:flex}
-body[data-mode=vine] .r.cur .cp{display:inline-block}
-body[data-mode=vine] .r::before{content:"";position:absolute;left:-23px;top:-8px;bottom:-8px;width:2px;background:#8d78d9}
-body[data-mode=vine] .r:first-child::before{top:-14px}
-body[data-mode=vine] .r:last-child::before{bottom:auto;height:29px}
-body[data-mode=vine] .r::after{content:"";position:absolute;left:-29px;top:14px;width:14px;height:14px;border-radius:50%;background:#fff;border:3.5px solid var(--c)}
-body[data-mode=vine] .r.cur::after{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 28%,transparent)}
-body[data-mode=vine] #foot{border-top:0;padding:6px 4px 0 40px}
 body[data-mode=seeds] #box{left:630px;width:340px;height:auto;max-height:270px;border-top:5px solid var(--c,#8b5cf6);border-radius:16px}
 body[data-mode=seeds] #box:before{background:var(--c,#8b5cf6);top:-13px}
 body[data-mode=seeds] #list{padding:10px 8px 2px;overflow:visible;flex:none}
@@ -245,10 +194,8 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
   <div id="bloom" aria-hidden="true"></div>
   <svg id="lines" viewBox="0 0 1200 900" aria-hidden="true"></svg>
   <div class="brand"><h1>Prompt Library</h1><span id="total"></span></div>
-  <button class="hbtn" id="fsbtn" aria-label="Full screen" title="Full screen">&#x26F6;</button>
   <button class="hbtn" id="sobtn">Sign out</button>
   <button class="hbtn" id="new">+ New prompt</button>
-  <div id="modes" role="group" aria-label="Results layout" title="How results appear"><button data-m="card">Card</button><button data-m="seeds">Seeds</button><button data-m="vine">Vine</button></div>
   <div id="labels"></div>
   <div id="chips" role="group" aria-label="Categories"></div>
   <div id="glow"></div>
@@ -257,7 +204,6 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
     <input id="q" type="text" role="combobox" aria-controls="list" aria-expanded="false" aria-autocomplete="list" placeholder="Type any words you remember…" maxlength="200" autocomplete="off" spellcheck="false" aria-label="Search your prompts" autofocus>
     <button id="clr" aria-label="Clear search">&times;</button>
   </div>
-  <div class="hint" id="hint">Type to search, or click a petal. Press / to jump here.</div>
   <div id="coach" role="status">Start here: type any word you remember, or click a petal to browse a group.<button id="coach-ok">Got it</button></div>
   <div id="box"><div id="tab"></div><div id="head"></div><div id="cats" role="group" aria-label="Filter by category"></div>
     <div id="list" role="listbox" aria-label="Results"></div>
@@ -286,7 +232,7 @@ function clean(p) {
   const title = str(p.title).trim(), text = str(p.text).trim();
   if (!title || !text) return null;
   const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
-  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true };
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }) };   // "from" = the built-in prompt this one replaces
 }
 let MINE = [];
 function loadMine() {
@@ -294,7 +240,7 @@ function loadMine() {
 }
 loadMine();
 const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
-const all = () => BUILTIN.concat(MINE);
+const all = () => BUILTIN.filter(b => !MINE.some(m => m.from === b.file)).concat(MINE);   // an edited built-in hides the original
 /* ---- sync: your prompts are also kept in the cloud so every device shares them ---- */
 const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1", OWNER = "promptlib.owner.v1";
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -328,8 +274,6 @@ const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let cat = "";          // "" = no category chosen, "*" = every prompt, otherwise a category name
 let cur = 0;           // which result row is highlighted
-const MODES = ["card", "seeds", "vine"], MODEKEY = "promptlib.layout.v1";
-let mode = MODES.includes(lsGet(MODEKEY)) ? lsGet(MODEKEY) : "seeds";   // how results appear on a computer: card, seeds or vine
 const RS = [];         // result seeds (seeds layout)
 let ctx = { n: 0, restrict: false };
 /* ---- fit the stage into the window (phones and short windows get their own layout) ---- */
@@ -338,8 +282,7 @@ const isMobile = () => vw() < 700 || vw() < innerHeight * 0.9 || innerHeight < 5
 function fit() {
   const mobile = isMobile();
   document.body.classList.toggle("mobile", mobile);
-  document.body.dataset.mode = mobile ? "classic" : mode;
-  document.querySelectorAll("#modes button").forEach(b => { const on = b.dataset.m === mode; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+  document.body.dataset.mode = mobile ? "classic" : "seeds";
   const W = mobile ? 420 : 1200, H = mobile ? 960 : 900, st = $("stage");
   st.style.width = W + "px"; st.style.height = H + "px";
   $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);
@@ -379,7 +322,6 @@ let focused = null, leaveTimer = 0;
 function renderLabels() {
   const cats = catList(), D = all();
   $("total").innerHTML = D.length + " prompts" + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
-  $("hint").textContent = D.length ? (isMobile() ? "Type to search, or tap a group above." : "Type to search, or click a sprig to see what's inside. Press / to jump here.") : "No prompts yet. Press “+ New prompt” to add your first one.";
   $("coach").firstChild.nodeValue = isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
   $("labels").innerHTML = ""; $("chips").innerHTML = ""; floaters.length = 0; focused = null;
   ln.querySelectorAll(".slink").forEach(n => n.remove()); RS.length = 0;
@@ -674,12 +616,11 @@ function render() {
     r.innerHTML = `<div class="hd"><h3><i class="dt"></i>${hl(d.title, terms)}</h3><span class="cat">${esc(d.category)}</span><span class="cp">Copy</span></div>
       <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
       <div class="ft"><div class="chips">${d.mine ? '<span class="you">yours</span>' : ""}${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      ${d.mine ? `<div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button><button class="act" data-a="del" aria-label="Delete ${esc(d.title)}">Delete</button></div>` : ""}</div>`;
+      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button>${d.mine ? `<button class="act" data-a="del" aria-label="Delete ${esc(d.title)}">${d.from ? "Reset" : "Delete"}</button>` : ""}</div></div>`;
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "del") { if (confirm("Delete this prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast("Deleted"); } return; }
-      if (document.body.dataset.mode === "vine" && i !== cur) return setCur(i);          // vine: first click opens the leaf, the next copies
+      if (a === "del") { if (confirm(d.from ? "Go back to the original prompt?" : "Delete this prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast(d.from ? "Restored" : "Deleted"); } return; }
       copy(d.text, r);
     };
     list.appendChild(r);
@@ -695,10 +636,8 @@ function setCur(i) {                                    // choose the highlighte
   $("q").setAttribute("aria-activedescendant", rows[cur].id);
   $("box").style.setProperty("--c", rows[cur].style.getPropertyValue("--c"));
   RS.forEach(sd => sd.el.classList.toggle("sel", sd.i === cur));
-  const m = document.body.dataset.mode, n = ctx.n, s = n === 1 ? "" : "s";
+  const m = document.body.dataset.mode, n = ctx.n;
   $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · ${n - RS.length} more without a seed` : "")
-    : m === "vine" ? `${n} result${s} · ↑ ↓ open the next leaf · Enter copy`
-    : m === "card" ? `${n} result${s}${ctx.restrict ? " in " + cat : ""} · click a sprig to filter · ↑ ↓ move · Enter copy`
     : "↑ ↓ to move · Enter to copy · Esc to clear";
 }
 const move = step => setCur(cur + step);                // arrow keys
@@ -745,10 +684,10 @@ function closeModals() {
 $("f-cancel").onclick = closeModals;
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
 function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
-let editing = null;
+let editing = null, editingFrom = "";   // editingFrom = file of a built-in prompt being edited
 function openForm(d) {
-  editing = d && d.mine ? d.id : null;
-  $("ftitle").textContent = editing ? "Edit prompt" : "New prompt";
+  editing = d && d.mine ? d.id : null; editingFrom = d && !d.mine ? d.file : "";
+  $("ftitle").textContent = editing || editingFrom ? "Edit prompt" : "New prompt";
   $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
   $("f-tags").value = d ? d.tags.join(", ") : ""; $("f-text").value = d ? d.text : "";
   $("ferr").textContent = ""; showModal("modal", "f-title");
@@ -757,18 +696,15 @@ const closeForm = closeModals;
 $("f-save").onclick = () => {
   const title = $("f-title").value.trim(), text = $("f-text").value.trim();
   if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
-  const c = clean({ title, text, category: $("f-cat").value, tags: $("f-tags").value.split(",") });
+  const c = clean({ title, text, category: $("f-cat").value, tags: $("f-tags").value.split(","), from: editingFrom });
   const old = editing && MINE.find(x => x.id === editing);
-  if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
+  if (old) Object.assign(old, c, { id: old.id, from: old.from }); else MINE.push(c);
   const ok = save();
   closeModals(); renderLabels(); render();
-  toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
+  toast(ok ? (editing || editingFrom ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
 };
 addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
-document.querySelectorAll("#modes button").forEach(b => b.onclick = () => { mode = b.dataset.m; lsSet(MODEKEY, mode); fit(); render(); });
-$("fsbtn").onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
-["pointerdown", "keydown"].forEach(t => addEventListener(t, function go() { removeEventListener(t, go, true); try { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} }, true));   // browsers only allow full screen after a click or key press
 $("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
 render();
 sync();

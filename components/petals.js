@@ -25,7 +25,6 @@ let focused = null, leaveTimer = 0;
 function renderLabels() {
   const cats = catList(), D = all();
   $("total").innerHTML = D.length + " prompts" + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
-  $("hint").textContent = D.length ? (isMobile() ? "Type to search, or tap a group above." : "Type to search, or click a sprig to see what's inside. Press / to jump here.") : "No prompts yet. Press “+ New prompt” to add your first one.";
   $("coach").firstChild.nodeValue = isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
   $("labels").innerHTML = ""; $("chips").innerHTML = ""; floaters.length = 0; focused = null;
   ln.querySelectorAll(".slink").forEach(n => n.remove()); RS.length = 0;

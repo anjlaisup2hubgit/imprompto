@@ -46,12 +46,11 @@ function render() {
     r.innerHTML = `<div class="hd"><h3><i class="dt"></i>${hl(d.title, terms)}</h3><span class="cat">${esc(d.category)}</span><span class="cp">Copy</span></div>
       <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
       <div class="ft"><div class="chips">${d.mine ? '<span class="you">yours</span>' : ""}${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      ${d.mine ? `<div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button><button class="act" data-a="del" aria-label="Delete ${esc(d.title)}">Delete</button></div>` : ""}</div>`;
+      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button>${d.mine ? `<button class="act" data-a="del" aria-label="Delete ${esc(d.title)}">${d.from ? "Reset" : "Delete"}</button>` : ""}</div></div>`;
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "del") { if (confirm("Delete this prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast("Deleted"); } return; }
-      if (document.body.dataset.mode === "vine" && i !== cur) return setCur(i);          // vine: first click opens the leaf, the next copies
+      if (a === "del") { if (confirm(d.from ? "Go back to the original prompt?" : "Delete this prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast(d.from ? "Restored" : "Deleted"); } return; }
       copy(d.text, r);
     };
     list.appendChild(r);
@@ -67,9 +66,7 @@ function setCur(i) {                                    // choose the highlighte
   $("q").setAttribute("aria-activedescendant", rows[cur].id);
   $("box").style.setProperty("--c", rows[cur].style.getPropertyValue("--c"));
   RS.forEach(sd => sd.el.classList.toggle("sel", sd.i === cur));
-  const m = document.body.dataset.mode, n = ctx.n, s = n === 1 ? "" : "s";
+  const m = document.body.dataset.mode, n = ctx.n;
   $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · ${n - RS.length} more without a seed` : "")
-    : m === "vine" ? `${n} result${s} · ↑ ↓ open the next leaf · Enter copy`
-    : m === "card" ? `${n} result${s}${ctx.restrict ? " in " + cat : ""} · click a sprig to filter · ↑ ↓ move · Enter copy`
     : "↑ ↓ to move · Enter to copy · Esc to clear";
 }

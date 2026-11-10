@@ -14,7 +14,6 @@ body.mobile #sobtn{left:166px;width:94px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:70px;top:306px;width:280px;height:64px}
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
-body.mobile .hint{left:70px;width:280px;top:492px;font-size:15px}
 body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
 body.mobile #chips{display:flex;position:absolute;left:16px;top:70px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
 .chipbtn{flex:none;height:44px;border-radius:22px;border:0;background:#fff;padding:0 16px;font-size:15px;font-weight:700;color:var(--ink);

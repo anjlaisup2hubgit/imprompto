@@ -32,8 +32,7 @@ for f in sorted((ROOT / "prompts").rglob("*.md")):
 # The page is made of small files. The order matters: later files use things defined by earlier ones.
 STYLES = ["components/base.css", "pages/home.css", "components/header-buttons.css", "components/petals.css",
           "components/seeds.css", "components/search-bar.css", "components/results-box.css", "components/dialog.css",
-          "pages/mobile.css", "components/layout-switch.css", "pages/layout-card.css", "pages/layout-vine.css",
-          "pages/layout-seeds.css"]
+          "pages/mobile.css", "pages/layout-seeds.css"]
 PAGE = ["pages/home.html"]
 DIALOGS = ["components/prompt-dialog.html", "components/toast.html"]
 SCRIPTS = ["data/prompts.js", "data/local-storage.js", "data/sync.js", "components/dom-helpers.js",
