@@ -7,7 +7,7 @@ tags: tag1, tag2
 ---
 The prompt text...
 """
-import json, pathlib, re
+import base64, json, pathlib, re
 
 ROOT = pathlib.Path(__file__).parent
 HEADER = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)", re.S)
@@ -31,5 +31,6 @@ for f in sorted((ROOT / "prompts").rglob("*.md")):
 
 html = (ROOT / "template.html").read_text(encoding="utf-8")
 html = html.replace("__DATA__", json.dumps(items, ensure_ascii=False).replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
+html = html.replace("__FLOWER__", "data:image/webp;base64," + base64.b64encode((ROOT / "public" / "assets" / "flower.webp").read_bytes()).decode())   # inlined so the picture can never be blocked separately from the page
 (ROOT / "public" / "index.html").write_text(html, encoding="utf-8")
 print(f"public/index.html built with {len(items)} prompts")
