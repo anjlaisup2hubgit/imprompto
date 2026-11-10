@@ -1,0 +1,18 @@
+body[data-mode=vine] #box{left:630px;top:480px;width:380px;height:330px;background:none;box-shadow:none;border-radius:0}
+body[data-mode=vine] #box:before{left:17px;top:-20px;margin:0;width:2px;height:22px;background:#8d78d9;transform:none;border-radius:0}
+body[data-mode=vine] #list{padding:6px 4px 4px 40px}
+body[data-mode=vine] .r{background:#fff;border-radius:22px;box-shadow:0 8px 18px rgba(106,75,214,.16);padding:10px 18px;margin:0 0 8px}
+body[data-mode=vine] .r:hover{background:#fff}
+body[data-mode=vine] .r .dt,body[data-mode=vine] .r .cp,body[data-mode=vine] .r p,body[data-mode=vine] .r .ft{display:none}
+body[data-mode=vine] .r .cat{display:inline;flex:none;white-space:nowrap;margin-left:auto;font-size:12px;font-weight:700;color:var(--c)}
+body[data-mode=vine] .r.cur{border-radius:16px;padding:14px 18px 12px;box-shadow:0 0 0 2px var(--c),0 10px 22px rgba(106,75,214,.2)}
+body[data-mode=vine] .r.cur .cat{display:none}
+body[data-mode=vine] .r.cur p{display:-webkit-box;-webkit-line-clamp:3}
+body[data-mode=vine] .r.cur .ft{display:flex}
+body[data-mode=vine] .r.cur .cp{display:inline-block}
+body[data-mode=vine] .r::before{content:"";position:absolute;left:-23px;top:-8px;bottom:-8px;width:2px;background:#8d78d9}
+body[data-mode=vine] .r:first-child::before{top:-14px}
+body[data-mode=vine] .r:last-child::before{bottom:auto;height:29px}
+body[data-mode=vine] .r::after{content:"";position:absolute;left:-29px;top:14px;width:14px;height:14px;border-radius:50%;background:#fff;border:3.5px solid var(--c)}
+body[data-mode=vine] .r.cur::after{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 28%,transparent)}
+body[data-mode=vine] #foot{border-top:0;padding:6px 4px 0 40px}

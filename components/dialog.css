@@ -1,0 +1,18 @@
+/* pop-up windows */
+.ov{position:absolute;inset:0;background:rgba(36,28,63,.4);box-shadow:0 0 0 4000px rgba(36,28,63,.4);display:none;z-index:5;align-items:center;justify-content:center}
+.ov.show{display:flex}
+.dlg{width:520px;max-width:94%;background:#fff;border-radius:20px;padding:24px 26px;box-shadow:0 24px 60px rgba(60,30,140,.3);font-size:16px;animation:pop .2s}
+.dlg h2{margin:0 0 12px;font-size:21px}
+.dlg label{display:block;font-size:13px;font-weight:700;color:var(--mute);margin:12px 0 5px;letter-spacing:.5px}
+.dlg input[type=text],.dlg textarea{width:100%;border:1.5px solid #d9cff2;border-radius:10px;padding:10px 12px;font-size:16px;color:var(--ink)}
+.dlg textarea{height:150px;resize:vertical}
+.btns{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.btn{border:0;border-radius:20px;padding:10px 20px;cursor:pointer;font-size:16px;font-weight:700;background:var(--chip);color:var(--chipink)}
+.btn.main{background:var(--brand);color:#fff}
+.err{color:#a3180f;font-size:14px;margin-top:6px;min-height:18px}
+.dlg p{margin:0 0 6px;line-height:1.5;color:var(--mute)}
+#toast{position:absolute;left:50%;bottom:50px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:18px;
+  font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;max-width:90%;text-align:center}
+#toast.show{opacity:1}
+.btn:hover{filter:brightness(.96)}
+.btn.main:hover{filter:brightness(1.12)}

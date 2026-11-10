@@ -1,0 +1,29 @@
+/* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
+#chips{display:none}
+html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
+body.mobile{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:linear-gradient(#fff,#efe7fb) fixed}
+body.mobile #flower{left:0;top:124px;width:420px;height:399px}
+body.mobile #bloom{display:none}
+body.mobile .brand{left:16px;top:14px}
+body.mobile .brand h1{font-size:19px}
+body.mobile .brand span{font-size:13px}
+body.mobile .sv{display:none}
+body.mobile .hbtn{top:12px;height:44px;font-size:15px}
+body.mobile #new{left:268px;width:136px}
+body.mobile #sobtn{left:166px;width:94px}
+body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
+body.mobile #bar{left:70px;top:306px;width:280px;height:64px}
+body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
+body.mobile .hint{left:70px;width:280px;top:492px;font-size:15px}
+body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
+body.mobile #chips{display:flex;position:absolute;left:16px;top:70px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+.chipbtn{flex:none;height:44px;border-radius:22px;border:0;background:#fff;padding:0 16px;font-size:15px;font-weight:700;color:var(--ink);
+  cursor:pointer;box-shadow:0 4px 10px rgba(106,75,214,.14);display:flex;align-items:center;gap:8px}
+.chipbtn b{width:11px;height:11px;border-radius:50%;background:var(--c,#64748b)}
+.chipbtn i{font-style:normal;color:var(--acc)}
+.chipbtn.on{box-shadow:0 0 0 2px var(--c,#64748b)}
+body.mobile #box{left:16px;top:544px;width:388px;height:400px;transform-origin:50% 0}
+body.mobile .r .cp{opacity:1}
+body.mobile .act{padding:11px 12px}
+body.mobile #foot{display:none}
+body.mobile .dlg{width:380px}

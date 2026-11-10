@@ -29,3 +29,9 @@ organiser/
 - **On every device:** your prompts are saved online, so your phone and PC show the same ones.
 - **Sign in:** anyone can sign in with their email code, and each person sees only their own prompts.
 - **Private:** you must sign in with an email code to open it.
+
+## Where things live
+- `pages/` holds the screens (home, results, the add-prompt form).
+- `components/` holds shared pieces (search, petals, dialog, buttons).
+- `data/` holds saving and loading (your prompts, browser storage, cloud sync).
+- `build.py` joins these small files into `public/index.html`. Run `python build.py` after any change.

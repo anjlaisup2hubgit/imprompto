@@ -19,7 +19,6 @@ button:active{transform:scale(.97)}
 :focus-visible{outline:3px solid #6d4aff;outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-
 /* The whole design lives on a fixed stage that is scaled to fit the window. */
 #stage{position:absolute;left:0;top:0;width:1200px;height:900px;transform-origin:0 0}
 #flower{position:absolute;left:373px;top:14px;width:816px;height:776px;pointer-events:none;
@@ -39,13 +38,10 @@ button:active{transform:scale(.97)}
 #new{left:1008px;width:160px;background:var(--brand);color:#fff;border:0;box-shadow:0 8px 18px rgba(91,63,208,.3)}
 #sobtn:hover{background:var(--chip)}
 #new:hover{filter:brightness(1.12)}
-.btn:hover{filter:brightness(.96)}
-.btn.main:hover{filter:brightness(1.12)}
 #fsbtn{left:818px;width:46px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:20px}
 #fsbtn:hover{background:var(--chip)}
 body.mobile #fsbtn{display:none}
 #sobtn{left:880px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
-
 /* category labels on the petals (each has its own colour) */
 .lab{position:absolute;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;gap:10px;
   padding:0 18px;font-size:17px;font-weight:700;cursor:pointer;border:0;color:var(--ink);
@@ -87,7 +83,6 @@ body.searching .hint,body.searching #coach{opacity:0;pointer-events:none}
 #peek em{display:block;margin-top:8px;font-size:12px;font-style:normal;font-weight:700;color:var(--acc)}
 body.searching .seed:not(.rseed),body.searching #peek,body.searching .slink:not(.rs){opacity:0;pointer-events:none;visibility:hidden}
 body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
-
 /* search bar sitting on the pollen */
 #glow{position:absolute;left:680px;top:310px;width:240px;height:240px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,185,138,.6),rgba(255,185,138,0) 70%);pointer-events:none;animation:pulse 4s ease-in-out infinite}
@@ -105,7 +100,6 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 #coach.show{display:block}
 #coach:after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-9px;width:18px;height:18px;background:var(--brand);transform:rotate(45deg);border-radius:3px}
 #coach button{display:block;margin-top:10px;border:0;border-radius:14px;background:#fff;color:var(--brand);font-weight:700;font-size:15px;padding:7px 16px;cursor:pointer}
-
 /* results box: joined to the pollen by a line, like the reference */
 #box{position:absolute;left:48px;top:120px;width:400px;height:660px;background:rgba(255,255,255,.95);
   border:1.6px solid var(--line);opacity:0;transform:scale(.96);transform-origin:100% 0;pointer-events:none;
@@ -143,7 +137,6 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 .none{padding:26px 16px;color:var(--mute);font-size:16px;line-height:1.5}
 .none .sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 #foot{flex:none;padding:10px 16px 12px;font-size:13px;color:var(--mute);border-top:1px solid #efe7fb}
-
 /* pop-up windows */
 .ov{position:absolute;inset:0;background:rgba(36,28,63,.4);box-shadow:0 0 0 4000px rgba(36,28,63,.4);display:none;z-index:5;align-items:center;justify-content:center}
 .ov.show{display:flex}
@@ -160,7 +153,8 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 #toast{position:absolute;left:50%;bottom:50px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:18px;
   font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;max-width:90%;text-align:center}
 #toast.show{opacity:1}
-
+.btn:hover{filter:brightness(.96)}
+.btn.main:hover{filter:brightness(1.12)}
 /* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
 #chips{display:none}
 html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
@@ -190,7 +184,6 @@ body.mobile .r .cp{opacity:1}
 body.mobile .act{padding:11px 12px}
 body.mobile #foot{display:none}
 body.mobile .dlg{width:380px}
-
 /* ---- results layouts (desktop): card, seeds, vine. The sprigs stay on the flower and act as live filters. ---- */
 #modes{position:absolute;left:628px;top:38px;height:42px;display:flex;gap:2px;padding:3px;background:#fff;border:1.5px solid #cfc3ee;border-radius:21px}
 #modes button{border:0;background:none;border-radius:18px;padding:0 14px;font-size:14px;font-weight:700;color:var(--chipink);cursor:pointer}
@@ -207,7 +200,6 @@ body.mobile #modes{display:none}
 .seed.rseed span{max-width:230px;opacity:1;margin-left:7px}
 .seed.sel{box-shadow:0 0 0 3.5px var(--c),0 10px 20px rgba(106,75,214,.28);z-index:3}
 .slink.rs.show{opacity:.6}
-
 body:not(.mobile) #tab,body:not(.mobile) #head,body:not(.mobile) #cats{display:none}
 body:not(.mobile) #box{left:580px;top:482px;width:440px;height:320px;border:0;border-radius:22px;background:rgba(255,255,255,.97);
   box-shadow:0 14px 34px rgba(59,42,138,.22);transform-origin:50% 0}
@@ -220,7 +212,6 @@ body:not(.mobile) .r.cur{background:#f4efff;box-shadow:inset 4px 0 0 var(--c)}
 body:not(.mobile) .r.cur .cp{background:var(--brand);color:#fff;opacity:1;padding:3px 11px;border-radius:8px}
 body:not(.mobile) .ft{margin-top:3px;min-height:0}
 body:not(.mobile) #foot{padding:9px 18px 12px;font-size:12.5px;color:#8a82a6}
-
 body[data-mode=vine] #box{left:630px;top:480px;width:380px;height:330px;background:none;box-shadow:none;border-radius:0}
 body[data-mode=vine] #box:before{left:17px;top:-20px;margin:0;width:2px;height:22px;background:#8d78d9;transform:none;border-radius:0}
 body[data-mode=vine] #list{padding:6px 4px 4px 40px}
@@ -239,7 +230,6 @@ body[data-mode=vine] .r:last-child::before{bottom:auto;height:29px}
 body[data-mode=vine] .r::after{content:"";position:absolute;left:-29px;top:14px;width:14px;height:14px;border-radius:50%;background:#fff;border:3.5px solid var(--c)}
 body[data-mode=vine] .r.cur::after{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 28%,transparent)}
 body[data-mode=vine] #foot{border-top:0;padding:6px 4px 0 40px}
-
 body[data-mode=seeds] #box{left:630px;width:340px;height:auto;max-height:270px;border-top:5px solid var(--c,#8b5cf6);border-radius:16px}
 body[data-mode=seeds] #box:before{background:var(--c,#8b5cf6);top:-13px}
 body[data-mode=seeds] #list{padding:10px 8px 2px;overflow:visible;flex:none}
@@ -273,7 +263,6 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
     <div id="list" role="listbox" aria-label="Results"></div>
     <div id="foot">↑ ↓ to move · Enter to copy · Esc to clear</div></div>
   <div class="sr" id="live" role="status" aria-live="polite"></div>
-
   <div class="ov" id="modal"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ftitle">
     <h2 id="ftitle">New prompt</h2>
     <label for="f-title">TITLE</label><input type="text" id="f-title" maxlength="80" placeholder="e.g. Explain like I'm five">
@@ -283,7 +272,6 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
     <div class="err" id="ferr" role="alert"></div>
     <div class="btns"><button class="btn main" id="f-save">Save</button><button class="btn" id="f-cancel">Cancel</button></div>
   </div></div>
-
   <div id="toast" role="status"></div>
 </main>
 <script>
@@ -306,6 +294,7 @@ function loadMine() {
 }
 loadMine();
 const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
+const all = () => BUILTIN.concat(MINE);
 /* ---- sync: your prompts are also kept in the cloud so every device shares them ---- */
 const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1", OWNER = "promptlib.owner.v1";
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -335,7 +324,6 @@ async function sync() {
 }
 addEventListener("online", sync);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) sync(); });
-const all = () => BUILTIN.concat(MINE);
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let cat = "";          // "" = no category chosen, "*" = every prompt, otherwise a category name
@@ -344,7 +332,6 @@ const MODES = ["card", "seeds", "vine"], MODEKEY = "promptlib.layout.v1";
 let mode = MODES.includes(lsGet(MODEKEY)) ? lsGet(MODEKEY) : "seeds";   // how results appear on a computer: card, seeds or vine
 const RS = [];         // result seeds (seeds layout)
 let ctx = { n: 0, restrict: false };
-
 /* ---- fit the stage into the window (phones and short windows get their own layout) ---- */
 const vw = () => document.documentElement.clientWidth || innerWidth;   // real visible width (innerWidth can be stretched on phones)
 const isMobile = () => vw() < 700 || vw() < innerHeight * 0.9 || innerHeight < 560;
@@ -365,7 +352,6 @@ function fit() {
 }
 let wasMobile = isMobile();
 addEventListener("resize", () => { fit(); if (isMobile() !== wasMobile) { wasMobile = isMobile(); renderLabels(); render(); } });
-
 /* ---- categories ---- */
 const SPOTS = [                                   // petal positions: label (x,y) and the dot on the flower (dx,dy)
   { x: 430,  y: 190, dx: 639, dy: 210 },
@@ -433,7 +419,6 @@ function renderLabels() {
 }
 ln.innerHTML = `<line id="link" x1="448" y1="120" x2="635" y2="430" stroke="#c25be6" stroke-width="1.8" opacity="0" style="transition:opacity .22s"/>`;
 renderLabels(); fit();
-
 /* ---- sprigs and seeds ----
    A sprig is a category: a pill on a tendril, pinned to the flower by a pollen dot.
    Sprigs drift, push each other apart, and spring back when dragged. Seeds are the prompts inside:
@@ -484,7 +469,6 @@ function syncFocus() {                                               // dim the 
 function toggleOpen(f) { const was = f.open; floaters.forEach(g => g.open = false); f.open = !was; if (f.open) focused = f; syncFocus(); }
 function closeSeeds() { if (floaters.some(g => g.open)) { floaters.forEach(g => g.open = false); syncFocus(); } }
 document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed")) closeSeeds(); });
-
 const mouse = { x: 0, y: 0, in: false };
 const stagePt = e => { const r = $("stage").getBoundingClientRect(), sc = r.width / 1200; return { x: (e.clientX - r.left) / sc, y: (e.clientY - r.top) / sc }; };
 addEventListener("pointermove", e => { const m = stagePt(e); mouse.x = m.x; mouse.y = m.y; mouse.in = true; });
@@ -575,7 +559,6 @@ function step(ms) {
   }
 }
 requestAnimationFrame(step);
-
 /* ---- search (every word must match somewhere; tiny typos allowed) ---- */
 function near(a, b) {                       // true if the words differ by one typo
   if (a === b) return true;
@@ -619,7 +602,6 @@ function hl(s, terms) {                       // highlight on the plain text, es
   const re = new RegExp("(" + ts.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
   return s.split(re).map((part, i) => i % 2 ? "<mark>" + esc(part) + "</mark>" : esc(part)).join("");
 }
-
 /* sprigs double as live filters: while searching they show how many matches they hold */
 function markSprigs(counts, restrict) {
   for (const f of floaters) {
@@ -644,7 +626,6 @@ function makeResultSeed(d, i, color) {                   // seeds layout: each r
   $("labels").append(el); ln.insertAdjacentElement("afterbegin", link);
   f.rs.push(sd); RS.push(sd);
 }
-
 function render() {
   const raw = $("q").value.trim();
   const terms = [...new Set(fold(raw).split(/\s+/).filter(Boolean))].slice(0, 8).map(w => w.slice(0, 60));
@@ -728,13 +709,11 @@ async function copy(text, row) {
   row.classList.add("done");
   setTimeout(() => { cp.textContent = "Copy"; row.classList.remove("done"); }, 1400);
 }
-
 /* ---- first-visit tip ---- */
 function seenIt() { try { return !!localStorage.getItem(SEEN); } catch (e) { return true; } }
 function dismissCoach() { $("coach").classList.remove("show"); try { localStorage.setItem(SEEN, "1"); } catch (e) {} }
 if (!seenIt() && all().length) $("coach").classList.add("show");
 $("coach-ok").onclick = dismissCoach;
-
 $("q").addEventListener("input", () => { dismissCoach(); render(); });
 $("clr").onclick = () => { $("q").value = ""; cat = ""; render(); $("q").focus(); };
 const openOverlay = () => document.querySelector(".ov.show");
@@ -755,7 +734,6 @@ addEventListener("keydown", e => {
   else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
   else if (e.key === "Enter" && e.target.id === "q") { const rows = document.querySelectorAll("#list .r"); if (rows[cur]) rows[cur].click(); }
 });
-
 /* ---- pop-up windows ---- */
 let lastFocus = null;
 function showModal(id, focusId) { lastFocus = document.activeElement; $(id).classList.add("show"); $(focusId).focus(); dismissCoach(); }
@@ -764,8 +742,10 @@ function closeModals() {
   document.querySelectorAll(".ov").forEach(o => o.classList.remove("show"));
   if (was && lastFocus && lastFocus.focus) lastFocus.focus();
 }
-let editing = null;
+$("f-cancel").onclick = closeModals;
+document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
 function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
+let editing = null;
 function openForm(d) {
   editing = d && d.mine ? d.id : null;
   $("ftitle").textContent = editing ? "Edit prompt" : "New prompt";
@@ -774,14 +754,6 @@ function openForm(d) {
   $("ferr").textContent = ""; showModal("modal", "f-title");
 }
 const closeForm = closeModals;
-addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
-$("new").onclick = () => openForm(null);
-document.querySelectorAll("#modes button").forEach(b => b.onclick = () => { mode = b.dataset.m; lsSet(MODEKEY, mode); fit(); render(); });
-$("f-cancel").onclick = closeModals;
-$("fsbtn").onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
-["pointerdown", "keydown"].forEach(t => addEventListener(t, function go() { removeEventListener(t, go, true); try { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} }, true));   // browsers only allow full screen after a click or key press
-$("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
-document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
 $("f-save").onclick = () => {
   const title = $("f-title").value.trim(), text = $("f-text").value.trim();
   if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
@@ -792,6 +764,12 @@ $("f-save").onclick = () => {
   closeModals(); renderLabels(); render();
   toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
 };
+addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
+$("new").onclick = () => openForm(null);
+document.querySelectorAll("#modes button").forEach(b => b.onclick = () => { mode = b.dataset.m; lsSet(MODEKEY, mode); fit(); render(); });
+$("fsbtn").onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
+["pointerdown", "keydown"].forEach(t => addEventListener(t, function go() { removeEventListener(t, go, true); try { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} }, true));   // browsers only allow full screen after a click or key press
+$("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
 render();
 sync();
 </script>
