@@ -39,7 +39,7 @@ SCRIPTS = ["data/prompts.js", "data/local-storage.js", "data/sync.js", "componen
            "components/state.js", "components/stage-fit.js", "components/petals.js", "components/sprigs.js",
            "components/sprig-motion.js", "components/search.js", "components/sprig-filters.js", "pages/results.js",
            "components/copy.js", "components/coach.js", "components/keyboard.js", "components/modal.js",
-           "components/toast.js", "pages/prompt-form.js", "components/header-buttons.js", "pages/home.js"]
+           "components/toast.js", "components/auto-fill.js", "pages/prompt-form.js", "components/header-buttons.js", "pages/home.js"]
 
 def join(files):
     return "".join((ROOT / f).read_text(encoding="utf-8") for f in files).rstrip("\n")

@@ -8,9 +8,10 @@ function openForm(d) {
 }
 const closeForm = closeModals;
 $("f-save").onclick = () => {
-  const title = $("f-title").value.trim(), text = $("f-text").value.trim();
-  if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
-  const c = clean({ title, text, category: $("f-cat").value, tags: $("f-tags").value.split(","), from: editingFrom });
+  const text = $("f-text").value.trim();
+  if (!text) { $("ferr").textContent = "Please add the prompt text."; return; }
+  const title = $("f-title").value.trim() || autoTitle(text), tags = $("f-tags").value.split(",").filter(t => t.trim());
+  const c = clean({ title, text, category: $("f-cat").value.trim() || autoCategory(text), tags: tags.length ? tags : autoTags(text), from: editingFrom });
   const old = editing && MINE.find(x => x.id === editing);
   if (old) Object.assign(old, c, { id: old.id, from: old.from }); else MINE.push(c);
   const ok = save();
