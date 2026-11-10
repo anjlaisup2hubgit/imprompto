@@ -784,6 +784,7 @@ $("new").onclick = () => openForm(null);
 document.querySelectorAll("#modes button").forEach(b => b.onclick = () => { mode = b.dataset.m; lsSet(MODEKEY, mode); fit(); render(); });
 $("f-cancel").onclick = closeModals;
 $("fsbtn").onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
+["pointerdown", "keydown"].forEach(t => addEventListener(t, function go() { removeEventListener(t, go, true); try { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} }, true));   // browsers only allow full screen after a click or key press
 $("bkbtn").onclick = () => { $("berr").textContent = ""; showModal("bkmodal", "f-export"); };
 $("b-close").onclick = closeModals;
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
