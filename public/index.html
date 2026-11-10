@@ -37,14 +37,14 @@ button:active{transform:scale(.97)}
 .brand span{font-size:15px;color:var(--mute)}
 .hbtn{position:absolute;top:36px;height:46px;border-radius:23px;font-size:16px;font-weight:700;cursor:pointer;padding:0}
 #new{left:1008px;width:160px;background:var(--brand);color:#fff;border:0;box-shadow:0 8px 18px rgba(91,63,208,.3)}
-#bkbtn:hover{background:var(--chip)}
+#sobtn:hover{background:var(--chip)}
 #new:hover{filter:brightness(1.12)}
 .btn:hover{filter:brightness(.96)}
 .btn.main:hover{filter:brightness(1.12)}
 #fsbtn{left:818px;width:46px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:20px}
 #fsbtn:hover{background:var(--chip)}
 body.mobile #fsbtn{display:none}
-#bkbtn{left:880px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
+#sobtn{left:880px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
 
 /* category labels on the petals (each has its own colour) */
 .lab{position:absolute;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;gap:10px;
@@ -173,7 +173,7 @@ body.mobile .brand span{font-size:13px}
 body.mobile .sv{display:none}
 body.mobile .hbtn{top:12px;height:44px;font-size:15px}
 body.mobile #new{left:268px;width:136px}
-body.mobile #bkbtn{left:176px;width:84px}
+body.mobile #sobtn{left:166px;width:94px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:70px;top:306px;width:280px;height:64px}
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
@@ -256,7 +256,7 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
   <svg id="lines" viewBox="0 0 1200 900" aria-hidden="true"></svg>
   <div class="brand"><h1>Prompt Library</h1><span id="total"></span></div>
   <button class="hbtn" id="fsbtn" aria-label="Full screen" title="Full screen">&#x26F6;</button>
-  <button class="hbtn" id="bkbtn">Backup</button>
+  <button class="hbtn" id="sobtn">Sign out</button>
   <button class="hbtn" id="new">+ New prompt</button>
   <div id="modes" role="group" aria-label="Results layout" title="How results appear"><button data-m="card">Card</button><button data-m="seeds">Seeds</button><button data-m="vine">Vine</button></div>
   <div id="labels"></div>
@@ -284,13 +284,6 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
     <div class="btns"><button class="btn main" id="f-save">Save</button><button class="btn" id="f-cancel">Cancel</button></div>
   </div></div>
 
-  <div class="ov" id="bkmodal"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="btitle">
-    <h2 id="btitle">Backup</h2>
-    <p>Prompts you add are saved in this browser and synced to your account, so every device shares them. A backup file is an extra copy.</p>
-    <div class="err" id="berr" role="alert"></div>
-    <div class="btns"><button class="btn main" id="f-export">Download backup</button><button class="btn" id="f-import">Load backup</button><button class="btn" id="b-close">Close</button></div>
-    <input type="file" id="f-file" accept="application/json" hidden>
-  </div></div>
   <div id="toast" role="status"></div>
 </main>
 <script>
@@ -314,7 +307,7 @@ function loadMine() {
 loadMine();
 const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
 /* ---- sync: your prompts are also kept in the cloud so every device shares them ---- */
-const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1";
+const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1", OWNER = "promptlib.owner.v1";
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
 let syncing = false, again = false, cloudOK = false;
@@ -324,8 +317,10 @@ async function sync() {
   try {
     for (let i = 0; i < 3; i++) {
       const r = await fetch("/api/data", { cache: "no-store" });
-      if (!r.ok) return;                                   // no cloud (offline, local file, or not signed in): keep working locally
-      const { data, updated } = await r.json();
+      if (!r.ok) return;                                   // no cloud (offline or not signed in): keep working locally
+      const { data, updated, email } = await r.json();
+      if (email && lsGet(OWNER) && lsGet(OWNER) !== email) { [KEY, BASE, DIRTY].forEach(k => lsSet(k, null)); MINE = []; }   // a different person signed in on this browser
+      if (email) lsSet(OWNER, email);
       if (!cloudOK) { cloudOK = true; if (window.renderLabels) renderLabels(); }
       const remote = Array.isArray(data) ? data.map(clean).filter(Boolean) : null;
       const dirty = lsGet(DIRTY) === "1" || (lsGet(BASE) == null && MINE.length);
@@ -785,8 +780,7 @@ document.querySelectorAll("#modes button").forEach(b => b.onclick = () => { mode
 $("f-cancel").onclick = closeModals;
 $("fsbtn").onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
 ["pointerdown", "keydown"].forEach(t => addEventListener(t, function go() { removeEventListener(t, go, true); try { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} }, true));   // browsers only allow full screen after a click or key press
-$("bkbtn").onclick = () => { $("berr").textContent = ""; showModal("bkmodal", "f-export"); };
-$("b-close").onclick = closeModals;
+$("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
 $("f-save").onclick = () => {
   const title = $("f-title").value.trim(), text = $("f-text").value.trim();
@@ -796,24 +790,7 @@ $("f-save").onclick = () => {
   if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
   const ok = save();
   closeModals(); renderLabels(); render();
-  toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving. Use Backup.");
-};
-$("f-export").onclick = () => {
-  if (!MINE.length) { toast("You haven't added any prompts yet"); return; }
-  const blob = new Blob([JSON.stringify(MINE, null, 2)], { type: "application/json" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "my-prompts.json"; a.click();
-};
-$("f-import").onclick = () => $("f-file").click();
-$("f-file").onchange = async e => {
-  try {
-    const file = e.target.files[0]; if (!file) return;
-    const list = JSON.parse(await file.text());
-    let n = 0;
-    if (!Array.isArray(list)) throw new Error("not a list");
-    for (const p of list) { const c = clean(p); if (c && !MINE.some(m => m.id === c.id)) { MINE.push(c); n++; } }
-    save(); renderLabels(); render(); closeModals(); toast(n + " prompts imported");
-  } catch (err) { $("berr").textContent = "That file isn't a valid backup."; }
-  e.target.value = "";
+  toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
 };
 render();
 sync();

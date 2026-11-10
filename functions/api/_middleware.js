@@ -1,5 +1,6 @@
 // Cloudflare Access sits in front of the site; every /api request also re-verifies the Access JWT.
-// Fails CLOSED if ACCESS_TEAM_DOMAIN, ACCESS_AUD or ALLOWED_EMAIL is missing.
+// Any email that Cloudflare Access lets in is a user; the verified email says whose prompts to use.
+// Fails CLOSED if ACCESS_TEAM_DOMAIN or ACCESS_AUD is missing.
 
 const b64uToBytes = s => {
   s = s.replace(/-/g, '+').replace(/_/g, '/');
@@ -8,35 +9,38 @@ const b64uToBytes = s => {
 };
 const b64uToJson = s => JSON.parse(new TextDecoder().decode(b64uToBytes(s)));
 
-async function verify(request, env) {
+async function verifiedEmail(request, env) {
   const team = env.ACCESS_TEAM_DOMAIN, aud = env.ACCESS_AUD;
-  if (!team || !aud || !env.ALLOWED_EMAIL) return false;
+  if (!team || !aud) return null;
   const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
-  if (!jwt) return false;
+  if (!jwt) return null;
   const parts = jwt.split('.');
-  if (parts.length !== 3) return false;
+  if (parts.length !== 3) return null;
   try {
     const header = b64uToJson(parts[0]);
     const payload = b64uToJson(parts[1]);
-    if (header.alg !== 'RS256') return false;
-    if (!payload.exp || payload.exp * 1000 < Date.now()) return false;
-    if (payload.iss !== `https://${team}`) return false;
-    if (!([].concat(payload.aud)).includes(aud)) return false;
-    if (payload.email !== env.ALLOWED_EMAIL) return false;
+    if (header.alg !== 'RS256') return null;
+    if (!payload.exp || payload.exp * 1000 < Date.now()) return null;
+    if (payload.iss !== `https://${team}`) return null;
+    if (!([].concat(payload.aud)).includes(aud)) return null;
+    if (typeof payload.email !== 'string' || !payload.email) return null;
     const res = await fetch(`https://${team}/cdn-cgi/access/certs`);
-    if (!res.ok) return false;
+    if (!res.ok) return null;
     const jwk = (await res.json()).keys.find(k => k.kid === header.kid);
-    if (!jwk) return false;
+    if (!jwk) return null;
     const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-    return await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64uToBytes(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1]));
+    const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64uToBytes(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1]));
+    return ok ? payload.email.toLowerCase() : null;
   } catch (e) {
-    return false;
+    return null;
   }
 }
 
 export async function onRequest(context) {
-  if (!(await verify(context.request, context.env))) {
+  const email = await verifiedEmail(context.request, context.env);
+  if (!email) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
   }
+  context.data.email = email;
   return context.next();
 }

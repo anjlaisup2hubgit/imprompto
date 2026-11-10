@@ -27,5 +27,5 @@ organiser/
 - **Copy:** click a prompt, or press Enter, and it is copied.
 - **Add your own:** press "+ New prompt" to save one. You can edit or delete it later.
 - **On every device:** your prompts are saved online, so your phone and PC show the same ones.
-- **Backup:** save your prompts in a file, and load them again.
-- **Private:** only you can open it, with your email code.
+- **Sign in:** anyone can sign in with their email code, and each person sees only their own prompts.
+- **Private:** you must sign in with an email code to open it.
