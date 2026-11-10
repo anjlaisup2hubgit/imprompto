@@ -41,6 +41,9 @@ button:active{transform:scale(.97)}
 #new:hover{filter:brightness(1.12)}
 .btn:hover{filter:brightness(.96)}
 .btn.main:hover{filter:brightness(1.12)}
+#fsbtn{left:818px;width:46px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:20px}
+#fsbtn:hover{background:var(--chip)}
+body.mobile #fsbtn{display:none}
 #bkbtn{left:880px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
 
 /* category labels on the petals (each has its own colour) */
@@ -252,6 +255,7 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
   <div id="bloom" aria-hidden="true"></div>
   <svg id="lines" viewBox="0 0 1200 900" aria-hidden="true"></svg>
   <div class="brand"><h1>Prompt Library</h1><span id="total"></span></div>
+  <button class="hbtn" id="fsbtn" aria-label="Full screen" title="Full screen">&#x26F6;</button>
   <button class="hbtn" id="bkbtn">Backup</button>
   <button class="hbtn" id="new">+ New prompt</button>
   <div id="modes" role="group" aria-label="Results layout" title="How results appear"><button data-m="card">Card</button><button data-m="seeds">Seeds</button><button data-m="vine">Vine</button></div>
@@ -779,6 +783,7 @@ addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMi
 $("new").onclick = () => openForm(null);
 document.querySelectorAll("#modes button").forEach(b => b.onclick = () => { mode = b.dataset.m; lsSet(MODEKEY, mode); fit(); render(); });
 $("f-cancel").onclick = closeModals;
+$("fsbtn").onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
 $("bkbtn").onclick = () => { $("berr").textContent = ""; showModal("bkmodal", "f-export"); };
 $("b-close").onclick = closeModals;
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
