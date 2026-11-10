@@ -9,7 +9,7 @@ function clean(p) {
   const title = str(p.title).trim(), text = str(p.text).trim();
   if (!title || !text) return null;
   const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
-  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }) };   // "from" = the built-in prompt this one replaces
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }), ...(+p.deleted && { deleted: +p.deleted }), ...(p.purged && { purged: true }) };   // "from" = the built-in prompt this one replaces
 }
 let MINE = [];
 function loadMine() {
@@ -17,4 +17,4 @@ function loadMine() {
 }
 loadMine();
 const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
-const all = () => BUILTIN.filter(b => !MINE.some(m => m.from === b.file)).concat(MINE);   // an edited built-in hides the original
+const all = () => BUILTIN.filter(b => !MINE.some(m => m.from === b.file)).concat(MINE.filter(m => !m.deleted));   // an edited built-in hides the original

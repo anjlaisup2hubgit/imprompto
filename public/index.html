@@ -204,6 +204,25 @@ body[data-mode=seeds] .r:not(.cur){display:none}
 body[data-mode=seeds] .r.cur{background:none;box-shadow:none;padding:6px 12px}
 body[data-mode=seeds] .r.cur p{-webkit-line-clamp:4}
 body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
+/* Trash button (top bar) and Trash window */
+#trashbtn{left:752px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:flex;align-items:center;justify-content:center;gap:7px}
+#trashbtn:hover{background:var(--chip)}
+#tcount{background:#c62828;color:#fff;font-size:12px;min-width:20px;height:20px;border-radius:10px;line-height:20px;text-align:center;position:absolute;right:-4px;top:-6px}
+.act.danger{color:#c62828;border-color:#c62828}
+.act.danger:hover{background:#c62828;color:#fff}
+.thead{display:flex;justify-content:space-between;align-items:center}
+#tlist{max-height:340px;overflow-y:auto}
+.trow{display:flex;align-items:center;gap:8px;padding:12px 0;border-top:1px solid var(--chip)}
+.tinfo{flex:1;min-width:0}
+.tinfo b{display:flex;align-items:center;gap:8px;font-size:15px}
+.tinfo b i{flex:none;width:10px;height:10px;border-radius:50%}
+.tinfo span{font-size:12.5px;color:#8a82a6;margin-left:18px}
+.btn.sm{padding:6px 14px;font-size:13.5px}
+.tnone{padding:24px 0;text-align:center;color:#8a82a6}
+body.mobile #trashbtn{left:168px;width:44px}
+body.mobile #trashbtn span{display:none}
+body.mobile #sobtn{left:218px;width:74px}
+body.mobile #new{left:298px;width:106px;white-space:nowrap;font-size:14px}
 </style>
 </head>
 <body>
@@ -212,6 +231,7 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
   <div id="bloom" aria-hidden="true"></div>
   <svg id="lines" viewBox="0 0 1200 900" aria-hidden="true"></svg>
   <div class="brand"><h1>Prompt Library</h1><span id="total"></span></div>
+  <button class="hbtn" id="trashbtn" aria-label="Trash"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#43357d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h14M7.5 5V3h5v2M5 5l1 12h8l1-12M8.5 9v5M11.5 9v5"/></svg><span>Trash</span><b id="tcount"></b></button>
   <button class="hbtn" id="sobtn">Sign out</button>
   <button class="hbtn" id="new">+ New prompt</button>
   <div id="labels"></div>
@@ -237,6 +257,12 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
     <div class="err" id="ferr" role="alert"></div>
     <div class="btns"><button class="btn main" id="f-save">Save</button><button class="btn" id="f-cancel">Cancel</button></div>
   </div></div>
+  <div class="ov" id="trashmodal"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ttitle">
+    <div class="thead"><h2 id="ttitle">Trash</h2><button class="act danger" id="t-empty">Empty trash</button></div>
+    <p>Deleted prompts stay here for 30 days.</p>
+    <div id="tlist"></div>
+    <div class="btns"><button class="btn" id="t-close">Close</button></div>
+  </div></div>
   <div id="toast" role="status"></div>
 </main>
 <script>
@@ -251,7 +277,7 @@ function clean(p) {
   const title = str(p.title).trim(), text = str(p.text).trim();
   if (!title || !text) return null;
   const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
-  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }) };   // "from" = the built-in prompt this one replaces
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }), ...(+p.deleted && { deleted: +p.deleted }), ...(p.purged && { purged: true }) };   // "from" = the built-in prompt this one replaces
 }
 let MINE = [];
 function loadMine() {
@@ -259,7 +285,7 @@ function loadMine() {
 }
 loadMine();
 const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
-const all = () => BUILTIN.filter(b => !MINE.some(m => m.from === b.file)).concat(MINE);   // an edited built-in hides the original
+const all = () => BUILTIN.filter(b => !MINE.some(m => m.from === b.file)).concat(MINE.filter(m => !m.deleted));   // an edited built-in hides the original
 /* ---- sync: your prompts are also kept in the cloud so every device shares them ---- */
 const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1", OWNER = "promptlib.owner.v1";
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -303,6 +329,21 @@ function renameCategory(oldName, newName) {
   if (n) save();
   return n;
 }
+/* ---- trash: a deleted prompt is only marked with the time, so it can come back for 30 days ---- */
+const KEEP_MS = 30 * 864e5;
+const trashItems = () => MINE.filter(m => m.deleted && !m.purged && Date.now() - m.deleted < KEEP_MS).sort((a, b) => b.deleted - a.deleted);
+function trashPrompt(d) {
+  const mine = d.mine && MINE.find(m => m.id === d.id);
+  if (mine) mine.deleted = Date.now(); else MINE.push(clean({ ...d, from: d.file, deleted: Date.now() }));   // a starter prompt: save a hidden copy that hides the original
+  save();
+}
+function restorePrompt(id) { const m = MINE.find(x => x.id === id); if (m) { delete m.deleted; save(); } }
+function purgePrompt(id) {                                           // gone for good (a starter prompt keeps a hidden mark so it does not return)
+  const m = MINE.find(x => x.id === id); if (!m) return;
+  if (m.from) m.purged = true; else MINE = MINE.filter(x => x !== m);
+  save();
+}
+const emptyTrash = () => trashItems().map(m => m.id).forEach(purgePrompt);
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let cat = "";          // "" = no category chosen, "*" = every prompt, otherwise a category name
@@ -602,6 +643,7 @@ function makeResultSeed(d, i, color) {                   // seeds layout: each r
   f.rs.push(sd); RS.push(sd);
 }
 function render() {
+  refreshTrashBadge();
   const raw = $("q").value.trim();
   const terms = [...new Set(fold(raw).split(/\s+/).filter(Boolean))].slice(0, 8).map(w => w.slice(0, 60));
   const active = !!(terms.length || cat);
@@ -650,11 +692,12 @@ function render() {
     r.innerHTML = `<div class="hd"><h3><i class="dt"></i>${hl(d.title, terms)}</h3><span class="cat">${esc(d.category)}</span><span class="cp">Copy</span></div>
       <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
       <div class="ft"><div class="chips">${d.mine ? '<span class="you">yours</span>' : ""}${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button>${d.mine ? `<button class="act" data-a="del" aria-label="Delete ${esc(d.title)}">${d.from ? "Reset" : "Delete"}</button>` : ""}</div></div>`;
+      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button>${d.from ? `<button class="act" data-a="del" aria-label="Reset ${esc(d.title)}">Reset</button>` : ""}<button class="act danger" data-a="trash" aria-label="Delete ${esc(d.title)}">Delete</button></div></div>`;
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "del") { if (confirm(d.from ? "Go back to the original prompt?" : "Delete this prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast(d.from ? "Restored" : "Deleted"); } return; }
+      if (a === "del") { if (confirm("Go back to the original prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast("Restored"); } return; }
+      if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash"); return; }
       copy(d.text, r);
     };
     list.appendChild(r);
@@ -780,6 +823,28 @@ $("rename").onclick = () => {
   if (!n) return toast("Name not changed");
   cat = slug(name); renderLabels(); render(); toast(`Renamed ${n} prompt${n === 1 ? "" : "s"}`);
 };
+/* ---- the Trash button and window ---- */
+function refreshTrashBadge() { const n = trashItems().length; $("tcount").textContent = n || ""; $("tcount").style.display = n ? "" : "none"; }
+function showTrash() {
+  const items = trashItems(), box = $("tlist"), colors = Object.fromEntries(catList().map(o => [o.c, o.color]));
+  $("t-empty").style.display = items.length ? "" : "none";
+  box.innerHTML = items.length ? "" : '<div class="tnone">Trash is empty</div>';
+  items.forEach(m => {
+    const days = Math.floor((Date.now() - m.deleted) / 864e5), when = days < 1 ? "today" : days === 1 ? "yesterday" : days + " days ago";
+    const r = document.createElement("div"); r.className = "trow";
+    r.innerHTML = `<div class="tinfo"><b><i style="background:${colors[m.category] || "#64748b"}"></i>${esc(m.title)}</b><span>${esc(m.category)} · deleted ${when}</span></div>
+      <button class="btn main sm" data-a="restore">Restore</button><button class="act danger" data-a="purge">Delete forever</button>`;
+    r.onclick = e => {
+      const a = e.target.dataset && e.target.dataset.a; if (!a) return;
+      if (a === "restore") { restorePrompt(m.id); toast("Restored"); } else purgePrompt(m.id);
+      renderLabels(); render(); showTrash();
+    };
+    box.append(r);
+  });
+}
+$("trashbtn").onclick = () => { showTrash(); showModal("trashmodal", "t-close"); };
+$("t-close").onclick = closeModals;
+$("t-empty").onclick = () => { if (confirm("Delete everything in the trash for good?")) { emptyTrash(); renderLabels(); render(); showTrash(); } };
 render();
 sync();
 </script>
