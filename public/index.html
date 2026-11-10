@@ -211,9 +211,9 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
   <div class="sr" id="live" role="status" aria-live="polite"></div>
   <div class="ov" id="modal"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ftitle">
     <h2 id="ftitle">New prompt</h2>
-    <label for="f-title">TITLE</label><input type="text" id="f-title" maxlength="80" placeholder="e.g. Explain like I'm five">
-    <label for="f-cat">CATEGORY</label><input type="text" id="f-cat" list="catlist" maxlength="30" placeholder="design, writing, general…"><datalist id="catlist"></datalist>
-    <label for="f-tags">TAGS (SEPARATE WITH COMMAS)</label><input type="text" id="f-tags" placeholder="teaching, explain">
+    <label for="f-title">TITLE</label><input type="text" id="f-title" maxlength="80" placeholder="Leave blank to fill in automatically">
+    <label for="f-cat">CATEGORY</label><input type="text" id="f-cat" list="catlist" maxlength="30" placeholder="Leave blank to fill in automatically"><datalist id="catlist"></datalist>
+    <label for="f-tags">TAGS (SEPARATE WITH COMMAS)</label><input type="text" id="f-tags" placeholder="Leave blank to fill in automatically">
     <label for="f-text">PROMPT</label><textarea id="f-text" placeholder="Paste your prompt here…"></textarea>
     <div class="err" id="ferr" role="alert"></div>
     <div class="btns"><button class="btn main" id="f-save">Save</button><button class="btn" id="f-cancel">Cancel</button></div>
@@ -684,6 +684,24 @@ function closeModals() {
 $("f-cancel").onclick = closeModals;
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
 function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
+/* ---- fills in a blank title, category or tags from the prompt text ---- */
+const STOP = new Set("about above after again also been before being between both could does doing each from have having here into just like make more most must only other over please should some such than that their them then there these they this those through under until very want what when where which while will with would your you the and for are but not can use using write give".split(" "));
+const wordsOf = t => fold(t).split(/[^a-z0-9']+/).filter(w => w.length >= 4 && !STOP.has(w));
+function autoTitle(text) {
+  const first = text.replace(/\s+/g, " ").split(/(?<=[.!?:])\s/)[0].replace(/[.!?:]+$/, "");
+  const t = first.length > 60 ? first.slice(0, 57).replace(/\s+\S*$/, "") + "…" : first;
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+function autoTags(text) {
+  const n = {}; wordsOf(text).forEach(w => n[w] = (n[w] || 0) + 1);
+  return Object.keys(n).sort((a, b) => n[b] - n[a] || b.length - a.length).slice(0, 3);
+}
+function autoCategory(text) {          // the existing category whose prompts share the most words with this one
+  const mine = new Set(wordsOf(text)), score = {};
+  all().forEach(d => { wordsOf(d.title + " " + d.tags.join(" ") + " " + d.text).forEach(w => { if (mine.has(w)) score[d.category] = (score[d.category] || 0) + 1; }); });
+  const best = Object.keys(score).sort((a, b) => score[b] - score[a])[0];
+  return best || "general";
+}
 let editing = null, editingFrom = "";   // editingFrom = file of a built-in prompt being edited
 function openForm(d) {
   editing = d && d.mine ? d.id : null; editingFrom = d && !d.mine ? d.file : "";
@@ -694,9 +712,10 @@ function openForm(d) {
 }
 const closeForm = closeModals;
 $("f-save").onclick = () => {
-  const title = $("f-title").value.trim(), text = $("f-text").value.trim();
-  if (!title || !text) { $("ferr").textContent = "Please add a title and the prompt text."; return; }
-  const c = clean({ title, text, category: $("f-cat").value, tags: $("f-tags").value.split(","), from: editingFrom });
+  const text = $("f-text").value.trim();
+  if (!text) { $("ferr").textContent = "Please add the prompt text."; return; }
+  const title = $("f-title").value.trim() || autoTitle(text), tags = $("f-tags").value.split(",").filter(t => t.trim());
+  const c = clean({ title, text, category: $("f-cat").value.trim() || autoCategory(text), tags: tags.length ? tags : autoTags(text), from: editingFrom });
   const old = editing && MINE.find(x => x.id === editing);
   if (old) Object.assign(old, c, { id: old.id, from: old.from }); else MINE.push(c);
   const ok = save();
