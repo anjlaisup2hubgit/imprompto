@@ -6,7 +6,7 @@ const SPOTS = [                                   // petal positions: label (x,y
   { x: 1070, y: 500, dx: 933, dy: 336 },
 ];
 const ALLSPOT = { x: 640, y: 835, dx: 610, dy: 735 };
-const ORDER = ["design", "writing", "general", "how-to"];
+const ORDER = ["category1", "category2", "category3", "category4"];
 const PAL = ["#8b5cf6", "#d946ef", "#d97706", "#0d9488", "#2563eb", "#dc2626", "#65a30d", "#0891b2"];
 const ln = $("lines");
 function catList() {

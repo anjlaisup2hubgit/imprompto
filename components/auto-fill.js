@@ -14,5 +14,5 @@ function autoCategory(text) {          // the existing category whose prompts sh
   const mine = new Set(wordsOf(text)), score = {};
   all().forEach(d => { wordsOf(d.title + " " + d.tags.join(" ") + " " + d.text).forEach(w => { if (mine.has(w)) score[d.category] = (score[d.category] || 0) + 1; }); });
   const best = Object.keys(score).sort((a, b) => score[b] - score[a])[0];
-  return best || "general";
+  return best || "category1";
 }

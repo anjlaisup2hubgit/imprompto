@@ -22,7 +22,7 @@ button:active{transform:scale(.97)}
 /* The whole design lives on a fixed stage that is scaled to fit the window. */
 #stage{position:absolute;left:0;top:0;width:1200px;height:900px;transform-origin:0 0}
 #flower{position:absolute;left:332px;top:0;width:898px;height:854px;pointer-events:none;
-  filter:drop-shadow(0 16px 30px rgba(120,80,220,.25));animation:float 8s ease-in-out infinite alternate;will-change:transform}
+  filter:drop-shadow(0 16px 30px rgba(120,80,220,.25));will-change:transform}
 @keyframes float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
 @keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
 @keyframes pop{from{opacity:0;scale:.85}}
@@ -156,13 +156,15 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 /* computer layout: categories that do not fit on the 4 petals wait in a sliding row under the flower */
 body:not(.mobile) #chips{display:flex;position:absolute;left:48px;top:828px;width:480px;gap:8px;overflow-x:auto;padding:2px 2px 8px;z-index:2}
 body:not(.mobile) .chipbtn:not(.extra){display:none}
-#rename{flex:none;align-self:flex-start;margin:0 14px 8px;display:none}
+#rename{left:748px;width:164px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:none}
+#rename:hover{background:var(--chip)}
 #rename.show{display:block}
+body.mobile #rename{left:16px;top:64px;height:36px;width:150px;font-size:14px}
 /* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
 #chips{display:none}
 html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
 body.mobile{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:linear-gradient(#fff,#efe7fb) fixed}
-body.mobile #flower{left:0;top:124px;width:420px;height:399px}
+body.mobile #flower{left:0;top:124px;width:420px;height:399px;animation:float 8s ease-in-out infinite alternate}
 body.mobile #bloom{display:none}
 body.mobile .brand{left:16px;top:14px}
 body.mobile .brand h1{font-size:19px}
@@ -233,6 +235,7 @@ body.mobile #sobtn{left:322px;width:82px}
   <div class="brand"><h1>Imprompto</h1><span id="total"></span></div>
   <button class="hbtn" id="trashbtn" aria-label="Trash"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#43357d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h14M7.5 5V3h5v2M5 5l1 12h8l1-12M8.5 9v5M11.5 9v5"/></svg><span>Trash</span><b id="tcount"></b></button>
   <button class="hbtn" id="sobtn">Sign out</button>
+  <button class="hbtn" id="rename">Rename category</button>
   <div id="labels"></div>
   <div id="chips" role="group" aria-label="Categories"></div>
   <div id="glow"></div>
@@ -244,7 +247,6 @@ body.mobile #sobtn{left:322px;width:82px}
   </div>
   <div id="coach" role="status">Start here: type any word you remember, or click a petal to browse a group.<button id="coach-ok">Got it</button></div>
   <div id="box"><div id="tab"></div><div id="head"></div><div id="cats" role="group" aria-label="Filter by category"></div>
-    <button class="act" id="rename">Rename category</button>
     <div id="list" role="listbox" aria-label="Results"></div>
     <div id="foot">↑ ↓ to move · Enter to copy · Esc to clear</div></div>
   <div class="sr" id="live" role="status" aria-live="polite"></div>
@@ -263,10 +265,15 @@ body.mobile #sobtn{left:322px;width:82px}
     <div id="tlist"></div>
     <div class="btns"><button class="btn" id="t-close">Close</button></div>
   </div></div>
+  <div class="ov" id="renamemodal"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rtitle">
+    <h2 id="rtitle">Rename category</h2>
+    <label for="r-name">NEW NAME</label><input type="text" id="r-name" maxlength="30">
+    <div class="btns"><button class="btn main" id="r-save">Save</button><button class="btn" id="r-cancel">Cancel</button></div>
+  </div></div>
   <div id="toast" role="status"></div>
 </main>
 <script>
-const BUILTIN = [{"title": "Abstract beverage can graphic", "category": "design", "tags": ["graphic-design", "image-gen", "packaging"], "text": "Continuous pattern vector print for a craft soda can, abstract liquid marbling in coral pink, sunny yellow, and turquoise blue, wavy organic fluid motion, Bauhaus influence, crisp vector details", "file": "prompts/design/abstract-beverage-can-graphic.md"}, {"title": "Cyberpunk event poster", "category": "design", "tags": ["graphic-design", "image-gen", "poster"], "text": "Retro-futuristic synthwave concert poster, a sleek sports car driving toward a neon grid horizon with a massive low-poly glowing sun, bold Japanese typography on sides, heavy grain, dramatic rim lighting in magenta and deep navy blue, 1980s VHS tape cover vibe", "file": "prompts/design/cyberpunk-event-poster.md"}, {"title": "Eco-friendly skincare packaging", "category": "design", "tags": ["graphic-design", "image-gen", "packaging"], "text": "Product photography shot of a luxury organic cosmetic bottle made of frosted amber glass with a raw oak cap, resting on smooth wet river stones surrounded by lush green moss, soft morning sunlight filtering through leaves, natural botanical aesthetic, 8k resolution studio setup", "file": "prompts/design/eco-friendly-skincare-packaging.md"}, {"title": "Isometric 3D web illustration", "category": "design", "tags": ["graphic-design", "image-gen", "ui"], "text": "Isometric 3D illustration of a modern smart city powered by green energy, featuring wind turbines, solar panel roofs, floating electric transport pods, vibrant color palette, claymation matte texture, studio lighting, clean background for web landing page", "file": "prompts/design/isometric-3d-web-illustration.md"}, {"title": "Mascot logo", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Dynamic e-sports team logo featuring a stylized cybernetic wolf head, sharp aggressive angles, glowing cyan and dark charcoal grey tone, bold athletic badge layout, clean vector graphic --no text", "file": "prompts/design/mascot-logo.md"}, {"title": "Minimalist tech monogram", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Minimalist vector logo for a modern AI tech startup named 'Aether', geometric letter A intertwined with a neural network node, flat design, sharp edges, blue and neon violet gradient, isolated on solid white background, high contrast, clean SVG style --no shadows, gradients photo realism", "file": "prompts/design/minimalist-tech-monogram.md"}, {"title": "Minimalist typographic layout", "category": "design", "tags": ["graphic-design", "image-gen", "poster"], "text": "Swiss style graphic design poster, abstract bold geometric shapes, high-contrast composition using electric orange, off-white, and deep jet black, grid-aligned structure, clean negative space, mid-century modern aesthetic, screen-printed texture", "file": "prompts/design/minimalist-typographic-layout.md"}, {"title": "Neumorphic mobile app card", "category": "design", "tags": ["graphic-design", "image-gen", "ui"], "text": "UI design element, 3D render of a soft neumorphic credit card floating in mid-air, smooth frosted glass texture, soft ambient shadows, subtle iridescent sheen, pastel lavender and mint green background, hyper-minimalist, sleek digital interface aesthetic", "file": "prompts/design/neumorphic-mobile-app-card.md"}, {"title": "Tips to master graphic design prompts", "category": "design", "tags": ["graphic-design", "tips", "midjourney"], "text": "- Specify the Medium/Style: Use terms like vector, 3D render, isometric, woodcut line-art, flat design, or Swiss style.\n- Define Lighting & Texture: Mention details like frosted glass, screen-printed texture, matte finish, studio lighting, or neon rim light.\n- Control Output with Negatives: Use negative prompts (--no in Midjourney/Flux) to exclude unwanted details like photorealistic lighting, complex backgrounds, or garbled text.", "file": "prompts/design/tips-to-master-graphic-design-prompts.md"}, {"title": "UI redesign from reference", "category": "design", "tags": ["ui", "svg", "redesign"], "text": "I think you can do better. [issues with old design]. redesign me the [application] using the reference. [what you like about reference]. output 2 svg mockup images.", "file": "prompts/design/ui-redesign-from-reference.md"}, {"title": "Vintage artisanal emblem", "category": "design", "tags": ["graphic-design", "image-gen", "logo"], "text": "Vintage retro emblem logo for a craft coffee roastery, featuring a detailed line-art engraving of a roaring bear holding a coffee branch, distressed woodcut texture, warm mahogany and cream color palette, hand-drawn typography framing the circular border, 19th-century aesthetic", "file": "prompts/design/vintage-artisanal-emblem.md"}, {"title": "Depth to task", "category": "general", "tags": ["rewrite", "prompt-improving"], "text": "I want a deeper version of this task, not a bigger one. Before rewriting it: (1) say what a top professional in this field would do here that I’m not asking for; (2) name the rawest material they would start from instead of what has already been digested for me; (3) name the specific methods and tools they would use; (4) say what, other than you or me, would show the result is right. Then rewrite my prompt to ask for exactly that.", "file": "prompts/general/depth-to-task.md"}, {"title": "Explanation examples and analogies", "category": "general", "tags": ["teaching", "explain"], "text": "You are an experienced teacher and can generate clear, accurate examples for students of concepts. I want you to ask me two questions: What concept do I want explained. Wait for me to answer and then ask me the second question: Who is the audience for the explanation? Then look up the concept and examples of the concept. Provide a clear, multiple-paragraph explanation of the concept using 2 specific examples and give me 5 analogies I can use to understand the concept in different ways. apply the skill after the questions @fast", "file": "prompts/general/explanation-examples-and-analogies.md"}, {"title": "Find sources for my paragraph", "category": "general", "tags": ["research", "writing", "sources"], "text": "Find sources to support my paragraph, give me the context and the links to verify relevance, weave the sources into my writing.", "file": "prompts/general/find-sources-for-my-paragraph.md"}, {"title": "Organising file tree structure", "category": "general", "tags": ["files", "organise"], "text": "Suggest a simple folder structure for these files, with no more than seven top-level folders. Show me the plan as a list of what would move where, and wait for my approval.", "file": "prompts/general/organising-file-tree-structure.md"}, {"title": "Syllabus designer", "category": "general", "tags": ["teaching", "curriculum"], "text": "You are an expert learning designer specializing in building curricula for classes that promote direct instruction, active learning, retrieval practice, formative assessment, low-stakes testing, making connections between concepts, uncovering misconceptions, and interleaving. First ask me what course I'm teaching, including subject matter. Wait for my response. Then ask what learning levels my students are (high school or college). Wait for my response. Then ask how many times my students and I will meet (have class) over the course of the semester and what topics I generally cover. Wait for my response. Then design a curriculum that makes sure students learn effectively.", "file": "prompts/general/syllabus-designer.md"}, {"title": "Edit an app database in BlueStacks via ADB", "category": "how-to", "tags": ["bluestacks", "adb", "sqlite", "android"], "text": "Path: C:\\ProgramData\\BlueStacks_nxt\\Engine\\Pie64\n\nExtract, Edit, and Push via ADB (Recommended). This approach bypasses file system limitations by pulling the database file directly out of the running emulator, editing it on your PC, and pushing it back.\n\n1. Enable ADB in BlueStacks: Settings -> Preferences, check \"Enable Android debugging (ADB)\". Note the port number (usually 5555).\n2. Pull the database file to your PC. In Command Prompt:\n\nadb connect 127.0.0.1:5555\nadb shell \"su -c 'cp /data/data/\u003cyour.app.package>/databases/love_db /sdcard/love_db'\"\nadb pull /sdcard/love_db C:\\Users\\YourUsername\\Desktop\\love_db\n\n(Replace \u003cyour.app.package> with the actual bundle ID of the app.)\n3. Edit the database: open love_db in an SQLite editor (such as DB Browser for SQLite), make your edits, and save.\n4. Push the updated file back:\n\nadb push C:\\Users\\YourUsername\\Desktop\\love_db /sdcard/love_db\nadb shell \"su -c 'cp /sdcard/love_db /data/data/\u003cyour.app.package>/databases/love_db'\"\n\n5. Verification: restart the app inside BlueStacks to confirm your modifications load correctly.", "file": "prompts/how-to/edit-an-app-database-in-bluestacks-via-adb.md"}, {"title": "3-act outline blueprint", "category": "writing", "tags": ["storyline", "plot"], "text": "Draft a detailed 3-Act plot outline for a story with the following premise: [Insert Premise]. Ensure the outline clearly marks:\n- Inciting Incident\n- Plot Point 1 (Point of No Return)\n- Midpoint (False Victory/Defeat & Shifting Stakes)\n- Plot Point 2 (All Hope Is Lost)\n- Climax and Resolution", "file": "prompts/writing/3-act-outline-blueprint.md"}, {"title": "Antagonist motivation", "category": "writing", "tags": ["storyline", "character"], "text": "Draft a character motivation for the antagonist of a story about [Brief Plot]. Avoid making them evil for the sake of evil. Frame their goal so that from their perspective, they are the hero trying to solve a valid problem using drastic measures.", "file": "prompts/writing/antagonist-motivation.md"}, {"title": "Ban AI tropes", "category": "writing", "tags": ["creative-writing", "style"], "text": "Do not use words like 'testament,' 'beacon,' 'tapestry,' or 'delve.' Avoid ending paragraphs with neat summary moral lessons.", "file": "prompts/writing/ban-ai-tropes.md"}, {"title": "Brainstorming obstacles", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Give me 5 non-cliché physical complications that could prevent my protagonist from leaving the room without raising the alarm.", "file": "prompts/writing/brainstorming-obstacles.md"}, {"title": "Chain-of-thought story steps", "category": "writing", "tags": ["creative-writing", "structure"], "text": "Step 1: Outline the 5 main story beats of the scene.\nStep 2: Generate 3 alternative twists for Beat 3.\nStep 3: Write only the opening sensory hook (50–100 words).\nStep 4: Iterate and expand.", "file": "prompts/writing/chain-of-thought-story-steps.md"}, {"title": "Character profile and fatal flaw", "category": "writing", "tags": ["storyline", "character"], "text": "Create a character profile for a [Role/Archetype] named [Name]. Focus on their internal contradiction: what is their core desire versus their deepest lie/flaw? Outline how this flaw will cause them to make a catastrophic decision in Act 2.", "file": "prompts/writing/character-profile-and-fatal-flaw.md"}, {"title": "Dialogue doctor", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Rewrite this dialogue exchange 3 ways: 1) where they are hiding a secret, 2) passive-aggressive, 3) fast-paced/clipped.", "file": "prompts/writing/dialogue-doctor.md"}, {"title": "Feed style passages", "category": "writing", "tags": ["creative-writing", "style"], "text": "Analyze the tone, sentence length, and sensory focus of the excerpt below. Then, write a scene about a train station delay using that exact style.\n\n[Insert 1-2 paragraphs of your favorite author or your own best writing]", "file": "prompts/writing/feed-style-passages.md"}, {"title": "High-tension scene beat sheet", "category": "writing", "tags": ["storyline", "scene"], "text": "I need to write a high-tension scene where [Character A] must [Goal] while [Character B] tries to [Opposing Goal]. Provide a scene beat sheet detailing:\n- Opening emotional state\n- The immediate physical or verbal obstacle\n- The escalating stakes mid-scene\n- The turn/realization\n- The cliffhanger or outcome that forces the next action", "file": "prompts/writing/high-tension-scene-beat-sheet.md"}, {"title": "Pacing and twist enhancer", "category": "writing", "tags": ["storyline", "scene"], "text": "Review this scene summary: [Insert Scene Summary]. Suggest 3 plot twists or narrative shifts that escalate the stakes, flip character power dynamics, or reveal a secret that changes the direction of the scene.", "file": "prompts/writing/pacing-and-twist-enhancer.md"}, {"title": "Premise generator", "category": "writing", "tags": ["storyline", "world-building"], "text": "Act as a narrative strategist. Combine the core theme of [Theme, e.g., corporate surveillance] with a genre mashup of [Genre 1] and [Genre 2]. Give me 3 high-concept plot premises, each with a unique central conflict, an inciting incident, and the core stakes for the protagonist.", "file": "prompts/writing/premise-generator.md"}, {"title": "Reverse interviewing (sunken colony ship)", "category": "writing", "tags": ["creative-writing", "interview"], "text": "I have an idea for a sci-fi story set on a sunken colony ship. Act as a investigative journalist interviewing me. Ask me 5 sharp, probing questions one by one to help me flesh out the social hierarchy, energy source, and main conflict of this world.", "file": "prompts/writing/reverse-interviewing-sunken-colony-ship.md"}, {"title": "Sensory layering", "category": "writing", "tags": ["creative-writing", "sparring"], "text": "Here is a flat scene: [Insert text]. Rewrite it focusing strictly on sound, smell, and tactile temperature, omitting visual descriptions.", "file": "prompts/writing/sensory-layering.md"}, {"title": "Setting and environment", "category": "writing", "tags": ["storyline", "world-building"], "text": "I am designing a setting called [Name/Type of Place]. Describe 5 sensory details of this world that reveal its social structure, history, or underlying tension without explicitly explaining it to the reader.", "file": "prompts/writing/setting-and-environment.md"}, {"title": "Subplot integration", "category": "writing", "tags": ["storyline", "plot"], "text": "Here is my main plot: [Brief summary]. Generate 3 distinct subplot options (e.g., romantic, betrayal, mystery, mentor-student) that run parallel to the main narrative and directly mirror or challenge the protagonist's central internal conflict.", "file": "prompts/writing/subplot-integration.md"}, {"title": "The brutal developmental editor", "category": "writing", "tags": ["creative-writing", "persona"], "text": "Act as an aggressive line editor. Read this scene and tell me where the pacing drags, where the dialogue sounds robotic, and which cliché tropes I should cut. Do not rewrite it for me—give me structural critique.", "file": "prompts/writing/the-brutal-developmental-editor.md"}, {"title": "The character psychologist", "category": "writing", "tags": ["creative-writing", "persona"], "text": "Act as a character psychologist. Interview me about my main character's childhood trauma so I can discover their subconscious motivations.", "file": "prompts/writing/the-character-psychologist.md"}];
+const BUILTIN = [];
 const KEY = "promptlib.mine.v1", SEEN = "promptlib.seen.v1";
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
@@ -277,7 +284,7 @@ function clean(p) {
   const title = str(p.title).trim(), text = str(p.text).trim();
   if (!title || !text) return null;
   const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
-  return { id: str(p.id) || uid(), title, category: slug(p.category) || "general", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }), ...(+p.deleted && { deleted: +p.deleted }), ...(p.purged && { purged: true }) };   // "from" = the built-in prompt this one replaces
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "category1", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }), ...(+p.deleted && { deleted: +p.deleted }), ...(p.purged && { purged: true }) };   // "from" = the built-in prompt this one replaces
 }
 let MINE = [];
 function loadMine() {
@@ -377,7 +384,7 @@ const SPOTS = [                                   // petal positions: label (x,y
   { x: 1070, y: 500, dx: 933, dy: 336 },
 ];
 const ALLSPOT = { x: 640, y: 835, dx: 610, dy: 735 };
-const ORDER = ["design", "writing", "general", "how-to"];
+const ORDER = ["category1", "category2", "category3", "category4"];
 const PAL = ["#8b5cf6", "#d946ef", "#d97706", "#0d9488", "#2563eb", "#dc2626", "#65a30d", "#0891b2"];
 const ln = $("lines");
 function catList() {
@@ -478,13 +485,14 @@ function syncFocus() {                                               // dim the 
     const show = g.peek || g.open, dim = (focused || anyOpen) && g !== focused && !g.open;
     g.b.classList.toggle("dim", !!dim); g.dot.classList.toggle("dim", !!dim); g.tie && g.tie.classList.toggle("dim", !!dim);
     g.tie && g.tie.classList.toggle("hl", g === focused || g.open);
+    updateRename();
     g.b.classList.toggle("open", g.open); if (g.o !== "*") g.b.setAttribute("aria-expanded", g.open);
     g.seeds.forEach(sd => { sd.el.classList.toggle("show", show); sd.el.classList.toggle("full", g.open); sd.link.classList.toggle("show", show); });
   }
 }
 function toggleOpen(f) { const was = f.open; floaters.forEach(g => g.open = false); f.open = !was; if (f.open) focused = f; syncFocus(); }
 function closeSeeds() { if (floaters.some(g => g.open)) { floaters.forEach(g => g.open = false); syncFocus(); } }
-document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed")) closeSeeds(); });
+document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed,#rename")) closeSeeds(); });
 const mouse = { x: 0, y: 0, in: false };
 const stagePt = e => { const r = $("stage").getBoundingClientRect(), sc = r.width / $("stage").offsetWidth; return { x: (e.clientX - r.left) / sc, y: (e.clientY - r.top) / sc }; };
 addEventListener("pointermove", e => { const m = stagePt(e); mouse.x = m.x; mouse.y = m.y; mouse.in = true; });
@@ -505,14 +513,19 @@ function startDrag(f, e) {                                           // drag a s
   };
   addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
 }
-const calm = matchMedia("(prefers-reduced-motion:reduce)");
+const calm = matchMedia("(prefers-reduced-motion:reduce)"), flw = { x: 0, y: 0 };
 let last = 0;
 function step(ms) {
   requestAnimationFrame(step);
   const dt = Math.min(2, (ms - last) / 16.7 || 1); last = ms;
   if (isMobile() || !floaters.length) return;
   const t = ms / 1000, searching = document.body.classList.contains("searching");
+  const k = calm.matches ? 0 : 1, lx = mouse.in ? clamp((mouse.x - 781) * 0.012, -8, 8) : 0, ly = mouse.in ? clamp((mouse.y - 450) * 0.012, -8, 8) : 0;
+  flw.x += ((Math.sin(t * 0.4) * 5 + lx) * k - flw.x) * 0.05; flw.y += ((Math.cos(t * 0.33) * 7 - 5 + ly) * k - flw.y) * 0.05;   // the flower sways and leans toward the cursor
+  $("flower").style.translate = flw.x + "px " + flw.y + "px";
   for (const f of floaters) {
+    f.dot.style.left = f.p.dx + flw.x + "px"; f.dot.style.top = f.p.dy + flw.y + "px";                // dots and tendrils ride on the flower
+    if (f.hold) { $("bloom").style.left = f.p.dx + flw.x + "px"; $("bloom").style.top = f.p.dy + flw.y + "px"; }
     f.amp += (((f.hold || searching || calm.matches) ? 0 : 1) - f.amp) * 0.08;                     // ease to rest / back
     if (f.drag && f.drag.on) { f.vx = (f.drag.tx - f.x) * 0.5; f.vy = (f.drag.ty - f.y) * 0.5; f.x = f.drag.tx; f.y = f.drag.ty; }
     else {
@@ -532,9 +545,10 @@ function step(ms) {
     }
     f.b.style.left = f.x + "px"; f.b.style.top = f.y + "px";
     // the tendril: a curve that trails behind the motion
-    const mx = (f.p.dx + f.x) / 2, my = (f.p.dy + f.y) / 2, nx = -(f.y - f.p.dy), ny = f.x - f.p.dx, nl = Math.hypot(nx, ny) || 1;
+    const dx0 = f.p.dx + flw.x, dy0 = f.p.dy + flw.y;
+    const mx = (dx0 + f.x) / 2, my = (dy0 + f.y) / 2, nx = -(f.y - dy0), ny = f.x - dx0, nl = Math.hypot(nx, ny) || 1;
     const bend = (calm.matches ? 0 : Math.sin(t * 0.8 + f.ph) * 14) + clamp((f.vx * ny - f.vy * nx) / nl * -3, -40, 40);
-    f.line.setAttribute("d", `M${f.p.dx} ${f.p.dy}Q${mx + nx / nl * bend} ${my + ny / nl * bend} ${f.x} ${f.y}`);
+    f.line.setAttribute("d", `M${dx0} ${dy0}Q${mx + nx / nl * bend} ${my + ny / nl * bend} ${f.x} ${f.y}`);
     // seeds: fan out away from the flower, trailing the sprig on springs (result seeds use the same fan, but wider)
     const act = f.rs.length ? f.rs : f.seeds, show = f.rs.length > 0 || f.peek || f.open, n = act.length, big = f.open || f.rs.length > 0;
     const rs_ = f.rs.length > 0, rx = rs_ ? 200 : big ? 175 : 150, ry = rs_ ? 175 : big ? 140 : 115, spread = 3.2;
@@ -664,7 +678,7 @@ function render() {
   base.forEach(r => { counts[r.d.category] = (counts[r.d.category] || 0) + 1; });
   markSprigs(counts, restrict);
   ctx = { n: rows.length, restrict };
-  $("rename").classList.toggle("show", restrict);
+  updateRename();
 
   $("tab").textContent = "results · " + rows.length;
   $("live").textContent = rows.length + (rows.length === 1 ? " result" : " results");
@@ -783,7 +797,7 @@ function autoCategory(text) {          // the existing category whose prompts sh
   const mine = new Set(wordsOf(text)), score = {};
   all().forEach(d => { wordsOf(d.title + " " + d.tags.join(" ") + " " + d.text).forEach(w => { if (mine.has(w)) score[d.category] = (score[d.category] || 0) + 1; }); });
   const best = Object.keys(score).sort((a, b) => score[b] - score[a])[0];
-  return best || "general";
+  return best || "category1";
 }
 let editing = null, editingFrom = "";   // editingFrom = file of a built-in prompt being edited
 function openForm(d) {
@@ -815,14 +829,29 @@ $("f-save").onclick = () => {
 addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
 $("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
-/* ---- the "Rename category" button above the results ---- */
+/* ---- the "Rename category" button: works on the category you opened (sprig) or are browsing ---- */
+let renaming = "";
+function renameTarget() {
+  const f = floaters.find(g => g.open && g.o !== "*");
+  return f ? f.o : (cat && cat !== "*" ? cat : "");
+}
+function updateRename() { $("rename").classList.toggle("show", !!renameTarget()); }
 $("rename").onclick = () => {
-  const old = cat, name = prompt(`New name for “${old}”:`, old);
-  if (name === null) return;
+  renaming = renameTarget(); if (!renaming) return;
+  $("r-name").value = renaming; showModal("renamemodal", "r-name"); $("r-name").select();
+};
+function saveRename() {
+  const old = renaming, name = $("r-name").value;
+  closeModals();
   const n = renameCategory(old, name);
   if (!n) return toast("Name not changed");
-  cat = slug(name); renderLabels(); render(); toast(`Renamed ${n} prompt${n === 1 ? "" : "s"}`);
-};
+  floaters.forEach(g => g.open = false);
+  if (cat === old) cat = slug(name);
+  renderLabels(); render(); toast(`Renamed ${n} prompt${n === 1 ? "" : "s"}`);
+}
+$("r-save").onclick = saveRename;
+$("r-cancel").onclick = closeModals;
+$("r-name").onkeydown = e => { if (e.key === "Enter") saveRename(); };
 /* ---- the Trash button and window ---- */
 function refreshTrashBadge() { const n = trashItems().length; $("tcount").textContent = n || ""; $("tcount").style.display = n ? "" : "none"; }
 function showTrash() {

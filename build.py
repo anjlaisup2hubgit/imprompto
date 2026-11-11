@@ -34,7 +34,7 @@ STYLES = ["components/base.css", "pages/home.css", "components/header-buttons.cs
           "components/seeds.css", "components/search-bar.css", "components/results-box.css", "components/dialog.css", "components/more-chips.css",
           "pages/mobile.css", "pages/layout-seeds.css", "components/trash.css"]
 PAGE = ["pages/home.html"]
-DIALOGS = ["components/prompt-dialog.html", "components/trash-dialog.html", "components/toast.html"]
+DIALOGS = ["components/prompt-dialog.html", "components/trash-dialog.html", "components/rename-dialog.html", "components/toast.html"]
 SCRIPTS = ["data/prompts.js", "data/local-storage.js", "data/sync.js", "data/categories.js", "data/trash.js", "components/dom-helpers.js",
            "components/state.js", "components/stage-fit.js", "components/petals.js", "components/sprigs.js",
            "components/sprig-motion.js", "components/search.js", "components/sprig-filters.js", "pages/results.js",

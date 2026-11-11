@@ -1,1 +1,0 @@
-- [Code organization rules](feedback-code-organization-rules.md) — pages/components/data, one job per file, max 300 lines, check before writing

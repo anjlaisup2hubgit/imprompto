@@ -20,7 +20,7 @@ function render() {
   base.forEach(r => { counts[r.d.category] = (counts[r.d.category] || 0) + 1; });
   markSprigs(counts, restrict);
   ctx = { n: rows.length, restrict };
-  $("rename").classList.toggle("show", restrict);
+  updateRename();
 
   $("tab").textContent = "results · " + rows.length;
   $("live").textContent = rows.length + (rows.length === 1 ? " result" : " results");

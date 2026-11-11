@@ -1,14 +1,10 @@
 # Imprompto
 
-Imprompto is a place to keep the messages you type to an AI helper.
+A storage space for your prompts.
 
 ## Download
 
-Open the app in any web browser, on your phone or your computer. There is nothing to install.
-
-https://imprompto.pages.dev
-
-To get your own copy of the code, run this in a terminal.
+For developers:
 
 ```bash
 git clone https://github.com/anjlaisup2hubgit/imprompto.git
@@ -35,7 +31,7 @@ imprompto/
 ├── components/    small pieces used on many screens (search, petals, buttons, pop-ups)
 ├── data/          saving and loading your prompts
 ├── functions/     the small helper on the internet that keeps your prompts safe
-├── prompts/       the starter prompts, sorted into design, general, how-to and writing
+├── prompts/       the starter prompts, sorted into category1, category2, category3 and category4
 ├── assets/        the flower picture
 ├── screenshots/   photos of the app, used to check how it looks
 ├── template.html  the empty page before the prompts are put in
