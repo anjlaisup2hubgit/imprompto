@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit categories · Imprompto</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23c9b8f5'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23ffb26b'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:light;--ink:#241c3f;--mute:#554d70;--acc:#a8450f;--line:#c25be6;--chip:#efe9fb;--chipink:#43357d;--brand:#5b3fd0}
+*{box-sizing:border-box}
+html{background:#f3edfc}
+html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#fff,#efe7fb);color:var(--ink);
+  font-family:system-ui,"Segoe UI",Helvetica,sans-serif}
+button,input,textarea{font-family:inherit}
+button:active{transform:scale(.97)}
+.lab:active{transform:translate(-50%,-50%) scale(.97)}   /* keep the label centred while pressed, or the click misses */
+:focus-visible{outline:3px solid #6d4aff;outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* the "Edit categories" page: one card per category, with its prompts inside */
+body.edit{height:auto;min-height:100%;overflow:auto;padding:24px 20px 80px}
+.top{max-width:1100px;margin:0 auto 12px}
+.top h1{margin:8px 0 4px;font-size:28px;font-weight:800}
+.top p{margin:0;color:var(--mute);font-size:15px}
+.back{color:var(--chipink);font-weight:700;text-decoration:none}
+.back:hover{text-decoration:underline}
+#bar{position:sticky;top:0;z-index:5;max-width:1100px;margin:0 auto 16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1.5px solid #cfc3ee;border-radius:16px}
+#bar input{font:inherit;font-size:14px;padding:8px 10px;border:1.5px solid #cfc3ee;border-radius:10px;min-width:0}
+#filter{flex:1 1 180px}
+#dest{flex:1 1 220px}
+#sel{font-size:14px;color:var(--mute)}
+#go{font:inherit;font-weight:700;padding:8px 18px;border:0;border-radius:10px;background:var(--brand);color:#fff;cursor:pointer}
+#tabs{max-width:1100px;margin:0 auto 14px;display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+.tab{flex:none;font:inherit;font-size:14px;font-weight:700;padding:8px 14px;border:1.5px solid #cfc3ee;border-radius:20px;background:#fff;color:var(--chipink);cursor:pointer}
+.tab:hover{background:var(--chip)}
+.tab[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff}
+#cols{max-width:700px;margin:0 auto}
+.col{background:#fff;border:1.5px solid #cfc3ee;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.cname{width:100%;font-size:17px;font-weight:700;color:var(--ink);padding:8px 10px;border:1.5px solid transparent;border-radius:10px;background:var(--chip)}
+.cname:hover,.cname:focus{border-color:#cfc3ee;background:#fff}
+.cnt{font-size:13px;color:var(--mute);margin:0 2px 4px}
+.prompt{display:flex;gap:8px;align-items:center;background:#faf8ff;border:1px solid #e4dcf7;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:14px}
+.prompt b{font-weight:600;overflow-wrap:anywhere}
+.more{font:inherit;font-size:13px;font-weight:700;padding:6px;border:1.5px dashed #cfc3ee;border-radius:10px;background:none;color:var(--chipink);cursor:pointer}
+.more:hover{background:var(--chip)}
+.empty{font-size:13px;color:var(--mute);padding:6px 2px}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:18px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="back" href="/">&larr; Back to prompts</a>
+  <h1>Edit categories</h1>
+  <p>Type a new name to rename a category. Pick a category, then tick prompts and move them to another one.</p>
+</header>
+<div id="bar">
+  <input id="filter" type="search" placeholder="Filter prompts by title" aria-label="Filter prompts by title" autocomplete="off">
+  <span id="sel">0 selected</span>
+  <input id="dest" list="dl" placeholder="Move to… (type a new name to make one)" maxlength="30" aria-label="Category to move the ticked prompts to" autocomplete="off">
+  <datalist id="dl"></datalist>
+  <button id="go" type="button">Move</button>
+</div>
+<nav id="tabs" aria-label="Categories"></nav>
+<div id="cols"></div>
+<div id="toast" role="status"></div>
+<script>
+const KEY = "promptlib.mine.v1", SEEN = "promptlib.seen.v1";
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
+const slug = v => str(v).trim().toLowerCase().replace(/\s+/g, "-");
+/* turns anything (saved data, imported file) into a safe prompt, or null if it is not one */
+function clean(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p) || p.purged) return null;   // purged = left over from the old starter prompts
+  const title = str(p.title).trim(), text = str(p.text).trim();
+  if (!title || !text) return null;
+  const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "category1", tags, text, ...(+p.deleted && { deleted: +p.deleted }) };
+}
+let MINE = [];
+function loadMine() {
+  try { const j = JSON.parse(localStorage.getItem(KEY) || "[]"); MINE = (Array.isArray(j) ? j : []).map(clean).filter(Boolean); } catch (e) { MINE = []; }
+}
+loadMine();
+const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
+const all = () => MINE.filter(m => !m.deleted);
+/* ---- sync: your prompts are also kept in the cloud so every device shares them ---- */
+const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1", OWNER = "promptlib.owner.v1";
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+let syncing = false, again = false, cloudOK = false;
+async function sync() {
+  if (syncing) { again = true; return; }
+  syncing = true;
+  try {
+    for (let i = 0; i < 3; i++) {
+      const r = await fetch("/api/data", { cache: "no-store" });
+      if (!r.ok) return;                                   // no cloud (offline or not signed in): keep working locally
+      const { data, updated, email } = await r.json();
+      if (email && lsGet(OWNER) && lsGet(OWNER) !== email) { [KEY, BASE, DIRTY].forEach(k => lsSet(k, null)); MINE = []; }   // a different person signed in on this browser
+      if (email) lsSet(OWNER, email);
+      if (!cloudOK) { cloudOK = true; if (window.renderLabels) renderLabels(); }
+      const remote = Array.isArray(data) ? data.map(clean).filter(Boolean) : null;
+      const dirty = lsGet(DIRTY) === "1" || (lsGet(BASE) == null && MINE.length);
+      if (remote && !dirty) { MINE = remote; lsSet(BASE, String(updated)); try { localStorage.setItem(KEY, JSON.stringify(MINE)); } catch (e) {} if (window.renderLabels) { renderLabels(); render(); } return; }
+      if (remote && lsGet(BASE) !== String(updated)) for (const c of remote) if (!MINE.some(m => m.id === c.id)) MINE.push(c);   // keep prompts added on other devices
+      const put = await fetch("/api/data", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ base: updated, data: MINE }) });
+      if (put.ok) { lsSet(BASE, String((await put.json()).updated)); lsSet(DIRTY, null); try { localStorage.setItem(KEY, JSON.stringify(MINE)); } catch (e) {} if (window.renderLabels) { renderLabels(); render(); } return; }
+      if (put.status !== 409) return;                      // otherwise a newer version appeared: look again
+    }
+  } catch (e) { /* offline: try again later */ }
+  finally { syncing = false; if (again) { again = false; sync(); } }
+}
+addEventListener("online", sync);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) sync(); });
+/* moves any number of prompts to one category and saves only once */
+function movePrompts(list, newName) {
+  const name = slug(newName), moving = name ? list.filter(d => d.category !== name) : [];
+  moving.forEach(d => d.category = name);
+  if (moving.length) save();
+  return moving.length;
+}
+/* renaming a category: every prompt inside it moves to the new name */
+const renameCategory = (oldName, newName) => movePrompts(all().filter(d => d.category === oldName), newName);
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
+/* ---- Edit categories page: rename a category, move prompts between categories ---- */
+/* Built for 1000+ prompts: one pass over the data per draw, one shared set of listeners, one category on screen at a time, 30 rows until "Show more". */
+document.body.classList.add("edit");
+const LIMIT = 30, keyOf = d => d.id;
+const selected = new Set(), expanded = new Set(), cols = $("cols");
+let byKey = new Map(), current = "";
+const plural = n => n + " prompt" + (n === 1 ? "" : "s");
+
+const rowHtml = d => `<label class="prompt" data-k="${esc(keyOf(d))}"><input type="checkbox"${selected.has(keyOf(d)) ? " checked" : ""}><b>${esc(d.title)}</b></label>`;
+
+function draw() {
+  const groups = new Map(), q = $("filter").value.trim().toLowerCase();
+  byKey = new Map();
+  all().forEach(d => { byKey.set(keyOf(d), d); (groups.get(d.category) || groups.set(d.category, []).get(d.category)).push(d); });
+  [...selected].forEach(k => { if (!byKey.has(k)) selected.delete(k); });
+  const names = [...groups.keys()].sort();
+  if (!groups.has(current)) current = names[0] || "";
+  $("tabs").innerHTML = names.map(n => `<button class="tab" type="button" data-name="${esc(n)}" aria-pressed="${n === current}">${esc(n)} · ${groups.get(n).length}</button>`).join("");
+  const list = groups.get(current) || [], shown = q ? list.filter(d => d.title.toLowerCase().includes(q)) : list;
+  const rows = expanded.has(current) ? shown : shown.slice(0, LIMIT), more = shown.length - rows.length;
+  cols.innerHTML = current ? `<section class="col" data-name="${esc(current)}"><input class="cname" type="text" maxlength="30" value="${esc(current)}" aria-label="Category name">`
+    + `<div class="cnt">${plural(list.length)}${q ? ` · ${shown.length} match` : ""}</div>${rows.map(rowHtml).join("")}`
+    + (more > 0 ? `<button class="more" type="button">Show ${more} more</button>` : "") + `</section>` : '<p class="empty">No prompts yet.</p>';
+  $("dl").innerHTML = names.map(n => `<option value="${esc(n)}">`).join("");
+  $("sel").textContent = selected.size + " selected";
+}
+
+function moveKeys(keys, dest) {
+  const n = movePrompts(keys.map(k => byKey.get(k)).filter(Boolean), dest);
+  if (!n) return toast("Nothing to move");
+  keys.forEach(k => selected.delete(k));
+  draw(); toast(`Moved ${plural(n)} to ${slug(dest)}`);
+}
+
+function commitName(input) {
+  const col = input.closest(".col"), old = col.dataset.name, n = renameCategory(old, input.value);
+  if (!n) { input.value = old; return; }
+  if (expanded.delete(old)) expanded.add(slug(input.value));
+  current = slug(input.value);
+  draw(); toast(`Renamed ${plural(n)}`);
+}
+
+cols.addEventListener("change", e => {
+  const row = e.target.closest(".prompt"); if (!row) return;
+  e.target.checked ? selected.add(row.dataset.k) : selected.delete(row.dataset.k);
+  $("sel").textContent = selected.size + " selected";
+});
+$("tabs").addEventListener("click", e => { const t = e.target.closest(".tab"); if (t) { current = t.dataset.name; draw(); } });
+cols.addEventListener("click", e => { const b = e.target.closest(".more"); if (b) { expanded.add(b.parentNode.dataset.name); draw(); } });
+cols.addEventListener("focusout", e => { if (e.target.classList.contains("cname")) commitName(e.target); });
+cols.addEventListener("keydown", e => {
+  if (!e.target.classList.contains("cname")) return;
+  if (e.key === "Escape") e.target.value = e.target.closest(".col").dataset.name;
+  if (e.key === "Enter" || e.key === "Escape") e.target.blur();
+});
+$("filter").oninput = draw;
+$("go").onclick = () => {
+  if (!selected.size) return toast("Tick some prompts first");
+  if (!slug($("dest").value)) return toast("Type a category to move them to");
+  moveKeys([...selected], $("dest").value); $("dest").value = "";
+};
+
+/* sync.js calls these names when your prompts change (skip the redraw while you are typing a name) */
+window.renderLabels = () => { if (!document.activeElement.classList.contains("cname")) draw(); };
+function render() {}
+addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); draw(); } });   // another tab changed things
+draw();
+sync();
+</script>
+</body>
+</html>

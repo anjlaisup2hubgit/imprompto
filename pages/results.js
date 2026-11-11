@@ -20,7 +20,6 @@ function render() {
   base.forEach(r => { counts[r.d.category] = (counts[r.d.category] || 0) + 1; });
   markSprigs(counts, restrict);
   ctx = { n: rows.length, restrict };
-  updateRename();
 
   $("tab").textContent = "results · " + rows.length;
   $("live").textContent = rows.length + (rows.length === 1 ? " result" : " results");
@@ -47,12 +46,11 @@ function render() {
     r.title = d.text.slice(0, 400);
     r.innerHTML = `<div class="hd"><h3><i class="dt"></i>${hl(d.title, terms)}</h3><span class="cat">${esc(d.category)}</span><span class="cp">Copy</span></div>
       <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
-      <div class="ft"><div class="chips">${d.mine ? '<span class="you">yours</span>' : ""}${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button>${d.from ? `<button class="act" data-a="del" aria-label="Reset ${esc(d.title)}">Reset</button>` : ""}<button class="act danger" data-a="trash" aria-label="Delete ${esc(d.title)}">Delete</button></div></div>`;
+      <div class="ft"><div class="chips">${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
+      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button><button class="act danger" data-a="trash" aria-label="Delete ${esc(d.title)}">Delete</button></div></div>`;
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "del") { if (confirm("Go back to the original prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast("Restored"); } return; }
       if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash"); return; }
       copy(d.text, r);
     };

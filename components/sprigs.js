@@ -41,11 +41,10 @@ function syncFocus() {                                               // dim the 
     const show = g.peek || g.open, dim = (focused || anyOpen) && g !== focused && !g.open;
     g.b.classList.toggle("dim", !!dim); g.dot.classList.toggle("dim", !!dim); g.tie && g.tie.classList.toggle("dim", !!dim);
     g.tie && g.tie.classList.toggle("hl", g === focused || g.open);
-    updateRename();
     g.b.classList.toggle("open", g.open); if (g.o !== "*") g.b.setAttribute("aria-expanded", g.open);
     g.seeds.forEach(sd => { sd.el.classList.toggle("show", show); sd.el.classList.toggle("full", g.open); sd.link.classList.toggle("show", show); });
   }
 }
 function toggleOpen(f) { const was = f.open; floaters.forEach(g => g.open = false); f.open = !was; if (f.open) focused = f; syncFocus(); }
 function closeSeeds() { if (floaters.some(g => g.open)) { floaters.forEach(g => g.open = false); syncFocus(); } }
-document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed,#rename")) closeSeeds(); });
+document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed,#editcats")) closeSeeds(); });

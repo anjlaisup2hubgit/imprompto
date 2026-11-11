@@ -11,8 +11,9 @@ function fit() {
   $("q").placeholder = "Type any words you remember";
   const l = $("link");
   if (l) { const a = mobile ? [210, 370, 210, 544] : [448, 120, 635, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
-  const s = Math.min(vw() / W, innerHeight / H, mobile ? 1.5 : 9);
-  const x = (vw() - W * s) / 2, y = (innerHeight - H * s) / 2;
+  // phones and tablets fill the width and scroll down; the computer layout fits the whole window
+  const s = mobile ? Math.min(vw() / W, 1.5) : Math.min(vw() / W, innerHeight / H, 9);
+  const x = (vw() - W * s) / 2, y = mobile ? 0 : (innerHeight - H * s) / 2;
   st.style.transform = `translate(${x}px,${y}px) scale(${s})`;
 }
 let wasMobile = isMobile();

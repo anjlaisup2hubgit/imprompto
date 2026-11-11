@@ -127,8 +127,6 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 .chips{display:flex;flex-wrap:wrap;align-items:center}
 .chips span{color:#8a82a6;font-size:12.5px;font-weight:500}
 .chips span+span:before{content:" \0000b7 ";white-space:pre}
-.you{background:#ffe3cc;color:var(--acc)!important;font-weight:700!important;padding:1px 9px;border-radius:10px;margin-right:8px}
-.chips .you+span:before{content:""}
 .acts{flex:none;display:flex;gap:6px}
 .act{background:none;color:var(--chipink);font-size:14px;font-weight:700;cursor:pointer;padding:5px 14px;border-radius:14px;border:1.5px solid var(--chipink)}
 .act:hover{background:var(--chipink);color:#fff}
@@ -156,10 +154,9 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 /* computer layout: categories that do not fit on the 4 petals wait in a sliding row under the flower */
 body:not(.mobile) #chips{display:flex;position:absolute;left:48px;top:828px;width:480px;gap:8px;overflow-x:auto;padding:2px 2px 8px;z-index:2}
 body:not(.mobile) .chipbtn:not(.extra){display:none}
-#rename{left:748px;width:164px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:none}
-#rename:hover{background:var(--chip)}
-#rename.show{display:block}
-body.mobile #rename{left:16px;top:64px;height:36px;width:150px;font-size:14px}
+#editcats{left:748px;width:164px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:flex;align-items:center;justify-content:center;text-decoration:none}
+#editcats:hover{background:var(--chip)}
+body.mobile #editcats{left:16px;top:64px;height:36px;width:150px;font-size:14px}
 /* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
 #chips{display:none}
 html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
@@ -173,11 +170,11 @@ body.mobile .sv{display:none}
 body.mobile .hbtn{top:12px;height:44px;font-size:15px}
 body.mobile #sobtn{left:166px;width:94px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
-body.mobile #bar{left:30px;top:306px;width:360px;height:64px}
-body.mobile #q{font-size:14px}
+body.mobile #bar{left:60px;top:322px;width:300px;height:48px}
+body.mobile #q{font-size:13px}
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
 body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
-body.mobile #chips{display:flex;position:absolute;left:16px;top:70px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+body.mobile #chips{display:flex;position:absolute;left:16px;top:106px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
 .chipbtn{flex:none;height:44px;border-radius:22px;border:0;background:#fff;padding:0 16px;font-size:15px;font-weight:700;color:var(--ink);
   cursor:pointer;box-shadow:0 4px 10px rgba(106,75,214,.14);display:flex;align-items:center;gap:8px}
 .chipbtn b{width:11px;height:11px;border-radius:50%;background:var(--c,#64748b)}
@@ -202,11 +199,12 @@ body:not(.mobile) .ft{margin-top:3px;min-height:0}
 body:not(.mobile) #foot{padding:9px 18px 12px;font-size:12.5px;color:#8a82a6}
 body[data-mode=seeds] #box{left:630px;width:340px;height:auto;max-height:270px;border-top:5px solid var(--c,#8b5cf6);border-radius:16px}
 body[data-mode=seeds] #box:before{background:var(--c,#8b5cf6);top:-13px}
-body[data-mode=seeds] #list{padding:10px 8px 2px;overflow:visible;flex:none}
+body[data-mode=seeds] #list{padding:12px 8px 6px;overflow:visible;flex:none}
 body[data-mode=seeds] .r:not(.cur){display:none}
-body[data-mode=seeds] .r.cur{background:none;box-shadow:none;padding:6px 12px}
+body[data-mode=seeds] .r.cur{background:none;box-shadow:none;padding:6px 12px 8px}
+body[data-mode=seeds] .ft{margin-top:10px}
 body[data-mode=seeds] .r.cur p{-webkit-line-clamp:4}
-body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
+body[data-mode=seeds] #foot{border-top:0;padding:10px 18px 16px;line-height:1.45}
 /* Trash button (top bar) and Trash window */
 #trashbtn{left:928px;width:112px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:flex;align-items:center;justify-content:center;gap:7px}
 #trashbtn:hover{background:var(--chip)}
@@ -225,6 +223,21 @@ body[data-mode=seeds] #foot{border-top:0;padding:4px 18px 12px}
 body.mobile #trashbtn{left:270px;width:44px}
 body.mobile #trashbtn span{display:none}
 body.mobile #sobtn{left:322px;width:82px}
+/* the glassy look that matches the flower: soft edges, a glow behind it, see-through pills, apricot search bar */
+#flower{-webkit-mask-image:radial-gradient(closest-side,#000 68%,transparent 100%);mask-image:radial-gradient(closest-side,#000 68%,transparent 100%)}
+#stage:before{content:"";position:absolute;left:332px;top:0;width:898px;height:854px;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(196,170,255,.45),rgba(196,170,255,0))}
+body.mobile #stage:before{left:-40px;top:84px;width:500px;height:480px}
+.lab,.chipbtn,.cb,#trashbtn,#sobtn,#editcats{background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1.5px solid rgba(190,170,240,.6)}
+.cb.on{background:var(--chipink);border-color:var(--chipink)}
+#trashbtn:hover,#sobtn:hover,#editcats:hover{background:rgba(255,255,255,.9)}
+#bar{background:radial-gradient(circle at 18% 28%,rgba(255,255,255,.6),rgba(255,255,255,0) 50%),linear-gradient(rgba(255,226,190,.5),rgba(255,196,150,.45));
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.9);
+  box-shadow:0 0 34px 8px rgba(255,185,138,.5),0 8px 20px rgba(106,75,214,.15)}
+#bar:focus-within{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 40px 12px rgba(255,170,110,.65),0 8px 20px rgba(106,75,214,.15)}
+#bar :focus-visible{outline:0}
+#q::placeholder{color:#7a4a30}
 </style>
 </head>
 <body>
@@ -235,7 +248,7 @@ body.mobile #sobtn{left:322px;width:82px}
   <div class="brand"><h1>Imprompto</h1><span id="total"></span></div>
   <button class="hbtn" id="trashbtn" aria-label="Trash"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#43357d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h14M7.5 5V3h5v2M5 5l1 12h8l1-12M8.5 9v5M11.5 9v5"/></svg><span>Trash</span><b id="tcount"></b></button>
   <button class="hbtn" id="sobtn">Sign out</button>
-  <button class="hbtn" id="rename">Rename category</button>
+  <a class="hbtn" id="editcats" href="/edit-categories.html">Edit categories</a>
   <div id="labels"></div>
   <div id="chips" role="group" aria-label="Categories"></div>
   <div id="glow"></div>
@@ -254,7 +267,6 @@ body.mobile #sobtn{left:322px;width:82px}
     <h2 id="ftitle">New prompt</h2>
     <label for="f-title">TITLE</label><input type="text" id="f-title" maxlength="80" placeholder="Leave blank to fill in automatically">
     <label for="f-cat">CATEGORY</label><input type="text" id="f-cat" list="catlist" maxlength="30" placeholder="Leave blank to fill in automatically"><datalist id="catlist"></datalist>
-    <label for="f-tags">TAGS (SEPARATE WITH COMMAS)</label><input type="text" id="f-tags" placeholder="Leave blank to fill in automatically">
     <label for="f-text">PROMPT</label><textarea id="f-text" placeholder="Paste your prompt here…"></textarea>
     <div class="err" id="ferr" role="alert"></div>
     <div class="btns"><button class="btn main" id="f-save">Save</button><button class="btn" id="f-cancel">Cancel</button></div>
@@ -265,26 +277,20 @@ body.mobile #sobtn{left:322px;width:82px}
     <div id="tlist"></div>
     <div class="btns"><button class="btn" id="t-close">Close</button></div>
   </div></div>
-  <div class="ov" id="renamemodal"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rtitle">
-    <h2 id="rtitle">Rename category</h2>
-    <label for="r-name">NEW NAME</label><input type="text" id="r-name" maxlength="30">
-    <div class="btns"><button class="btn main" id="r-save">Save</button><button class="btn" id="r-cancel">Cancel</button></div>
-  </div></div>
   <div id="toast" role="status"></div>
 </main>
 <script>
-const BUILTIN = [];
 const KEY = "promptlib.mine.v1", SEEN = "promptlib.seen.v1";
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
 const slug = v => str(v).trim().toLowerCase().replace(/\s+/g, "-");
 /* turns anything (saved data, imported file) into a safe prompt, or null if it is not one */
 function clean(p) {
-  if (!p || typeof p !== "object" || Array.isArray(p)) return null;
+  if (!p || typeof p !== "object" || Array.isArray(p) || p.purged) return null;   // purged = left over from the old starter prompts
   const title = str(p.title).trim(), text = str(p.text).trim();
   if (!title || !text) return null;
   const tags = (Array.isArray(p.tags) ? p.tags : []).map(slug).filter(Boolean);
-  return { id: str(p.id) || uid(), title, category: slug(p.category) || "category1", tags, text, mine: true, ...(str(p.from) && { from: str(p.from) }), ...(+p.deleted && { deleted: +p.deleted }), ...(p.purged && { purged: true }) };   // "from" = the built-in prompt this one replaces
+  return { id: str(p.id) || uid(), title, category: slug(p.category) || "category1", tags, text, ...(+p.deleted && { deleted: +p.deleted }) };
 }
 let MINE = [];
 function loadMine() {
@@ -292,7 +298,7 @@ function loadMine() {
 }
 loadMine();
 const save = () => { let ok = true; try { localStorage.setItem(KEY, JSON.stringify(MINE)); localStorage.setItem(DIRTY, "1"); } catch (e) { ok = false; } sync(); return ok; };
-const all = () => BUILTIN.filter(b => !MINE.some(m => m.from === b.file)).concat(MINE.filter(m => !m.deleted));   // an edited built-in hides the original
+const all = () => MINE.filter(m => !m.deleted);
 /* ---- sync: your prompts are also kept in the cloud so every device shares them ---- */
 const BASE = "promptlib.base.v1", DIRTY = "promptlib.dirty.v1", OWNER = "promptlib.owner.v1";
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -322,34 +328,24 @@ async function sync() {
 }
 addEventListener("online", sync);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) sync(); });
-/* ---- renaming a category: every prompt inside it moves to the new name ---- */
-function renameCategory(oldName, newName) {
-  const name = slug(newName);
-  if (!name || name === oldName) return 0;
-  let n = 0;
-  all().forEach(d => {
-    if (d.category !== oldName) return;
-    n++;
-    if (d.mine) d.category = name;                                              // your own prompt: just change it
-    else MINE.push(clean({ ...d, category: name, from: d.file }));              // a starter prompt: save a changed copy that hides the original
-  });
-  if (n) save();
-  return n;
+/* moves any number of prompts to one category and saves only once */
+function movePrompts(list, newName) {
+  const name = slug(newName), moving = name ? list.filter(d => d.category !== name) : [];
+  moving.forEach(d => d.category = name);
+  if (moving.length) save();
+  return moving.length;
 }
+/* renaming a category: every prompt inside it moves to the new name */
+const renameCategory = (oldName, newName) => movePrompts(all().filter(d => d.category === oldName), newName);
 /* ---- trash: a deleted prompt is only marked with the time, so it can come back for 30 days ---- */
 const KEEP_MS = 30 * 864e5;
-const trashItems = () => MINE.filter(m => m.deleted && !m.purged && Date.now() - m.deleted < KEEP_MS).sort((a, b) => b.deleted - a.deleted);
+const trashItems = () => MINE.filter(m => m.deleted && Date.now() - m.deleted < KEEP_MS).sort((a, b) => b.deleted - a.deleted);
 function trashPrompt(d) {
-  const mine = d.mine && MINE.find(m => m.id === d.id);
-  if (mine) mine.deleted = Date.now(); else MINE.push(clean({ ...d, from: d.file, deleted: Date.now() }));   // a starter prompt: save a hidden copy that hides the original
+  const m = MINE.find(x => x.id === d.id); if (m) m.deleted = Date.now();
   save();
 }
 function restorePrompt(id) { const m = MINE.find(x => x.id === id); if (m) { delete m.deleted; save(); } }
-function purgePrompt(id) {                                           // gone for good (a starter prompt keeps a hidden mark so it does not return)
-  const m = MINE.find(x => x.id === id); if (!m) return;
-  if (m.from) m.purged = true; else MINE = MINE.filter(x => x !== m);
-  save();
-}
+const purgePrompt = id => { MINE = MINE.filter(x => x.id !== id); save(); };   // gone for good
 const emptyTrash = () => trashItems().map(m => m.id).forEach(purgePrompt);
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -370,8 +366,9 @@ function fit() {
   $("q").placeholder = "Type any words you remember";
   const l = $("link");
   if (l) { const a = mobile ? [210, 370, 210, 544] : [448, 120, 635, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
-  const s = Math.min(vw() / W, innerHeight / H, mobile ? 1.5 : 9);
-  const x = (vw() - W * s) / 2, y = (innerHeight - H * s) / 2;
+  // phones and tablets fill the width and scroll down; the computer layout fits the whole window
+  const s = mobile ? Math.min(vw() / W, 1.5) : Math.min(vw() / W, innerHeight / H, 9);
+  const x = (vw() - W * s) / 2, y = mobile ? 0 : (innerHeight - H * s) / 2;
   st.style.transform = `translate(${x}px,${y}px) scale(${s})`;
 }
 let wasMobile = isMobile();
@@ -485,14 +482,13 @@ function syncFocus() {                                               // dim the 
     const show = g.peek || g.open, dim = (focused || anyOpen) && g !== focused && !g.open;
     g.b.classList.toggle("dim", !!dim); g.dot.classList.toggle("dim", !!dim); g.tie && g.tie.classList.toggle("dim", !!dim);
     g.tie && g.tie.classList.toggle("hl", g === focused || g.open);
-    updateRename();
     g.b.classList.toggle("open", g.open); if (g.o !== "*") g.b.setAttribute("aria-expanded", g.open);
     g.seeds.forEach(sd => { sd.el.classList.toggle("show", show); sd.el.classList.toggle("full", g.open); sd.link.classList.toggle("show", show); });
   }
 }
 function toggleOpen(f) { const was = f.open; floaters.forEach(g => g.open = false); f.open = !was; if (f.open) focused = f; syncFocus(); }
 function closeSeeds() { if (floaters.some(g => g.open)) { floaters.forEach(g => g.open = false); syncFocus(); } }
-document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed,#rename")) closeSeeds(); });
+document.addEventListener("pointerdown", e => { if (!e.target.closest(".lab,.seed,#editcats")) closeSeeds(); });
 const mouse = { x: 0, y: 0, in: false };
 const stagePt = e => { const r = $("stage").getBoundingClientRect(), sc = r.width / $("stage").offsetWidth; return { x: (e.clientX - r.left) / sc, y: (e.clientY - r.top) / sc }; };
 addEventListener("pointermove", e => { const m = stagePt(e); mouse.x = m.x; mouse.y = m.y; mouse.in = true; });
@@ -678,7 +674,6 @@ function render() {
   base.forEach(r => { counts[r.d.category] = (counts[r.d.category] || 0) + 1; });
   markSprigs(counts, restrict);
   ctx = { n: rows.length, restrict };
-  updateRename();
 
   $("tab").textContent = "results · " + rows.length;
   $("live").textContent = rows.length + (rows.length === 1 ? " result" : " results");
@@ -705,12 +700,11 @@ function render() {
     r.title = d.text.slice(0, 400);
     r.innerHTML = `<div class="hd"><h3><i class="dt"></i>${hl(d.title, terms)}</h3><span class="cat">${esc(d.category)}</span><span class="cp">Copy</span></div>
       <p>${hl(d.text.replace(/\s+/g, " "), terms)}</p>
-      <div class="ft"><div class="chips">${d.mine ? '<span class="you">yours</span>' : ""}${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button>${d.from ? `<button class="act" data-a="del" aria-label="Reset ${esc(d.title)}">Reset</button>` : ""}<button class="act danger" data-a="trash" aria-label="Delete ${esc(d.title)}">Delete</button></div></div>`;
+      <div class="ft"><div class="chips">${d.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
+      <div class="acts"><button class="act" data-a="edit" aria-label="Edit ${esc(d.title)}">Edit</button><button class="act danger" data-a="trash" aria-label="Delete ${esc(d.title)}">Delete</button></div></div>`;
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "del") { if (confirm("Go back to the original prompt?")) { MINE = MINE.filter(m => m.id !== d.id); save(); renderLabels(); render(); toast("Restored"); } return; }
       if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash"); return; }
       copy(d.text, r);
     };
@@ -781,7 +775,7 @@ function closeModals() {
 $("f-cancel").onclick = closeModals;
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
 function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
-/* ---- fills in a blank title, category or tags from the prompt text ---- */
+/* ---- fills in a blank title or category from the prompt text ---- */
 const STOP = new Set("about above after again also been before being between both could does doing each from have having here into just like make more most must only other over please should some such than that their them then there these they this those through under until very want what when where which while will with would your you the and for are but not can use using write give".split(" "));
 const wordsOf = t => fold(t).split(/[^a-z0-9']+/).filter(w => w.length >= 4 && !STOP.has(w));
 function autoTitle(text) {
@@ -789,22 +783,18 @@ function autoTitle(text) {
   const t = first.length > 60 ? first.slice(0, 57).replace(/\s+\S*$/, "") + "…" : first;
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
-function autoTags(text) {
-  const n = {}; wordsOf(text).forEach(w => n[w] = (n[w] || 0) + 1);
-  return Object.keys(n).sort((a, b) => n[b] - n[a] || b.length - a.length).slice(0, 3);
-}
 function autoCategory(text) {          // the existing category whose prompts share the most words with this one
   const mine = new Set(wordsOf(text)), score = {};
   all().forEach(d => { wordsOf(d.title + " " + d.tags.join(" ") + " " + d.text).forEach(w => { if (mine.has(w)) score[d.category] = (score[d.category] || 0) + 1; }); });
   const best = Object.keys(score).sort((a, b) => score[b] - score[a])[0];
   return best || "category1";
 }
-let editing = null, editingFrom = "";   // editingFrom = file of a built-in prompt being edited
+let editing = null, editingTags = [];
 function openForm(d) {
-  editing = d && d.mine ? d.id : null; editingFrom = d && !d.mine ? d.file : "";
-  $("ftitle").textContent = editing || editingFrom ? "Edit prompt" : "New prompt";
+  editing = d ? d.id : null; editingTags = d ? d.tags : [];
+  $("ftitle").textContent = editing ? "Edit prompt" : "New prompt";
   $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
-  $("f-tags").value = d ? d.tags.join(", ") : ""; $("f-text").value = d ? d.text : "";
+  $("f-text").value = d ? d.text : "";
   $("ferr").textContent = ""; showAutoHints(); showModal("modal", "f-title");
 }
 const closeForm = closeModals;
@@ -812,46 +802,22 @@ function showAutoHints() {             // the boxes preview what will be filled 
   const text = $("f-text").value.trim();
   $("f-title").placeholder = text ? "Will be: " + autoTitle(text) : "Leave blank to fill in automatically";
   $("f-cat").placeholder = text ? "Will be: " + autoCategory(text) : "Leave blank to fill in automatically";
-  $("f-tags").placeholder = text ? "Will be: " + autoTags(text).join(", ") : "Leave blank to fill in automatically";
 }
 $("f-text").addEventListener("input", showAutoHints);
 $("f-save").onclick = () => {
   const text = $("f-text").value.trim();
   if (!text) { $("ferr").textContent = "Please add the prompt text."; return; }
-  const title = $("f-title").value.trim() || autoTitle(text), tags = $("f-tags").value.split(",").filter(t => t.trim());
-  const c = clean({ title, text, category: $("f-cat").value.trim() || autoCategory(text), tags: tags.length ? tags : autoTags(text), from: editingFrom });
+  const title = $("f-title").value.trim() || autoTitle(text);
+  const c = clean({ title, text, category: $("f-cat").value.trim() || autoCategory(text), tags: editingTags });
   const old = editing && MINE.find(x => x.id === editing);
-  if (old) Object.assign(old, c, { id: old.id, from: old.from }); else MINE.push(c);
+  if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
   const ok = save();
   closeModals(); renderLabels(); render();
-  toast(ok ? (editing || editingFrom ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
+  toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
 };
 addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
 $("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
-/* ---- the "Rename category" button: works on the category you opened (sprig) or are browsing ---- */
-let renaming = "";
-function renameTarget() {
-  const f = floaters.find(g => g.open && g.o !== "*");
-  return f ? f.o : (cat && cat !== "*" ? cat : "");
-}
-function updateRename() { $("rename").classList.toggle("show", !!renameTarget()); }
-$("rename").onclick = () => {
-  renaming = renameTarget(); if (!renaming) return;
-  $("r-name").value = renaming; showModal("renamemodal", "r-name"); $("r-name").select();
-};
-function saveRename() {
-  const old = renaming, name = $("r-name").value;
-  closeModals();
-  const n = renameCategory(old, name);
-  if (!n) return toast("Name not changed");
-  floaters.forEach(g => g.open = false);
-  if (cat === old) cat = slug(name);
-  renderLabels(); render(); toast(`Renamed ${n} prompt${n === 1 ? "" : "s"}`);
-}
-$("r-save").onclick = saveRename;
-$("r-cancel").onclick = closeModals;
-$("r-name").onkeydown = e => { if (e.key === "Enter") saveRename(); };
 /* ---- the Trash button and window ---- */
 function refreshTrashBadge() { const n = trashItems().length; $("tcount").textContent = n || ""; $("tcount").style.display = n ? "" : "none"; }
 function showTrash() {

@@ -1,7 +1,6 @@
 /* computer layout: categories that do not fit on the 4 petals wait in a sliding row under the flower */
 body:not(.mobile) #chips{display:flex;position:absolute;left:48px;top:828px;width:480px;gap:8px;overflow-x:auto;padding:2px 2px 8px;z-index:2}
 body:not(.mobile) .chipbtn:not(.extra){display:none}
-#rename{left:748px;width:164px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:none}
-#rename:hover{background:var(--chip)}
-#rename.show{display:block}
-body.mobile #rename{left:16px;top:64px;height:36px;width:150px;font-size:14px}
+#editcats{left:748px;width:164px;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);display:flex;align-items:center;justify-content:center;text-decoration:none}
+#editcats:hover{background:var(--chip)}
+body.mobile #editcats{left:16px;top:64px;height:36px;width:150px;font-size:14px}

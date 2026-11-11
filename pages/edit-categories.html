@@ -1,0 +1,15 @@
+<header class="top">
+  <a class="back" href="/">&larr; Back to prompts</a>
+  <h1>Edit categories</h1>
+  <p>Type a new name to rename a category. Pick a category, then tick prompts and move them to another one.</p>
+</header>
+<div id="bar">
+  <input id="filter" type="search" placeholder="Filter prompts by title" aria-label="Filter prompts by title" autocomplete="off">
+  <span id="sel">0 selected</span>
+  <input id="dest" list="dl" placeholder="Move to… (type a new name to make one)" maxlength="30" aria-label="Category to move the ticked prompts to" autocomplete="off">
+  <datalist id="dl"></datalist>
+  <button id="go" type="button">Move</button>
+</div>
+<nav id="tabs" aria-label="Categories"></nav>
+<div id="cols"></div>
+<div id="toast" role="status"></div>
