@@ -2,7 +2,7 @@
 #chips{display:none}
 html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
 body.mobile{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:linear-gradient(#fff,#efe7fb) fixed}
-body.mobile #flower{left:0;top:124px;width:420px;height:399px}
+body.mobile #flower{left:0;top:124px;width:420px;height:399px;animation:float 8s ease-in-out infinite alternate}
 body.mobile #bloom{display:none}
 body.mobile .brand{left:16px;top:14px}
 body.mobile .brand h1{font-size:19px}

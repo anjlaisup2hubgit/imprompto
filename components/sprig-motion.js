@@ -18,14 +18,19 @@ function startDrag(f, e) {                                           // drag a s
   };
   addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
 }
-const calm = matchMedia("(prefers-reduced-motion:reduce)");
+const calm = matchMedia("(prefers-reduced-motion:reduce)"), flw = { x: 0, y: 0 };
 let last = 0;
 function step(ms) {
   requestAnimationFrame(step);
   const dt = Math.min(2, (ms - last) / 16.7 || 1); last = ms;
   if (isMobile() || !floaters.length) return;
   const t = ms / 1000, searching = document.body.classList.contains("searching");
+  const k = calm.matches ? 0 : 1, lx = mouse.in ? clamp((mouse.x - 781) * 0.012, -8, 8) : 0, ly = mouse.in ? clamp((mouse.y - 450) * 0.012, -8, 8) : 0;
+  flw.x += ((Math.sin(t * 0.4) * 5 + lx) * k - flw.x) * 0.05; flw.y += ((Math.cos(t * 0.33) * 7 - 5 + ly) * k - flw.y) * 0.05;   // the flower sways and leans toward the cursor
+  $("flower").style.translate = flw.x + "px " + flw.y + "px";
   for (const f of floaters) {
+    f.dot.style.left = f.p.dx + flw.x + "px"; f.dot.style.top = f.p.dy + flw.y + "px";                // dots and tendrils ride on the flower
+    if (f.hold) { $("bloom").style.left = f.p.dx + flw.x + "px"; $("bloom").style.top = f.p.dy + flw.y + "px"; }
     f.amp += (((f.hold || searching || calm.matches) ? 0 : 1) - f.amp) * 0.08;                     // ease to rest / back
     if (f.drag && f.drag.on) { f.vx = (f.drag.tx - f.x) * 0.5; f.vy = (f.drag.ty - f.y) * 0.5; f.x = f.drag.tx; f.y = f.drag.ty; }
     else {
@@ -45,9 +50,10 @@ function step(ms) {
     }
     f.b.style.left = f.x + "px"; f.b.style.top = f.y + "px";
     // the tendril: a curve that trails behind the motion
-    const mx = (f.p.dx + f.x) / 2, my = (f.p.dy + f.y) / 2, nx = -(f.y - f.p.dy), ny = f.x - f.p.dx, nl = Math.hypot(nx, ny) || 1;
+    const dx0 = f.p.dx + flw.x, dy0 = f.p.dy + flw.y;
+    const mx = (dx0 + f.x) / 2, my = (dy0 + f.y) / 2, nx = -(f.y - dy0), ny = f.x - dx0, nl = Math.hypot(nx, ny) || 1;
     const bend = (calm.matches ? 0 : Math.sin(t * 0.8 + f.ph) * 14) + clamp((f.vx * ny - f.vy * nx) / nl * -3, -40, 40);
-    f.line.setAttribute("d", `M${f.p.dx} ${f.p.dy}Q${mx + nx / nl * bend} ${my + ny / nl * bend} ${f.x} ${f.y}`);
+    f.line.setAttribute("d", `M${dx0} ${dy0}Q${mx + nx / nl * bend} ${my + ny / nl * bend} ${f.x} ${f.y}`);
     // seeds: fan out away from the flower, trailing the sprig on springs (result seeds use the same fan, but wider)
     const act = f.rs.length ? f.rs : f.seeds, show = f.rs.length > 0 || f.peek || f.open, n = act.length, big = f.open || f.rs.length > 0;
     const rs_ = f.rs.length > 0, rx = rs_ ? 200 : big ? 175 : 150, ry = rs_ ? 175 : big ? 140 : 115, spread = 3.2;
