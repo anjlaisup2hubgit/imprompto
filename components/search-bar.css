@@ -1,6 +1,6 @@
 /* search bar sitting on the pollen */
 #glow{position:absolute;left:680px;top:310px;width:240px;height:240px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,185,138,.6),rgba(255,185,138,0) 70%);pointer-events:none;animation:pulse 4s ease-in-out infinite}
+  background:radial-gradient(circle,rgba(var(--bar,255,185,138),.6),rgba(var(--bar,255,185,138),0) 70%);pointer-events:none;animation:pulse 4s ease-in-out infinite}
 #bar{position:absolute;left:650px;top:404px;width:300px;height:52px;border-radius:26px;
   background:radial-gradient(circle at 18% 28%,#fff6cf,rgba(255,246,207,0) 45%),radial-gradient(circle at 2px 2px,rgba(194,110,10,.28) 1.4px,transparent 1.6px) 0 0/13px 13px,linear-gradient(#ffd877,#ffbd55);
   border:3px solid #f59e0b;display:flex;align-items:center;padding:0 8px 0 16px;gap:10px;box-shadow:0 12px 26px rgba(106,75,214,.2)}

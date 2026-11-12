@@ -1,0 +1,27 @@
+/* edit mode: only two buttons on the screen edges (move sprigs, picture style) plus Done; the rest steps aside */
+#edge{display:none}
+body.editing #edge{display:block}
+body.editing :is(#setbtn,#menu,#bar,#glow,#coach,#box,#chips){display:none!important}
+body.editing :is(.lab,.seed,.chipbtn){pointer-events:none}
+.edgebtn{position:fixed;top:calc(50% - 80px);width:64px;height:160px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:40;
+  background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1.5px solid #cfc3ee;color:var(--chipink);font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
+.edgebtn span{width:50px;text-align:center;line-height:1.2}
+#movebtn{left:0;border-radius:0 32px 32px 0;border-left:0}
+#stylebtn{right:0;border-radius:32px 0 0 32px;border-right:0}
+.edgebtn:hover,.edgebtn.on,.edgebtn[aria-expanded=true]{background:var(--chip)}
+#stylepanel{display:none;position:fixed;right:76px;top:50%;transform:translateY(-50%);width:210px;max-height:calc(100% - 32px);overflow:auto;z-index:40;padding:10px;border-radius:22px;
+  background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1.5px solid #cfc3ee;box-shadow:0 12px 30px rgba(120,80,220,.2)}
+#stylepanel.open{display:block}
+#styles{display:flex;flex-direction:column;gap:2px}
+.sty{height:32px;padding:0 14px;border:0;border-radius:16px;background:none;color:var(--chipink);font-size:14px;font-weight:700;text-align:left;cursor:pointer}
+.sty:hover{background:rgba(239,233,251,.7)}
+.sty.on{background:var(--chip)}
+.prow{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #e6defa}
+.prow button{flex:1;height:32px;border-radius:16px;border:1.5px solid #cfc3ee;background:#fff;color:var(--chipink);font-size:13px;font-weight:700;cursor:pointer}
+.barrow label{flex:1;font-size:13px;font-weight:700;color:var(--chipink)}
+.barrow button{flex:none;padding:0 10px}
+#barcolor{flex:none;width:34px;height:32px;padding:0;border:1.5px solid #cfc3ee;border-radius:16px;background:#fff;cursor:pointer}
+#pichint{position:fixed;top:20px;left:50%;transform:translateX(-50%);margin:0;padding:8px 16px;border-radius:18px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:14px;font-weight:700}
+#pichint[hidden]{display:none}
+#donebtn{position:fixed;bottom:24px;left:calc(50% - 60px);width:120px;height:44px;border-radius:22px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
+#donebtn:hover{background:var(--chip)}

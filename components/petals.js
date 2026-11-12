@@ -29,7 +29,8 @@ function renderLabels() {
   $("labels").innerHTML = ""; $("chips").innerHTML = ""; floaters.length = 0; focused = null;
   ln.querySelectorAll(".slink").forEach(n => n.remove()); RS.length = 0;
   let tieHtml = "", k = 0;
-  const mk = (o, p, label, count, color) => {
+  const mk = (o, spot, label, count, color) => {
+    const p = withDot(o, spot);
     tieHtml += `<g class="tie"><path d="M${p.dx} ${p.dy}L${p.x} ${p.y}" fill="none" stroke="${color}" stroke-width="1.6"/></g>`;
     const delay = `animation-delay:${0.1 + 0.08 * k++}s`;
     const dot = document.createElement("div"); dot.className = "dot"; dot.style.cssText = `left:${p.dx}px;top:${p.dy}px;--c:${color};${delay}`;

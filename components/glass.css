@@ -7,9 +7,9 @@ body.mobile #stage:before{left:-40px;top:84px;width:500px;height:480px}
   border:1.5px solid rgba(190,170,240,.6)}
 .cb.on{background:var(--chipink);border-color:var(--chipink)}
 #trashbtn:hover,#sobtn:hover,#editcats:hover{background:rgba(255,255,255,.9)}
-#bar{background:radial-gradient(circle at 18% 28%,rgba(255,255,255,.6),rgba(255,255,255,0) 50%),linear-gradient(rgba(255,226,190,.5),rgba(255,196,150,.45));
+#bar{background:radial-gradient(circle at 18% 28%,rgba(255,255,255,.6),rgba(255,255,255,0) 50%),linear-gradient(rgba(var(--bar-hi,255,226,190),.5),rgba(var(--bar,255,196,150),.45));
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.9);
-  box-shadow:0 0 34px 8px rgba(255,185,138,.5),0 8px 20px rgba(106,75,214,.15)}
-#bar:focus-within{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 40px 12px rgba(255,170,110,.65),0 8px 20px rgba(106,75,214,.15)}
+  box-shadow:0 0 34px 8px rgba(var(--bar,255,185,138),.5),0 8px 20px rgba(106,75,214,.15)}
+#bar:focus-within{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 40px 12px rgba(var(--bar,255,170,110),.65),0 8px 20px rgba(106,75,214,.15)}
 #bar :focus-visible{outline:0}
-#q::placeholder{color:#7a4a30}
+#q::placeholder{color:rgb(var(--bar-ink,122,74,48))}

@@ -1,0 +1,10 @@
+/* the holographic picture sits where the flower is; the flower hides while a picture is set */
+#holo{display:none;position:absolute;left:332px;top:0;width:898px;height:854px;pointer-events:none;will-change:transform;
+  -webkit-mask-image:radial-gradient(closest-side,#000 68%,transparent 100%);mask-image:radial-gradient(closest-side,#000 68%,transparent 100%);
+  filter:drop-shadow(0 16px 30px rgba(120,80,220,.25))}
+body.pic #holo{display:block}
+body.pic #flower{display:none}
+body.mobile #holo{left:0;top:124px;width:420px;height:399px}
+/* placing mode: dots can be grabbed, everything else steps aside */
+body.placing .dot{pointer-events:auto;cursor:grab;z-index:5;box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
+body.placing .lab,body.placing .seed{pointer-events:none}

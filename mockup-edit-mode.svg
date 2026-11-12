@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbf9ff"/><stop offset="1" stop-color="#efe8ff"/></linearGradient>
+    <radialGradient id="holo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#f6a46a"/><stop offset=".45" stop-color="#b9a2e8"/><stop offset="1" stop-color="#b9a2e8" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <!-- title -->
+  <text x="48" y="64" font-size="28" font-weight="800" fill="#2b2160">Imprompto</text>
+  <text x="48" y="88" font-size="15" fill="#7a7396">Edit mode</text>
+  <!-- the picture, with slice lines like the holographic look -->
+  <ellipse cx="600" cy="350" rx="260" ry="250" fill="url(#holo)"/>
+  <g stroke="#fff" stroke-opacity=".35" stroke-width="3">
+    <path d="M400 250h400M390 290h420M385 330h430M385 370h430M390 410h420M400 450h400"/>
+  </g>
+  <!-- hand-placed sprigs: dots are draggable -->
+  <g font-size="15" font-weight="700" fill="#43357d">
+    <path d="M300 160L470 270" stroke="#8b5cf6" stroke-width="1.6" fill="none"/>
+    <rect x="190" y="140" width="170" height="40" rx="20" fill="#fff" stroke="#cfc3ee"/><circle cx="212" cy="160" r="6" fill="#8b5cf6"/><text x="228" y="165">claude-prompts</text>
+    <circle cx="470" cy="270" r="10" fill="#fff" stroke="#8b5cf6" stroke-width="3"/>
+    <path d="M900 170L740 300" stroke="#d946ef" stroke-width="1.6" fill="none"/>
+    <rect x="880" y="150" width="170" height="40" rx="20" fill="#fff" stroke="#cfc3ee"/><circle cx="902" cy="170" r="6" fill="#d946ef"/><text x="918" y="175">git-commands</text>
+    <circle cx="740" cy="300" r="10" fill="#fff" stroke="#d946ef" stroke-width="3"/>
+    <path d="M330 520L520 440" stroke="#d97706" stroke-width="1.6" fill="none"/>
+    <rect x="170" y="500" width="190" height="40" rx="20" fill="#fff" stroke="#cfc3ee"/><circle cx="192" cy="520" r="6" fill="#d97706"/><text x="208" y="525">terminal-commands</text>
+    <circle cx="520" cy="440" r="10" fill="#fff" stroke="#d97706" stroke-width="3"/>
+  </g>
+  <!-- grabbing hand on one dot -->
+  <circle cx="740" cy="300" r="20" fill="#d946ef" fill-opacity=".25"/>
+  <!-- LEFT EDGE button: move sprigs -->
+  <g>
+    <rect x="0" y="270" width="64" height="160" rx="32" fill="#fff" stroke="#cfc3ee" stroke-width="1.5"/>
+    <g stroke="#43357d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M32 308v44M10 330h44M32 308l-6 7M32 308l6 7M32 352l-6-7M32 352l6-7M10 330l7-6M10 330l7 6M54 330l-7-6M54 330l-7 6"/>
+    </g>
+    <text x="32" y="384" font-size="12" font-weight="700" fill="#43357d" text-anchor="middle">Move</text>
+    <text x="32" y="400" font-size="12" font-weight="700" fill="#43357d" text-anchor="middle">sprigs</text>
+  </g>
+  <!-- RIGHT EDGE button: picture style (open, showing the list) -->
+  <g>
+    <rect x="1136" y="270" width="64" height="160" rx="32" fill="#fff" stroke="#cfc3ee" stroke-width="1.5"/>
+    <g stroke="#43357d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="18" y="0" width="28" height="28" rx="6" transform="translate(1136 306)"/><circle cx="1160" cy="326" r="4"/><path d="M1154 334l6-6 8 8"/>
+    </g>
+    <text x="1168" y="384" font-size="12" font-weight="700" fill="#43357d" text-anchor="middle">Picture</text>
+    <text x="1168" y="400" font-size="12" font-weight="700" fill="#43357d" text-anchor="middle">style</text>
+    <rect x="956" y="170" width="170" height="350" rx="22" fill="#fff" fill-opacity=".92" stroke="#cfc3ee" stroke-width="1.5"/>
+    <g font-size="14" font-weight="700" fill="#43357d">
+      <rect x="968" y="182" width="146" height="30" rx="15" fill="#ece5ff"/><text x="984" y="202">Holographic</text>
+      <text x="984" y="240">Pixel art</text><text x="984" y="274">Halftone dots</text><text x="984" y="308">ASCII text</text>
+      <text x="984" y="342">Glitch / VHS</text><text x="984" y="376">Watercolor</text><text x="984" y="410">Neon outline</text>
+      <text x="984" y="444">Duotone</text><text x="984" y="478">Sketch</text>
+    </g>
+  </g>
+  <!-- the only other control: leave edit mode -->
+  <rect x="540" y="620" width="120" height="44" rx="22" fill="#fff" stroke="#cfc3ee" stroke-width="1.5"/>
+  <text x="600" y="648" font-size="16" font-weight="700" fill="#43357d" text-anchor="middle">Done</text>
+  <text x="600" y="690" font-size="12" fill="#7a7396" text-anchor="middle">Trash, Sign out, search and Settings are hidden while editing</text>
+</svg>

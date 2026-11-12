@@ -1,0 +1,15 @@
+<div id="edge">
+  <button class="edgebtn" id="movebtn" aria-pressed="false">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#43357d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3v20M3 13h20M13 3l-3 3M13 3l3 3M13 23l-3-3M13 23l3-3M3 13l3-3M3 13l3 3M23 13l-3-3M23 13l-3 3"/></svg>
+    <span>Move sprigs</span></button>
+  <button class="edgebtn" id="stylebtn" aria-expanded="false">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#43357d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="20" height="20" rx="5"/><circle cx="10" cy="10" r="2"/><path d="M4 20l6-6 4 4 3-3 5 5"/></svg>
+    <span>Picture style</span></button>
+  <div id="stylepanel" role="group" aria-label="Picture style">
+    <div id="styles"></div>
+    <div class="prow"><button id="choosepic">Choose picture</button><button id="rmpic">Remove</button></div>
+    <div class="prow barrow"><label for="barcolor">Search bar colour</label><input type="color" id="barcolor"><button id="barauto">Auto</button></div>
+  </div>
+  <p id="pichint" hidden>Drag each dot to where you want it</p>
+  <button id="donebtn">Done</button>
+</div>
