@@ -9,6 +9,8 @@ const b64uToBytes = s => {
 };
 const b64uToJson = s => JSON.parse(new TextDecoder().decode(b64uToBytes(s)));
 
+let certs = null, certsAt = 0;
+
 async function verifiedEmail(request, env) {
   const team = env.ACCESS_TEAM_DOMAIN, aud = env.ACCESS_AUD;
   if (!team || !aud) return null;
@@ -24,9 +26,12 @@ async function verifiedEmail(request, env) {
     if (payload.iss !== `https://${team}`) return null;
     if (!([].concat(payload.aud)).includes(aud)) return null;
     if (typeof payload.email !== 'string' || !payload.email) return null;
-    const res = await fetch(`https://${team}/cdn-cgi/access/certs`);
-    if (!res.ok) return null;
-    const jwk = (await res.json()).keys.find(k => k.kid === header.kid);
+    if (!certs || Date.now() - certsAt > 600000) { // keep Cloudflare's keys for 10 minutes instead of asking every request
+      const res = await fetch(`https://${team}/cdn-cgi/access/certs`);
+      if (!res.ok) return null;
+      certs = (await res.json()).keys; certsAt = Date.now();
+    }
+    const jwk = certs.find(k => k.kid === header.kid);
     if (!jwk) return null;
     const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
     const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64uToBytes(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1]));

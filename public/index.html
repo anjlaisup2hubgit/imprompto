@@ -21,7 +21,7 @@ button:active{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* The whole design lives on a fixed stage that is scaled to fit the window. */
 #stage{position:absolute;left:0;top:0;width:1200px;height:900px;transform-origin:0 0}
-#flower{position:absolute;left:332px;top:0;width:898px;height:854px;pointer-events:none;
+#flower{position:absolute;left:332px;top:0;width:898px;height:854px;pointer-events:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;
   filter:drop-shadow(0 16px 30px rgba(120,80,220,.25));will-change:transform}
 @keyframes float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
 @keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
@@ -778,10 +778,12 @@ function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.
 /* ---- fills in a blank title or category from the prompt text ---- */
 const STOP = new Set("about above after again also been before being between both could does doing each from have having here into just like make more most must only other over please should some such than that their them then there these they this those through under until very want what when where which while will with would your you the and for are but not can use using write give".split(" "));
 const wordsOf = t => fold(t).split(/[^a-z0-9']+/).filter(w => w.length >= 4 && !STOP.has(w));
-function autoTitle(text) {
-  const first = text.replace(/\s+/g, " ").split(/(?<=[.!?:])\s/)[0].replace(/[.!?:]+$/, "");
-  const t = first.length > 60 ? first.slice(0, 57).replace(/\s+\S*$/, "") + "…" : first;
-  return t.charAt(0).toUpperCase() + t.slice(1);
+function autoTitle(text) {             // a short keyword title (top 3 words), not a copy of the prompt's first sentence
+  const ws = wordsOf(text), count = {};
+  ws.forEach(w => count[w] = (count[w] || 0) + 1);
+  const top = [...new Set(ws)].sort((a, b) => count[b] - count[a]).slice(0, 3);
+  const picked = [...new Set(ws)].filter(w => top.includes(w));
+  return picked.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") || "Untitled";
 }
 function autoCategory(text) {          // the existing category whose prompts share the most words with this one
   const mine = new Set(wordsOf(text)), score = {};
