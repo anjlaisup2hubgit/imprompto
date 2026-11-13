@@ -17,6 +17,8 @@ function readPicture(file) {                                          // shrink 
   im.src = url;
 }
 function setPlacing(on) {
+  if (on) setAligning(false);
+  $("pichint").textContent = "Drag each dot to where you want it";
   document.body.classList.toggle("placing", on);
   $("movebtn").classList.toggle("on", on); $("movebtn").setAttribute("aria-pressed", on);
   $("pichint").hidden = !on;

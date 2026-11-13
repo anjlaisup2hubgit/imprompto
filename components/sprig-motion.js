@@ -14,11 +14,14 @@ function startDrag(f, e) {                                           // drag a s
   const up = () => {
     removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
     f.b.classList.remove("drag"); f.drag = null;
+    if (f.moved && document.body.classList.contains("editing")) {    // in edit mode a dropped box stays where it was dropped
+      f.p.x = Math.round(clamp(f.x, 90, 1110)); f.p.y = Math.round(clamp(f.y, 110, 870)); saveLabelSpot(f.o, f.p.x, f.p.y);
+    }
     if (f.moved) setTimeout(() => f.moved = false, 0);               // swallow the click that ends a drag
   };
   addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
 }
-const calm = matchMedia("(prefers-reduced-motion:reduce)"), flw = { x: 0, y: 0 };
+const calm = matchMedia("(prefers-reduced-motion:reduce)"), flw = { x: picOff.x, y: picOff.y };
 let last = 0;
 function step(ms) {
   requestAnimationFrame(step);
@@ -26,7 +29,7 @@ function step(ms) {
   if (isMobile() || !floaters.length) return;
   const t = ms / 1000, searching = document.body.classList.contains("searching");
   const k = calm.matches ? 0 : 1, lx = mouse.in ? clamp((mouse.x - 781) * 0.012, -8, 8) : 0, ly = mouse.in ? clamp((mouse.y - 450) * 0.012, -8, 8) : 0;
-  flw.x += ((Math.sin(t * 0.4) * 5 + lx) * k - flw.x) * 0.05; flw.y += ((Math.cos(t * 0.33) * 7 - 5 + ly) * k - flw.y) * 0.05;   // the flower sways and leans toward the cursor
+  flw.x += ((Math.sin(t * 0.4) * 5 + lx) * k + picOff.x - flw.x) * 0.05; flw.y += ((Math.cos(t * 0.33) * 7 - 5 + ly) * k + picOff.y - flw.y) * 0.05;   // the flower sways and leans toward the cursor, around the spot the user moved it to
   $("flower").style.translate = flw.x + "px " + flw.y + "px";
   for (const f of floaters) {
     f.dot.style.left = f.p.dx + flw.x + "px"; f.dot.style.top = f.p.dy + flw.y + "px";                // dots and tendrils ride on the flower

@@ -268,8 +268,11 @@ body.mobile #menu{left:240px;top:62px}
 /* edit mode: only two buttons on the screen edges (move sprigs, picture style) plus Done; the rest steps aside */
 #edge{display:none}
 body.editing #edge{display:block}
-body.editing :is(#setbtn,#menu,#bar,#glow,#coach,#box,#chips){display:none!important}
-body.editing :is(.lab,.seed,.chipbtn){pointer-events:none}
+body.editing :is(#setbtn,#menu,#bar,#glow,#coach,#box,#chips,.brand){display:none!important}
+body.editing :is(.seed,.chipbtn){pointer-events:none}
+body.editing .lab{cursor:grab}
+body.aligning :is(.lab,.dot){pointer-events:none}
+body.aligning{cursor:move}
 .edgebtn{position:fixed;top:calc(50% - 80px);width:64px;height:160px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:40;
   background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1.5px solid #cfc3ee;color:var(--chipink);font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
 .edgebtn span{width:50px;text-align:center;line-height:1.2}
@@ -350,6 +353,7 @@ body.mobile #pichint{top:76px;width:max-content;max-width:90%;text-align:center}
     <span>Picture style</span></button>
   <div id="stylepanel" role="group" aria-label="Picture style">
     <div id="styles"></div>
+    <div class="prow"><button id="alignbtn">Move picture</button><button id="centerpic">Centre</button></div>
     <div class="prow"><button id="choosepic">Choose picture</button><button id="rmpic">Remove</button></div>
     <div class="prow barrow"><label for="barcolor">Search bar colour</label><input type="color" id="barcolor"><button id="barauto">Auto</button></div>
   </div>
@@ -489,10 +493,16 @@ let picture = (() => { try { return JSON.parse(localStorage.getItem(PIC)) || nul
 function savePicture() {
   try { picture ? localStorage.setItem(PIC, JSON.stringify(picture)) : localStorage.removeItem(PIC); return true; } catch (e) { return false; }
 }
-function withDot(cat, spot) {                         // a copy of the default spot, with the hand-placed dot if there is one
-  const d = picture && picture.dots[cat];
-  return d ? { ...spot, dx: d[0], dy: d[1] } : { ...spot };
+function withDot(cat, spot) {                         // a copy of the default spot, with the hand-placed dot and box if there are any
+  const d = picture && picture.dots[cat], l = picture && picture.labels && picture.labels[cat];
+  return { ...spot, ...(d ? { dx: d[0], dy: d[1] } : {}), ...(l ? { x: l[0], y: l[1] } : {}) };
 }
+function saveLabelSpot(cat, x, y) {                   // remember where the user dropped a category box
+  picture = picture || { dots: {} }; (picture.labels = picture.labels || {})[cat] = [x, y]; savePicture();
+}
+const OFF = "promptlib.picoff.v1";                     // how far the whole picture was moved, e.g. {x:-161,y:23}; on this device only
+let picOff = (() => { try { return JSON.parse(localStorage.getItem(OFF)) || { x: 0, y: 0 }; } catch (e) { return { x: 0, y: 0 }; } })();
+function savePicOff() { try { localStorage.setItem(OFF, JSON.stringify(picOff)); } catch (e) {} }
 function picStore(mode, fn) {                         // run one small job on the picture box in IndexedDB
   return new Promise((ok, no) => {
     const open = indexedDB.open("imprompto", 1);
@@ -629,8 +639,9 @@ function renderLabels() {
     b.innerHTML = `<b></b>${esc(label)} <i>${count}</i>`;
     const f = { o, p, b, dot, color, ph: k * 1.9, amp: 1, hold: false, x: p.x, y: p.y, vx: 0, vy: 0, seeds: [], rs: [], label, total: count, open: false, peek: false, drag: null };
     $("labels").append(dot, b);
-    b.addEventListener("click", () => { if (f.moved) { f.moved = false; return; } o === "*" ? toggleCat(o) : toggleOpen(f); });
-    const on = () => { dot.classList.add("hot"); bloom(true, p, color); f.hold = true; enter(f); };
+    const editing = () => document.body.classList.contains("editing");
+    b.addEventListener("click", () => { if (f.moved || editing()) { f.moved = false; return; } o === "*" ? toggleCat(o) : toggleOpen(f); });
+    const on = () => { if (editing()) return; dot.classList.add("hot"); bloom(true, p, color); f.hold = true; enter(f); };
     const off = () => { dot.classList.remove("hot"); bloom(false, p, color); f.hold = false; leave(); };
     b.addEventListener("mouseenter", on); b.addEventListener("focus", on); b.addEventListener("mouseleave", off); b.addEventListener("blur", off);
     b.addEventListener("pointerdown", e => startDrag(f, e));
@@ -720,11 +731,14 @@ function startDrag(f, e) {                                           // drag a s
   const up = () => {
     removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
     f.b.classList.remove("drag"); f.drag = null;
+    if (f.moved && document.body.classList.contains("editing")) {    // in edit mode a dropped box stays where it was dropped
+      f.p.x = Math.round(clamp(f.x, 90, 1110)); f.p.y = Math.round(clamp(f.y, 110, 870)); saveLabelSpot(f.o, f.p.x, f.p.y);
+    }
     if (f.moved) setTimeout(() => f.moved = false, 0);               // swallow the click that ends a drag
   };
   addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
 }
-const calm = matchMedia("(prefers-reduced-motion:reduce)"), flw = { x: 0, y: 0 };
+const calm = matchMedia("(prefers-reduced-motion:reduce)"), flw = { x: picOff.x, y: picOff.y };
 let last = 0;
 function step(ms) {
   requestAnimationFrame(step);
@@ -732,7 +746,7 @@ function step(ms) {
   if (isMobile() || !floaters.length) return;
   const t = ms / 1000, searching = document.body.classList.contains("searching");
   const k = calm.matches ? 0 : 1, lx = mouse.in ? clamp((mouse.x - 781) * 0.012, -8, 8) : 0, ly = mouse.in ? clamp((mouse.y - 450) * 0.012, -8, 8) : 0;
-  flw.x += ((Math.sin(t * 0.4) * 5 + lx) * k - flw.x) * 0.05; flw.y += ((Math.cos(t * 0.33) * 7 - 5 + ly) * k - flw.y) * 0.05;   // the flower sways and leans toward the cursor
+  flw.x += ((Math.sin(t * 0.4) * 5 + lx) * k + picOff.x - flw.x) * 0.05; flw.y += ((Math.cos(t * 0.33) * 7 - 5 + ly) * k + picOff.y - flw.y) * 0.05;   // the flower sways and leans toward the cursor, around the spot the user moved it to
   $("flower").style.translate = flw.x + "px " + flw.y + "px";
   for (const f of floaters) {
     f.dot.style.left = f.p.dx + flw.x + "px"; f.dot.style.top = f.p.dy + flw.y + "px";                // dots and tendrils ride on the flower
@@ -890,6 +904,8 @@ function readPicture(file) {                                          // shrink 
   im.src = url;
 }
 function setPlacing(on) {
+  if (on) setAligning(false);
+  $("pichint").textContent = "Drag each dot to where you want it";
   document.body.classList.toggle("placing", on);
   $("movebtn").classList.toggle("on", on); $("movebtn").setAttribute("aria-pressed", on);
   $("pichint").hidden = !on;
@@ -909,6 +925,27 @@ $("labels").addEventListener("pointerdown", e => {                    // in plac
   addEventListener("pointermove", move); addEventListener("pointerup", up);
 });
 if (picture) showPicture();
+/* ---- move the whole picture: drag it anywhere, or press Centre; its dots and lines ride along ---- */
+function setAligning(on) {
+  if (on) setPlacing(false);
+  document.body.classList.toggle("aligning", on);
+  $("alignbtn").classList.toggle("on", on);
+  if (on) $("pichint").textContent = "Drag the picture where you want it";
+  $("pichint").hidden = !on;
+}
+$("alignbtn").onclick = () => setAligning(!document.body.classList.contains("aligning"));
+$("centerpic").onclick = () => { picOff.x = 620 - 781; picOff.y = 450 - 427; savePicOff(); };   // the picture's middle onto the stage's middle
+document.addEventListener("pointerdown", e => {
+  if (!document.body.classList.contains("aligning") || e.button !== 0 || e.target.closest("#edge")) return;
+  e.preventDefault();
+  const a = stagePt(e), x0 = picOff.x, y0 = picOff.y;
+  const move = ev => {
+    const q = stagePt(ev), nx = Math.round(x0 + q.x - a.x), ny = Math.round(y0 + q.y - a.y);
+    flw.x += nx - picOff.x; flw.y += ny - picOff.y; picOff.x = nx; picOff.y = ny;      // follow the pointer right away, no easing lag
+  };
+  const up = () => { removeEventListener("pointermove", move); removeEventListener("pointerup", up); savePicOff(); };
+  addEventListener("pointermove", move); addEventListener("pointerup", up);
+});
 /* ---- Edit mode: the list of picture styles; the choice is remembered and shown on the next frame ---- */
 function drawStyleList() {
   const now = PIC_STYLES[picStyleIndex()].id;
@@ -1175,7 +1212,7 @@ addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
 function setStylePanel(on) { $("stylepanel").classList.toggle("open", on); $("stylebtn").setAttribute("aria-expanded", on); }
 function setEditing(on) {
   document.body.classList.toggle("editing", on);
-  if (on) setMenu(false); else { setPlacing(false); setStylePanel(false); }
+  if (on) setMenu(false); else { setPlacing(false); setAligning(false); setStylePanel(false); }
 }
 $("editdash").onclick = () => setEditing(true);
 $("donebtn").onclick = () => setEditing(false);

@@ -42,8 +42,9 @@ function renderLabels() {
     b.innerHTML = `<b></b>${esc(label)} <i>${count}</i>`;
     const f = { o, p, b, dot, color, ph: k * 1.9, amp: 1, hold: false, x: p.x, y: p.y, vx: 0, vy: 0, seeds: [], rs: [], label, total: count, open: false, peek: false, drag: null };
     $("labels").append(dot, b);
-    b.addEventListener("click", () => { if (f.moved) { f.moved = false; return; } o === "*" ? toggleCat(o) : toggleOpen(f); });
-    const on = () => { dot.classList.add("hot"); bloom(true, p, color); f.hold = true; enter(f); };
+    const editing = () => document.body.classList.contains("editing");
+    b.addEventListener("click", () => { if (f.moved || editing()) { f.moved = false; return; } o === "*" ? toggleCat(o) : toggleOpen(f); });
+    const on = () => { if (editing()) return; dot.classList.add("hot"); bloom(true, p, color); f.hold = true; enter(f); };
     const off = () => { dot.classList.remove("hot"); bloom(false, p, color); f.hold = false; leave(); };
     b.addEventListener("mouseenter", on); b.addEventListener("focus", on); b.addEventListener("mouseleave", off); b.addEventListener("blur", off);
     b.addEventListener("pointerdown", e => startDrag(f, e));

@@ -2,7 +2,7 @@
 function setStylePanel(on) { $("stylepanel").classList.toggle("open", on); $("stylebtn").setAttribute("aria-expanded", on); }
 function setEditing(on) {
   document.body.classList.toggle("editing", on);
-  if (on) setMenu(false); else { setPlacing(false); setStylePanel(false); }
+  if (on) setMenu(false); else { setPlacing(false); setAligning(false); setStylePanel(false); }
 }
 $("editdash").onclick = () => setEditing(true);
 $("donebtn").onclick = () => setEditing(false);

@@ -6,10 +6,16 @@ let picture = (() => { try { return JSON.parse(localStorage.getItem(PIC)) || nul
 function savePicture() {
   try { picture ? localStorage.setItem(PIC, JSON.stringify(picture)) : localStorage.removeItem(PIC); return true; } catch (e) { return false; }
 }
-function withDot(cat, spot) {                         // a copy of the default spot, with the hand-placed dot if there is one
-  const d = picture && picture.dots[cat];
-  return d ? { ...spot, dx: d[0], dy: d[1] } : { ...spot };
+function withDot(cat, spot) {                         // a copy of the default spot, with the hand-placed dot and box if there are any
+  const d = picture && picture.dots[cat], l = picture && picture.labels && picture.labels[cat];
+  return { ...spot, ...(d ? { dx: d[0], dy: d[1] } : {}), ...(l ? { x: l[0], y: l[1] } : {}) };
 }
+function saveLabelSpot(cat, x, y) {                   // remember where the user dropped a category box
+  picture = picture || { dots: {} }; (picture.labels = picture.labels || {})[cat] = [x, y]; savePicture();
+}
+const OFF = "promptlib.picoff.v1";                     // how far the whole picture was moved, e.g. {x:-161,y:23}; on this device only
+let picOff = (() => { try { return JSON.parse(localStorage.getItem(OFF)) || { x: 0, y: 0 }; } catch (e) { return { x: 0, y: 0 }; } })();
+function savePicOff() { try { localStorage.setItem(OFF, JSON.stringify(picOff)); } catch (e) {} }
 function picStore(mode, fn) {                         // run one small job on the picture box in IndexedDB
   return new Promise((ok, no) => {
     const open = indexedDB.open("imprompto", 1);

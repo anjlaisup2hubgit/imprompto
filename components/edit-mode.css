@@ -1,8 +1,11 @@
 /* edit mode: only two buttons on the screen edges (move sprigs, picture style) plus Done; the rest steps aside */
 #edge{display:none}
 body.editing #edge{display:block}
-body.editing :is(#setbtn,#menu,#bar,#glow,#coach,#box,#chips){display:none!important}
-body.editing :is(.lab,.seed,.chipbtn){pointer-events:none}
+body.editing :is(#setbtn,#menu,#bar,#glow,#coach,#box,#chips,.brand){display:none!important}
+body.editing :is(.seed,.chipbtn){pointer-events:none}
+body.editing .lab{cursor:grab}
+body.aligning :is(.lab,.dot){pointer-events:none}
+body.aligning{cursor:move}
 .edgebtn{position:fixed;top:calc(50% - 80px);width:64px;height:160px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:40;
   background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1.5px solid #cfc3ee;color:var(--chipink);font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
 .edgebtn span{width:50px;text-align:center;line-height:1.2}
