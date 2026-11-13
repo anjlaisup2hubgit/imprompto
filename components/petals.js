@@ -4,6 +4,10 @@ const SPOTS = [                                   // petal positions: label (x,y
   { x: 1070, y: 200, dx: 862, dy: 128 },
   { x: 330,  y: 600, dx: 555, dy: 490 },
   { x: 1070, y: 500, dx: 933, dy: 336 },
+  { x: 230,  y: 400, dx: 590, dy: 340 },     // spots 5-8: room for 8 categories
+  { x: 1090, y: 350, dx: 905, dy: 245 },
+  { x: 230,  y: 780, dx: 620, dy: 610 },
+  { x: 1060, y: 740, dx: 850, dy: 600 },
 ];
 const ALLSPOT = { x: 640, y: 835, dx: 610, dy: 735 };
 const ORDER = ["category1", "category2", "category3", "category4"];
