@@ -1,9 +1,12 @@
-let editing = null, editingTags = [];
+let editing = null, editingTags = [], blankForm = true;   // blankForm false = a new prompt was closed by accident, so its words stay in the boxes
 function openForm(d) {
   editing = d ? d.id : null; editingTags = d ? d.tags : [];
   $("ftitle").textContent = editing ? "Edit prompt" : "New prompt";
-  $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
-  $("f-text").value = d ? d.text : "";
+  if (d || blankForm) {
+    $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
+    $("f-text").value = d ? d.text : "";
+  }
+  blankForm = !!d;
   $("ferr").textContent = ""; showAutoHints(); showModal("modal", "f-title");
 }
 const closeForm = closeModals;
@@ -21,6 +24,11 @@ $("f-save").onclick = () => {
   const old = editing && MINE.find(x => x.id === editing);
   if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
   const ok = save();
+  blankForm = true;
   closeModals(); renderLabels(); render();
   toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
 };
+$("f-cancel").onclick = () => { blankForm = true; closeModals(); };   // Cancel throws the words away; Esc or a click outside keeps them
+$("modal").addEventListener("keydown", e => {                              // Enter in the title box, or Ctrl/Cmd+Enter anywhere, saves
+  if (e.key === "Enter" && !e.isComposing && (e.target.id === "f-title" || e.ctrlKey || e.metaKey)) { e.preventDefault(); $("f-save").click(); }
+});

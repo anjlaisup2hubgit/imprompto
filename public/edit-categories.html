@@ -25,25 +25,29 @@ body.edit{height:auto;min-height:100%;overflow:auto;padding:24px 20px 80px}
 .back{color:var(--chipink);font-weight:700;text-decoration:none}
 .back:hover{text-decoration:underline}
 #bar{position:sticky;top:0;z-index:5;max-width:1100px;margin:0 auto 16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1.5px solid #cfc3ee;border-radius:16px}
-#bar input{font:inherit;font-size:14px;padding:8px 10px;border:1.5px solid #cfc3ee;border-radius:10px;min-width:0}
+#bar input{font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid #cfc3ee;border-radius:10px;min-width:0}
 #filter{flex:1 1 180px}
 #dest{flex:1 1 220px}
 #sel{font-size:14px;color:var(--mute)}
 #go{font:inherit;font-weight:700;padding:8px 18px;border:0;border-radius:10px;background:var(--brand);color:#fff;cursor:pointer}
-#tabs{max-width:1100px;margin:0 auto 14px;display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+#tabs{scrollbar-width:none;max-width:1100px;margin:0 auto 14px;display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}
 .tab{flex:none;font:inherit;font-size:14px;font-weight:700;padding:8px 14px;border:1.5px solid #cfc3ee;border-radius:20px;background:#fff;color:var(--chipink);cursor:pointer}
 .tab:hover{background:var(--chip)}
 .tab[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff}
 #cols{max-width:700px;margin:0 auto}
 .col{background:#fff;border:1.5px solid #cfc3ee;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px}
-.cname{width:100%;font-size:17px;font-weight:700;color:var(--ink);padding:8px 10px;border:1.5px solid transparent;border-radius:10px;background:var(--chip)}
+.cname{width:100%;font-size:18px;font-weight:700;color:var(--ink);padding:8px 10px;border:1.5px solid transparent;border-radius:10px;background:var(--chip)}
 .cname:hover,.cname:focus{border-color:#cfc3ee;background:#fff}
 .cnt{font-size:13px;color:var(--mute);margin:0 2px 4px}
-.prompt{display:flex;gap:8px;align-items:center;background:#faf8ff;border:1px solid #e4dcf7;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:14px}
+.prompt{display:flex;gap:10px;align-items:center;background:#faf8ff;border:1px solid #e4dcf7;border-radius:10px;padding:10px 12px;cursor:pointer;font-size:15px}
+.prompt:hover{background:#f1e6fd}
+.prompt input{flex:none;width:20px;height:20px;margin:0;cursor:pointer}
 .prompt b{font-weight:600;overflow-wrap:anywhere}
 .more{font:inherit;font-size:13px;font-weight:700;padding:6px;border:1.5px dashed #cfc3ee;border-radius:10px;background:none;color:var(--chipink);cursor:pointer}
 .more:hover{background:var(--chip)}
-.empty{font-size:13px;color:var(--mute);padding:6px 2px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:15px;color:var(--mute);padding:48px 16px}
+.empty b{font-size:19px;color:var(--ink)}
+.empty a{margin-top:10px;padding:10px 20px;border-radius:20px;background:var(--brand);color:#fff;font-weight:700;text-decoration:none}
 #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:18px;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
 </style>
@@ -57,7 +61,7 @@ body.edit{height:auto;min-height:100%;overflow:auto;padding:24px 20px 80px}
 <div id="bar">
   <input id="filter" type="search" placeholder="Filter prompts by title" aria-label="Filter prompts by title" autocomplete="off">
   <span id="sel">0 selected</span>
-  <input id="dest" list="dl" placeholder="Move to… (type a new name to make one)" maxlength="30" aria-label="Category to move the ticked prompts to" autocomplete="off">
+  <input id="dest" title="Pick a category, or type a new name to make one" list="dl" placeholder="Move to category…" maxlength="30" aria-label="Category to move the ticked prompts to" autocomplete="off">
   <datalist id="dl"></datalist>
   <button id="go" type="button">Move</button>
 </div>
@@ -124,7 +128,12 @@ function movePrompts(list, newName) {
 const renameCategory = (oldName, newName) => movePrompts(all().filter(d => d.category === oldName), newName);
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
+document.body.append($("toast"));   // lives on the page itself (not the scaled stage) so phones always see it
+function toast(msg, undo) {          // undo (optional): shows an Undo button for a few seconds
+  const el = $("toast"); el.textContent = msg; el.classList.toggle("has-undo", !!undo);
+  if (undo) { const b = document.createElement("button"); b.textContent = "Undo"; b.onclick = () => { undo(); el.classList.remove("show"); }; el.append(b); }
+  el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), undo ? 6000 : 1900);
+}
 /* ---- Edit categories page: rename a category, move prompts between categories ---- */
 /* Built for 1000+ prompts: one pass over the data per draw, one shared set of listeners, one category on screen at a time, 30 rows until "Show more". */
 document.body.classList.add("edit");
@@ -147,7 +156,8 @@ function draw() {
   const rows = expanded.has(current) ? shown : shown.slice(0, LIMIT), more = shown.length - rows.length;
   cols.innerHTML = current ? `<section class="col" data-name="${esc(current)}"><input class="cname" type="text" maxlength="30" value="${esc(current)}" aria-label="Category name">`
     + `<div class="cnt">${plural(list.length)}${q ? ` · ${shown.length} match` : ""}</div>${rows.map(rowHtml).join("")}`
-    + (more > 0 ? `<button class="more" type="button">Show ${more} more</button>` : "") + `</section>` : '<p class="empty">No prompts yet.</p>';
+    + (more > 0 ? `<button class="more" type="button">Show ${more} more</button>` : "") + `</section>` : '<div class="empty"><b>Nothing to organise yet</b>Save a prompt first, then come back to sort it into categories.<a href="/">Back to prompts</a></div>';
+  $("bar").style.display = $("tabs").style.display = current ? "" : "none";
   $("dl").innerHTML = names.map(n => `<option value="${esc(n)}">`).join("");
   $("sel").textContent = selected.size + " selected";
 }

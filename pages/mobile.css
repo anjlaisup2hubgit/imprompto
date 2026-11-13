@@ -1,6 +1,6 @@
 /* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
 #chips{display:none}
-html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
+html:has(body.mobile){background:linear-gradient(#fff,#efe7fb) fixed;overflow-x:hidden;overflow-y:auto;height:auto}
 body.mobile{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:linear-gradient(#fff,#efe7fb) fixed}
 body.mobile #flower{left:0;top:124px;width:420px;height:399px;animation:float 8s ease-in-out infinite alternate}
 body.mobile #bloom{display:none}
@@ -12,7 +12,7 @@ body.mobile .hbtn{top:12px;height:44px;font-size:15px}
 body.mobile #sobtn{left:166px;width:94px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:60px;top:322px;width:300px;height:48px}
-body.mobile #q{font-size:13px}
+body.mobile #q{font-size:16px}   /* under 16px phones zoom the page when you tap the box */
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
 body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
 body.mobile #chips{display:flex;position:absolute;left:16px;top:106px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
@@ -26,3 +26,4 @@ body.mobile .r .cp{opacity:1}
 body.mobile .act{padding:11px 12px}
 body.mobile #foot{display:none}
 body.mobile .dlg{width:380px}
+body.mobile #stage{overflow-x:clip}   /* nothing inside may widen the phone page sideways */

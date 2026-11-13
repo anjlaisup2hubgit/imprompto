@@ -24,8 +24,10 @@ const SEEDS_MAX = 7, NS = "http://www.w3.org/2000/svg";
 let focused = null, leaveTimer = 0;
 function renderLabels() {
   const cats = catList(), D = all();
-  $("total").innerHTML = D.length + " prompts" + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
-  $("coach").firstChild.nodeValue = isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
+  $("total").innerHTML = D.length + (D.length === 1 ? " prompt" : " prompts") + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
+  $("sobtn").style.display = cloudOK ? "" : "none";             // nobody to sign out of when prompts only live on this device (signing out would wipe them)
+  $("coach").firstChild.nodeValue = !D.length ? "Welcome! Press the + button in the search bar to save your first prompt."
+    : isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
   $("labels").innerHTML = ""; $("chips").innerHTML = ""; floaters.length = 0; focused = null;
   ln.querySelectorAll(".slink").forEach(n => n.remove()); RS.length = 0;
   let tieHtml = "", k = 0;
@@ -35,7 +37,7 @@ function renderLabels() {
     const delay = `animation-delay:${0.1 + 0.08 * k++}s`;
     const dot = document.createElement("div"); dot.className = "dot"; dot.style.cssText = `left:${p.dx}px;top:${p.dy}px;--c:${color};${delay}`;
     const b = document.createElement("button"); b.className = "lab"; b.dataset.c = o; b.style.cssText = `left:${p.x}px;top:${p.y}px;--c:${color};${delay}`;
-    b.setAttribute("aria-label", `${label}, ${count} prompts`);
+    b.setAttribute("aria-label", `${label}, ${count} ${count === 1 ? "prompt" : "prompts"}`);
     if (o !== "*") b.setAttribute("aria-expanded", "false");
     b.innerHTML = `<b></b>${esc(label)} <i>${count}</i>`;
     const f = { o, p, b, dot, color, ph: k * 1.9, amp: 1, hold: false, x: p.x, y: p.y, vx: 0, vy: 0, seeds: [], rs: [], label, total: count, open: false, peek: false, drag: null };
@@ -55,7 +57,7 @@ function renderLabels() {
   mk("*", ALLSPOT, "all prompts", D.length, "#64748b");
   [{ c: "*", n: D.length, color: "#64748b", label: "all" }, ...cats].forEach((o, i) => {
     const ch = document.createElement("button"); ch.className = "chipbtn" + (i > SPOTS.length ? " extra" : ""); ch.dataset.c = o.c; ch.style.setProperty("--c", o.color);
-    ch.innerHTML = `<b></b>${esc(o.label || o.c)}<i>${o.n}</i>`; ch.onclick = () => toggleCat(o.c); $("chips").append(ch);
+    ch.innerHTML = `<b></b>${esc(o.label || o.c)}<i>${o.n}</i>`; ch.onclick = () => { toggleCat(o.c); if (cat) $("box").scrollIntoView({ behavior: "smooth", block: "nearest" }); }; $("chips").append(ch);
   });
   ln.querySelectorAll(".tie").forEach(n => n.remove());
   ln.insertAdjacentHTML("afterbegin", tieHtml);

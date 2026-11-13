@@ -23,5 +23,7 @@ body.editing :is(.lab,.seed,.chipbtn){pointer-events:none}
 #barcolor{flex:none;width:34px;height:32px;padding:0;border:1.5px solid #cfc3ee;border-radius:16px;background:#fff;cursor:pointer}
 #pichint{position:fixed;top:20px;left:50%;transform:translateX(-50%);margin:0;padding:8px 16px;border-radius:18px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:14px;font-weight:700}
 #pichint[hidden]{display:none}
-#donebtn{position:fixed;bottom:24px;left:calc(50% - 60px);width:120px;height:44px;border-radius:22px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
+#donebtn{position:fixed;top:20px;right:24px;width:120px;   /* top corner (where Settings was) so it never covers the all-prompts label */
+  height:44px;border-radius:22px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
 #donebtn:hover{background:var(--chip)}
+body.mobile #pichint{top:76px;width:max-content;max-width:90%;text-align:center}

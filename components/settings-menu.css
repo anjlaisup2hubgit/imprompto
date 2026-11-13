@@ -8,5 +8,5 @@ body #menu .hbtn{position:static;width:100%;height:42px;font-size:15px;display:f
 body #menu #trashbtn span{display:inline}
 body #menu #editcats{order:1}body #menu #editdash{order:2}body #menu #trashbtn{order:3}body #menu #sobtn{order:4}
 #editdash{background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
-body.mobile #setbtn{left:16px;top:12px}
-body.mobile #menu{left:16px;top:62px}
+body.mobile #setbtn{left:292px;top:12px;width:112px}   /* right side, so it never covers the app name */
+body.mobile #menu{left:240px;top:62px}

@@ -64,7 +64,7 @@ body.searching #coach{opacity:0;pointer-events:none}
   box-shadow:0 0 0 2px var(--c),0 6px 14px rgba(106,75,214,.2);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
 .seed.show{opacity:1;visibility:visible;transition-delay:0s}
 .seed b{flex:none;width:10px;height:10px;border-radius:50%;background:var(--c)}
-.seed span{max-width:0;overflow:hidden;opacity:0;margin-left:0;transition:max-width .25s,opacity .2s,margin .25s}
+.seed span{max-width:0;overflow:hidden;text-overflow:ellipsis;opacity:0;margin-left:0;transition:max-width .25s,opacity .2s,margin .25s}
 .seed.full span,.seed:hover span,.seed:focus-visible span{max-width:130px;opacity:1;margin-left:7px}
 .seed.all{background:var(--c);color:#fff;box-shadow:0 6px 14px rgba(0,0,0,.18)}
 .seed.all b{background:#fff}
@@ -118,7 +118,8 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 .r{padding:14px 12px 10px;border-radius:12px;cursor:pointer;margin-bottom:2px;animation:rowin .28s backwards}
 .r:hover,.r.cur{background:#f1e6fd}
 .r .hd{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.r h3{margin:0;font-size:17px;font-weight:700;line-height:1.3}
+.r h3{margin:0;font-size:17px;font-weight:700;line-height:1.3;min-width:0;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}   /* a long title wraps, then is cut, instead of spilling out */
+.r .cat{min-width:0;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .r .cp{flex:none;font-size:14px;font-weight:700;color:var(--acc);opacity:.6}
 .r:hover .cp,.r.cur .cp,.r.done .cp{opacity:1}
 .r p{margin:5px 0 0;font-size:14px;line-height:1.45;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -146,9 +147,12 @@ body.mobile .seed,body.mobile #peek,body.mobile .slink{display:none}
 .btn.main{background:var(--brand);color:#fff}
 .err{color:#a3180f;font-size:14px;margin-top:6px;min-height:18px}
 .dlg p{margin:0 0 6px;line-height:1.5;color:var(--mute)}
-#toast{position:absolute;left:50%;bottom:50px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:18px;
+#toast{position:fixed;left:50%;top:24px;width:max-content;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:18px;
   font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;max-width:90%;text-align:center}
 #toast.show{opacity:1}
+body.mobile #toast{top:auto;bottom:24px}
+#toast.has-undo{pointer-events:auto}
+#toast button{margin-left:12px;border:0;border-radius:12px;padding:4px 12px;font-size:14px;font-weight:700;background:#fff;color:var(--chipink);cursor:pointer}
 .btn:hover{filter:brightness(.96)}
 .btn.main:hover{filter:brightness(1.12)}
 /* computer layout: categories that do not fit on the 4 petals wait in a sliding row under the flower */
@@ -159,7 +163,7 @@ body:not(.mobile) .chipbtn:not(.extra){display:none}
 body.mobile #editcats{left:16px;top:64px;height:36px;width:150px;font-size:14px}
 /* phone / small-window layout: a 420-wide stage, categories on top, flower, results underneath */
 #chips{display:none}
-html:has(body.mobile){overflow-x:hidden;overflow-y:auto;height:auto}
+html:has(body.mobile){background:linear-gradient(#fff,#efe7fb) fixed;overflow-x:hidden;overflow-y:auto;height:auto}
 body.mobile{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:linear-gradient(#fff,#efe7fb) fixed}
 body.mobile #flower{left:0;top:124px;width:420px;height:399px;animation:float 8s ease-in-out infinite alternate}
 body.mobile #bloom{display:none}
@@ -171,7 +175,7 @@ body.mobile .hbtn{top:12px;height:44px;font-size:15px}
 body.mobile #sobtn{left:166px;width:94px}
 body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:60px;top:322px;width:300px;height:48px}
-body.mobile #q{font-size:13px}
+body.mobile #q{font-size:16px}   /* under 16px phones zoom the page when you tap the box */
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
 body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
 body.mobile #chips{display:flex;position:absolute;left:16px;top:106px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
@@ -185,6 +189,7 @@ body.mobile .r .cp{opacity:1}
 body.mobile .act{padding:11px 12px}
 body.mobile #foot{display:none}
 body.mobile .dlg{width:380px}
+body.mobile #stage{overflow-x:clip}   /* nothing inside may widen the phone page sideways */
 body:not(.mobile) #tab,body:not(.mobile) #head,body:not(.mobile) #cats{display:none}
 body:not(.mobile) #box{left:580px;top:482px;width:440px;height:320px;border:0;border-radius:22px;background:rgba(255,255,255,.97);
   box-shadow:0 14px 34px rgba(59,42,138,.22);transform-origin:50% 0}
@@ -258,8 +263,8 @@ body #menu .hbtn{position:static;width:100%;height:42px;font-size:15px;display:f
 body #menu #trashbtn span{display:inline}
 body #menu #editcats{order:1}body #menu #editdash{order:2}body #menu #trashbtn{order:3}body #menu #sobtn{order:4}
 #editdash{background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink)}
-body.mobile #setbtn{left:16px;top:12px}
-body.mobile #menu{left:16px;top:62px}
+body.mobile #setbtn{left:292px;top:12px;width:112px}   /* right side, so it never covers the app name */
+body.mobile #menu{left:240px;top:62px}
 /* edit mode: only two buttons on the screen edges (move sprigs, picture style) plus Done; the rest steps aside */
 #edge{display:none}
 body.editing #edge{display:block}
@@ -285,8 +290,10 @@ body.editing :is(.lab,.seed,.chipbtn){pointer-events:none}
 #barcolor{flex:none;width:34px;height:32px;padding:0;border:1.5px solid #cfc3ee;border-radius:16px;background:#fff;cursor:pointer}
 #pichint{position:fixed;top:20px;left:50%;transform:translateX(-50%);margin:0;padding:8px 16px;border-radius:18px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:14px;font-weight:700}
 #pichint[hidden]{display:none}
-#donebtn{position:fixed;bottom:24px;left:calc(50% - 60px);width:120px;height:44px;border-radius:22px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
+#donebtn{position:fixed;top:20px;right:24px;width:120px;   /* top corner (where Settings was) so it never covers the all-prompts label */
+  height:44px;border-radius:22px;z-index:40;background:#fff;border:1.5px solid #cfc3ee;color:var(--chipink);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(120,80,220,.18)}
 #donebtn:hover{background:var(--chip)}
+body.mobile #pichint{top:76px;width:max-content;max-width:90%;text-align:center}
 </style>
 </head>
 <body>
@@ -309,7 +316,7 @@ body.editing :is(.lab,.seed,.chipbtn){pointer-events:none}
   <div id="glow"></div>
   <div id="bar">
     <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="#a8450f" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="7"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
-    <input id="q" type="text" role="combobox" aria-controls="list" aria-expanded="false" aria-autocomplete="list" placeholder="Type any words you remember" maxlength="200" autocomplete="off" spellcheck="false" aria-label="Search your prompts" autofocus>
+    <input id="q" type="text" role="combobox" aria-controls="list" aria-expanded="false" aria-autocomplete="list" placeholder="Type a word you remember" maxlength="200" autocomplete="off" spellcheck="false" aria-label="Search your prompts" autofocus>
     <button id="clr" aria-label="Clear search">&times;</button>
     <button id="new" aria-label="New prompt" title="New prompt"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="#a8450f" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M11 3v16M3 11h16"/></svg></button>
   </div>
@@ -568,7 +575,7 @@ function fit() {
   const W = mobile ? 420 : 1240, H = mobile ? 960 : 900, st = $("stage");
   st.style.width = W + "px"; st.style.height = H + "px";
   $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);
-  $("q").placeholder = "Type any words you remember";
+  $("q").placeholder = "Type a word you remember";
   const l = $("link");
   if (l) { const a = mobile ? [210, 370, 210, 544] : [448, 120, 635, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
   // phones and tablets fill the width and scroll down; the computer layout fits the whole window
@@ -604,8 +611,10 @@ const SEEDS_MAX = 7, NS = "http://www.w3.org/2000/svg";
 let focused = null, leaveTimer = 0;
 function renderLabels() {
   const cats = catList(), D = all();
-  $("total").innerHTML = D.length + " prompts" + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
-  $("coach").firstChild.nodeValue = isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
+  $("total").innerHTML = D.length + (D.length === 1 ? " prompt" : " prompts") + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
+  $("sobtn").style.display = cloudOK ? "" : "none";             // nobody to sign out of when prompts only live on this device (signing out would wipe them)
+  $("coach").firstChild.nodeValue = !D.length ? "Welcome! Press the + button in the search bar to save your first prompt."
+    : isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
   $("labels").innerHTML = ""; $("chips").innerHTML = ""; floaters.length = 0; focused = null;
   ln.querySelectorAll(".slink").forEach(n => n.remove()); RS.length = 0;
   let tieHtml = "", k = 0;
@@ -615,7 +624,7 @@ function renderLabels() {
     const delay = `animation-delay:${0.1 + 0.08 * k++}s`;
     const dot = document.createElement("div"); dot.className = "dot"; dot.style.cssText = `left:${p.dx}px;top:${p.dy}px;--c:${color};${delay}`;
     const b = document.createElement("button"); b.className = "lab"; b.dataset.c = o; b.style.cssText = `left:${p.x}px;top:${p.y}px;--c:${color};${delay}`;
-    b.setAttribute("aria-label", `${label}, ${count} prompts`);
+    b.setAttribute("aria-label", `${label}, ${count} ${count === 1 ? "prompt" : "prompts"}`);
     if (o !== "*") b.setAttribute("aria-expanded", "false");
     b.innerHTML = `<b></b>${esc(label)} <i>${count}</i>`;
     const f = { o, p, b, dot, color, ph: k * 1.9, amp: 1, hold: false, x: p.x, y: p.y, vx: 0, vy: 0, seeds: [], rs: [], label, total: count, open: false, peek: false, drag: null };
@@ -635,7 +644,7 @@ function renderLabels() {
   mk("*", ALLSPOT, "all prompts", D.length, "#64748b");
   [{ c: "*", n: D.length, color: "#64748b", label: "all" }, ...cats].forEach((o, i) => {
     const ch = document.createElement("button"); ch.className = "chipbtn" + (i > SPOTS.length ? " extra" : ""); ch.dataset.c = o.c; ch.style.setProperty("--c", o.color);
-    ch.innerHTML = `<b></b>${esc(o.label || o.c)}<i>${o.n}</i>`; ch.onclick = () => toggleCat(o.c); $("chips").append(ch);
+    ch.innerHTML = `<b></b>${esc(o.label || o.c)}<i>${o.n}</i>`; ch.onclick = () => { toggleCat(o.c); if (cat) $("box").scrollIntoView({ behavior: "smooth", block: "nearest" }); }; $("chips").append(ch);
   });
   ln.querySelectorAll(".tie").forEach(n => n.remove());
   ln.insertAdjacentHTML("afterbegin", tieHtml);
@@ -955,7 +964,7 @@ function markSprigs(counts, restrict) {
   for (const f of floaters) {
     const n = counts ? (f.o === "*" ? counts.total : (counts[f.o] || 0)) : f.total, sel = !!counts && f.o === cat;
     const i = f.b.querySelector("i"); if (i) i.textContent = n;
-    f.b.setAttribute("aria-label", `${f.label}, ${n} ${counts ? "matches" : "prompts"}`);
+    f.b.setAttribute("aria-label", `${f.label}, ${n} ${counts ? (n === 1 ? "match" : "matches") : (n === 1 ? "prompt" : "prompts")}`);
     const off = !!counts && restrict && !sel, zero = !!counts && !sel && n === 0;
     for (const el of [f.b, f.dot, f.tie]) if (el) { el.classList.toggle("off", off); el.classList.toggle("zero", zero); }
     f.dot.classList.toggle("sel", sel); f.tie && f.tie.classList.toggle("sel", sel);
@@ -1010,7 +1019,7 @@ function render() {
   });
   const list = $("list"); list.innerHTML = ""; list.scrollTop = 0; cur = 0;
   if (!rows.length) {
-    list.innerHTML = '<div class="none">Nothing found. Try fewer or different words' + (cl.length ? ", or browse a group:" : ".") + '<div class="sug"></div></div>';
+    list.innerHTML = '<div class="none">' + (all().length ? "Nothing found. Try fewer or different words" + (cl.length ? ", or browse a group:" : ".") : "You have no prompts yet. Press the + button to save your first one.") + '<div class="sug"></div></div>';
     cl.slice(0, 6).forEach(o => { const b = document.createElement("button"); b.className = "cb"; b.style.setProperty("--c", o.color); b.innerHTML = `<b></b>${esc(o.c)}`; b.onclick = () => { $("q").value = ""; cat = o.c; render(); }; list.querySelector(".sug").append(b); });
     $("foot").textContent = "Esc to clear"; $("q").removeAttribute("aria-activedescendant"); return;
   }
@@ -1027,7 +1036,7 @@ function render() {
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash"); return; }
+      if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash", () => { restorePrompt(d.id); renderLabels(); render(); }); return; }
       copy(d.text, r);
     };
     list.appendChild(r);
@@ -1044,7 +1053,7 @@ function setCur(i) {                                    // choose the highlighte
   $("box").style.setProperty("--c", rows[cur].style.getPropertyValue("--c"));
   RS.forEach(sd => sd.el.classList.toggle("sel", sd.i === cur));
   const m = document.body.dataset.mode, n = ctx.n;
-  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · only the top ${RS.length} show as seeds, type more words to narrow` : "")
+  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n}` + (n > 1 ? " · ↑ ↓ hop between seeds" : "") + " · Enter copy" + (n > RS.length ? ` · only the top ${RS.length} show as seeds, type more words to narrow` : "")
     : "↑ ↓ to move · Enter to copy · Esc to clear";
 }
 const move = step => setCur(cur + step);                // arrow keys
@@ -1058,7 +1067,7 @@ async function copy(text, row) {
 /* ---- first-visit tip ---- */
 function seenIt() { try { return !!localStorage.getItem(SEEN); } catch (e) { return true; } }
 function dismissCoach() { $("coach").classList.remove("show"); try { localStorage.setItem(SEEN, "1"); } catch (e) {} }
-if (!seenIt() && all().length) $("coach").classList.add("show");
+if (!seenIt()) $("coach").classList.add("show");
 $("coach-ok").onclick = dismissCoach;
 $("q").addEventListener("input", () => { dismissCoach(); render(); });
 $("clr").onclick = () => { $("q").value = ""; cat = ""; render(); $("q").focus(); };
@@ -1096,7 +1105,12 @@ function closeModals() {
 }
 $("f-cancel").onclick = closeModals;
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("mousedown", e => { if (e.target === o) closeModals(); }));
-function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1900); }
+document.body.append($("toast"));   // lives on the page itself (not the scaled stage) so phones always see it
+function toast(msg, undo) {          // undo (optional): shows an Undo button for a few seconds
+  const el = $("toast"); el.textContent = msg; el.classList.toggle("has-undo", !!undo);
+  if (undo) { const b = document.createElement("button"); b.textContent = "Undo"; b.onclick = () => { undo(); el.classList.remove("show"); }; el.append(b); }
+  el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), undo ? 6000 : 1900);
+}
 /* ---- fills in a blank title or category from the prompt text ---- */
 const STOP = new Set("about above after again also been before being between both could does doing each from have having here into just like make more most must only other over please should some such than that their them then there these they this those through under until very want what when where which while will with would your you the and for are but not can use using write give".split(" "));
 const wordsOf = t => fold(t).split(/[^a-z0-9']+/).filter(w => w.length >= 4 && !STOP.has(w));
@@ -1113,12 +1127,15 @@ function autoCategory(text) {          // the existing category whose prompts sh
   const best = Object.keys(score).sort((a, b) => score[b] - score[a])[0];
   return best || "category1";
 }
-let editing = null, editingTags = [];
+let editing = null, editingTags = [], blankForm = true;   // blankForm false = a new prompt was closed by accident, so its words stay in the boxes
 function openForm(d) {
   editing = d ? d.id : null; editingTags = d ? d.tags : [];
   $("ftitle").textContent = editing ? "Edit prompt" : "New prompt";
-  $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
-  $("f-text").value = d ? d.text : "";
+  if (d || blankForm) {
+    $("f-title").value = d ? d.title : ""; $("f-cat").value = d ? d.category : (cat && cat !== "*" ? cat : "");
+    $("f-text").value = d ? d.text : "";
+  }
+  blankForm = !!d;
   $("ferr").textContent = ""; showAutoHints(); showModal("modal", "f-title");
 }
 const closeForm = closeModals;
@@ -1136,12 +1153,19 @@ $("f-save").onclick = () => {
   const old = editing && MINE.find(x => x.id === editing);
   if (old) Object.assign(old, c, { id: old.id }); else MINE.push(c);
   const ok = save();
+  blankForm = true;
   closeModals(); renderLabels(); render();
   toast(ok ? (editing ? "Prompt updated" : "Prompt saved") : "Added, but your browser blocked saving.");
 };
+$("f-cancel").onclick = () => { blankForm = true; closeModals(); };   // Cancel throws the words away; Esc or a click outside keeps them
+$("modal").addEventListener("keydown", e => {                              // Enter in the title box, or Ctrl/Cmd+Enter anywhere, saves
+  if (e.key === "Enter" && !e.isComposing && (e.target.id === "f-title" || e.ctrlKey || e.metaKey)) { e.preventDefault(); $("f-save").click(); }
+});
 addEventListener("storage", e => { if (e.key === KEY || e.key === null) { loadMine(); renderLabels(); render(); } });   // another tab changed things
 $("new").onclick = () => openForm(null);
-$("sobtn").onclick = () => { [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
+$("sobtn").onclick = () => {
+  if (lsGet(DIRTY) === "1" && !confirm("Some changes have not reached your account yet and will be lost if you sign out now. Sign out anyway?")) return;
+  [KEY, BASE, DIRTY, OWNER].forEach(k => lsSet(k, null)); location.href = "/cdn-cgi/access/logout"; };
 /* ---- Settings: opens and closes the panel that holds the header buttons ---- */
 function setMenu(on) { $("menu").classList.toggle("open", on); $("setbtn").setAttribute("aria-expanded", on); }
 $("setbtn").onclick = () => setMenu(!$("menu").classList.contains("open"));
@@ -1171,6 +1195,7 @@ function showTrash() {
       <button class="btn main sm" data-a="restore">Restore</button><button class="act danger" data-a="purge">Delete forever</button>`;
     r.onclick = e => {
       const a = e.target.dataset && e.target.dataset.a; if (!a) return;
+      if (a === "purge" && !confirm("Delete “" + m.title + "” for good? This cannot be undone.")) return;
       if (a === "restore") { restorePrompt(m.id); toast("Restored"); } else purgePrompt(m.id);
       renderLabels(); render(); showTrash();
     };

@@ -19,7 +19,8 @@
 .r{padding:14px 12px 10px;border-radius:12px;cursor:pointer;margin-bottom:2px;animation:rowin .28s backwards}
 .r:hover,.r.cur{background:#f1e6fd}
 .r .hd{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.r h3{margin:0;font-size:17px;font-weight:700;line-height:1.3}
+.r h3{margin:0;font-size:17px;font-weight:700;line-height:1.3;min-width:0;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}   /* a long title wraps, then is cut, instead of spilling out */
+.r .cat{min-width:0;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .r .cp{flex:none;font-size:14px;font-weight:700;color:var(--acc);opacity:.6}
 .r:hover .cp,.r.cur .cp,.r.done .cp{opacity:1}
 .r p{margin:5px 0 0;font-size:14px;line-height:1.45;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}

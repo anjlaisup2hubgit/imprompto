@@ -8,7 +8,7 @@ function fit() {
   const W = mobile ? 420 : 1240, H = mobile ? 960 : 900, st = $("stage");
   st.style.width = W + "px"; st.style.height = H + "px";
   $("lines").setAttribute("viewBox", `0 0 ${W} ${H}`);
-  $("q").placeholder = "Type any words you remember";
+  $("q").placeholder = "Type a word you remember";
   const l = $("link");
   if (l) { const a = mobile ? [210, 370, 210, 544] : [448, 120, 635, 430]; ["x1", "y1", "x2", "y2"].forEach((k, i) => l.setAttribute(k, a[i])); }
   // phones and tablets fill the width and scroll down; the computer layout fits the whole window

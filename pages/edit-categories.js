@@ -20,7 +20,8 @@ function draw() {
   const rows = expanded.has(current) ? shown : shown.slice(0, LIMIT), more = shown.length - rows.length;
   cols.innerHTML = current ? `<section class="col" data-name="${esc(current)}"><input class="cname" type="text" maxlength="30" value="${esc(current)}" aria-label="Category name">`
     + `<div class="cnt">${plural(list.length)}${q ? ` · ${shown.length} match` : ""}</div>${rows.map(rowHtml).join("")}`
-    + (more > 0 ? `<button class="more" type="button">Show ${more} more</button>` : "") + `</section>` : '<p class="empty">No prompts yet.</p>';
+    + (more > 0 ? `<button class="more" type="button">Show ${more} more</button>` : "") + `</section>` : '<div class="empty"><b>Nothing to organise yet</b>Save a prompt first, then come back to sort it into categories.<a href="/">Back to prompts</a></div>';
+  $("bar").style.display = $("tabs").style.display = current ? "" : "none";
   $("dl").innerHTML = names.map(n => `<option value="${esc(n)}">`).join("");
   $("sel").textContent = selected.size + " selected";
 }

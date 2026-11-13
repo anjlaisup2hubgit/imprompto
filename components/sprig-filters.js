@@ -3,7 +3,7 @@ function markSprigs(counts, restrict) {
   for (const f of floaters) {
     const n = counts ? (f.o === "*" ? counts.total : (counts[f.o] || 0)) : f.total, sel = !!counts && f.o === cat;
     const i = f.b.querySelector("i"); if (i) i.textContent = n;
-    f.b.setAttribute("aria-label", `${f.label}, ${n} ${counts ? "matches" : "prompts"}`);
+    f.b.setAttribute("aria-label", `${f.label}, ${n} ${counts ? (n === 1 ? "match" : "matches") : (n === 1 ? "prompt" : "prompts")}`);
     const off = !!counts && restrict && !sel, zero = !!counts && !sel && n === 0;
     for (const el of [f.b, f.dot, f.tie]) if (el) { el.classList.toggle("off", off); el.classList.toggle("zero", zero); }
     f.dot.classList.toggle("sel", sel); f.tie && f.tie.classList.toggle("sel", sel);

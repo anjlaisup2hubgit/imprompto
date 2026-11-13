@@ -11,6 +11,7 @@ function showTrash() {
       <button class="btn main sm" data-a="restore">Restore</button><button class="act danger" data-a="purge">Delete forever</button>`;
     r.onclick = e => {
       const a = e.target.dataset && e.target.dataset.a; if (!a) return;
+      if (a === "purge" && !confirm("Delete “" + m.title + "” for good? This cannot be undone.")) return;
       if (a === "restore") { restorePrompt(m.id); toast("Restored"); } else purgePrompt(m.id);
       renderLabels(); render(); showTrash();
     };

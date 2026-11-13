@@ -34,7 +34,7 @@ function render() {
   });
   const list = $("list"); list.innerHTML = ""; list.scrollTop = 0; cur = 0;
   if (!rows.length) {
-    list.innerHTML = '<div class="none">Nothing found. Try fewer or different words' + (cl.length ? ", or browse a group:" : ".") + '<div class="sug"></div></div>';
+    list.innerHTML = '<div class="none">' + (all().length ? "Nothing found. Try fewer or different words" + (cl.length ? ", or browse a group:" : ".") : "You have no prompts yet. Press the + button to save your first one.") + '<div class="sug"></div></div>';
     cl.slice(0, 6).forEach(o => { const b = document.createElement("button"); b.className = "cb"; b.style.setProperty("--c", o.color); b.innerHTML = `<b></b>${esc(o.c)}`; b.onclick = () => { $("q").value = ""; cat = o.c; render(); }; list.querySelector(".sug").append(b); });
     $("foot").textContent = "Esc to clear"; $("q").removeAttribute("aria-activedescendant"); return;
   }
@@ -51,7 +51,7 @@ function render() {
     r.onclick = ev => {
       const btn = ev.target.closest && ev.target.closest("[data-a]"), a = btn && btn.dataset.a;
       if (a === "edit") return openForm(d);
-      if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash"); return; }
+      if (a === "trash") { trashPrompt(d); renderLabels(); render(); toast("Moved to trash", () => { restorePrompt(d.id); renderLabels(); render(); }); return; }
       copy(d.text, r);
     };
     list.appendChild(r);
@@ -68,6 +68,6 @@ function setCur(i) {                                    // choose the highlighte
   $("box").style.setProperty("--c", rows[cur].style.getPropertyValue("--c"));
   RS.forEach(sd => sd.el.classList.toggle("sel", sd.i === cur));
   const m = document.body.dataset.mode, n = ctx.n;
-  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n} · ↑ ↓ hop between seeds · Enter copy` + (n > RS.length ? ` · only the top ${RS.length} show as seeds, type more words to narrow` : "")
+  $("foot").textContent = m === "seeds" ? `${cur + 1} of ${n}` + (n > 1 ? " · ↑ ↓ hop between seeds" : "") + " · Enter copy" + (n > RS.length ? ` · only the top ${RS.length} show as seeds, type more words to narrow` : "")
     : "↑ ↓ to move · Enter to copy · Esc to clear";
 }
