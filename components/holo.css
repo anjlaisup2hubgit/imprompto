@@ -7,4 +7,4 @@ body.pic #flower{display:none}
 body.mobile #holo{left:0;top:124px;width:420px;height:399px}
 /* placing mode: dots can be grabbed, everything else steps aside */
 body.placing .dot{pointer-events:auto;cursor:grab;z-index:5;box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 30%,transparent)}
-body.placing .lab,body.placing .seed{pointer-events:none}
+body.placing .seed{pointer-events:none}
