@@ -8,6 +8,12 @@ function setAligning(on) {
 }
 $("alignbtn").onclick = () => setAligning(!document.body.classList.contains("aligning"));
 $("centerpic").onclick = () => { picOff.x = 620 - 781; picOff.y = 450 - 427; savePicOff(); };   // the picture's middle onto the stage's middle
+function snapPic(side) {   // slide the picture to the left or right edge of the stage, keeping its height
+  const m = document.body.classList.contains("mobile"), left = m ? 0 : 332, w = m ? 420 : 898, stageW = m ? 420 : 1240;
+  picOff.x = side === "left" ? -left : stageW - left - w; savePicOff();
+}
+$("leftpic").onclick = () => snapPic("left");
+$("rightpic").onclick = () => snapPic("right");
 document.addEventListener("pointerdown", e => {
   if (!document.body.classList.contains("aligning") || e.button !== 0 || e.target.closest("#edge")) return;
   e.preventDefault();

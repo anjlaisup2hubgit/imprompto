@@ -288,7 +288,7 @@ body.aligning{cursor:move}
 .sty:hover{background:rgba(239,233,251,.7)}
 .sty.on{background:var(--chip)}
 .prow{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #e6defa}
-.prow button{flex:1;height:32px;border-radius:16px;border:1.5px solid #cfc3ee;background:#fff;color:var(--chipink);font-size:13px;font-weight:700;cursor:pointer}
+.prow button{flex:1;min-height:32px;padding:4px 6px;line-height:1.15;border-radius:16px;border:1.5px solid #cfc3ee;background:#fff;color:var(--chipink);font-size:13px;font-weight:700;cursor:pointer}
 .barrow label{flex:1;font-size:13px;font-weight:700;color:var(--chipink)}
 .barrow button{flex:none;padding:0 10px}
 #barcolor{flex:none;width:34px;height:32px;padding:0;border:1.5px solid #cfc3ee;border-radius:16px;background:#fff;cursor:pointer}
@@ -354,7 +354,8 @@ body.mobile #pichint{top:76px;width:max-content;max-width:90%;text-align:center}
     <span>Picture style</span></button>
   <div id="stylepanel" role="group" aria-label="Picture style">
     <div id="styles"></div>
-    <div class="prow"><button id="alignbtn">Move picture</button><button id="centerpic">Centre</button></div>
+    <div class="prow"><button id="alignbtn">Move picture</button></div>
+    <div class="prow"><button id="leftpic">Left</button><button id="centerpic">Centre</button><button id="rightpic">Right</button></div>
     <div class="prow"><button id="choosepic">Choose picture</button><button id="rmpic">Remove</button></div>
     <div class="prow barrow"><label for="barcolor">Search bar colour</label><input type="color" id="barcolor"><button id="barauto">Auto</button></div>
   </div>
@@ -936,6 +937,12 @@ function setAligning(on) {
 }
 $("alignbtn").onclick = () => setAligning(!document.body.classList.contains("aligning"));
 $("centerpic").onclick = () => { picOff.x = 620 - 781; picOff.y = 450 - 427; savePicOff(); };   // the picture's middle onto the stage's middle
+function snapPic(side) {   // slide the picture to the left or right edge of the stage, keeping its height
+  const m = document.body.classList.contains("mobile"), left = m ? 0 : 332, w = m ? 420 : 898, stageW = m ? 420 : 1240;
+  picOff.x = side === "left" ? -left : stageW - left - w; savePicOff();
+}
+$("leftpic").onclick = () => snapPic("left");
+$("rightpic").onclick = () => snapPic("right");
 document.addEventListener("pointerdown", e => {
   if (!document.body.classList.contains("aligning") || e.button !== 0 || e.target.closest("#edge")) return;
   e.preventDefault();
