@@ -1,9 +1,9 @@
-$("q").addEventListener("input", () => { dismissCoach(); render(); });
+$("q").addEventListener("input", () => { render(); });
 $("clr").onclick = () => { $("q").value = ""; cat = ""; render(); $("q").focus(); };
 const openOverlay = () => document.querySelector(".ov.show");
 addEventListener("keydown", e => {
   const ov = openOverlay();
-  if (e.key === "Escape") { closeSeeds(); $("q").value = ""; cat = ""; closeModals(); dismissCoach(); render(); return; }
+  if (e.key === "Escape") { closeSeeds(); $("q").value = ""; cat = ""; closeModals(); render(); return; }
   if (e.key === "/" && !ov && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName || "")) { e.preventDefault(); $("q").focus(); return; }
   if (e.key === "Tab" && ov) {                                              // keep keyboard focus inside the pop-up
     const f = [...ov.querySelectorAll("input:not([hidden]),textarea,button")].filter(x => !x.disabled);

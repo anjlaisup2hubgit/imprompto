@@ -30,8 +30,6 @@ function renderLabels() {
   const cats = catList(), D = all();
   $("total").innerHTML = D.length + (D.length === 1 ? " prompt" : " prompts") + (cloudOK ? '<span class="sv"> · synced to your account</span>' : '<span class="sv"> · saved on this device</span>');
   $("sobtn").style.display = cloudOK ? "" : "none";             // nobody to sign out of when prompts only live on this device (signing out would wipe them)
-  $("coach").firstChild.nodeValue = !D.length ? "Welcome! Press the + button in the search bar to save your first prompt."
-    : isMobile() ? "Start here: type any word you remember, or tap a group above." : "Start here: type any word you remember, or click a sprig to see the prompts inside.";
   $("labels").innerHTML = ""; $("chips").innerHTML = ""; floaters.length = 0; focused = null;
   ln.querySelectorAll(".slink").forEach(n => n.remove()); RS.length = 0;
   let tieHtml = "", k = 0;

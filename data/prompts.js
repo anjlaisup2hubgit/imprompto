@@ -1,4 +1,4 @@
-const KEY = "promptlib.mine.v1", SEEN = "promptlib.seen.v1";
+const KEY = "promptlib.mine.v1";
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const str = v => (typeof v === "string" || typeof v === "number") ? String(v) : "";
 const slug = v => str(v).trim().toLowerCase().replace(/\s+/g, "-");

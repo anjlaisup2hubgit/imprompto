@@ -14,7 +14,6 @@ body.mobile #glow{left:100px;top:218px;width:240px;height:240px}
 body.mobile #bar{left:60px;top:322px;width:300px;height:48px}
 body.mobile #q{font-size:16px}   /* under 16px phones zoom the page when you tap the box */
 body.mobile .lab,body.mobile .dot,body.mobile .tie{display:none}
-body.mobile #coach{left:50px;bottom:672px;width:320px;font-size:15px}
 body.mobile #chips{display:flex;position:absolute;left:16px;top:106px;width:388px;gap:8px;overflow-x:auto;padding:2px 2px 8px}
 .chipbtn{flex:none;height:44px;border-radius:22px;border:0;background:#fff;padding:0 16px;font-size:15px;font-weight:700;color:var(--ink);
   cursor:pointer;box-shadow:0 4px 10px rgba(106,75,214,.14);display:flex;align-items:center;gap:8px}

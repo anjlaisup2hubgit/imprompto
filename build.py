@@ -11,7 +11,7 @@ DIALOGS = ["components/prompt-dialog.html", "components/trash-dialog.html", "com
 SCRIPTS = ["data/prompts.js", "data/local-storage.js", "components/holo-shader.js", "data/picture.js", "data/sync.js", "data/categories.js", "data/trash.js", "components/dom-helpers.js",
            "components/state.js", "components/stage-fit.js", "components/petals.js", "components/sprigs.js",
            "components/sprig-motion.js", "components/bar-color.js", "components/holo.js", "components/picture-upload.js", "components/picture-align.js","components/style-picker.js", "components/search.js", "components/sprig-filters.js", "pages/results.js",
-           "components/copy.js", "components/coach.js", "components/keyboard.js", "components/click-away.js", "components/modal.js",
+           "components/copy.js", "components/keyboard.js", "components/click-away.js", "components/modal.js",
            "components/toast.js", "components/auto-fill.js", "pages/prompt-form.js", "components/header-buttons.js", "components/settings-menu.js", "components/edit-mode.js", "components/trash.js", "pages/home.js"]
 
 EDIT_STYLES = ["components/base.css", "pages/edit-categories.css"]
